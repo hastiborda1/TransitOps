@@ -1,13 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Receipt, Loader2 } from "lucide-react";
+import { Plus, Receipt, Loader2, ShieldAlert } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { toast } from "sonner";
 
-import { api } from "@/services/api";
+import { api, authService } from "@/services/api";
 import { PageHeader } from "@/components/page-header";
 import { DataTable, type Column } from "@/components/data-table";
 import { StatusBadge } from "@/components/status-badge";
@@ -54,6 +54,8 @@ type ExpenseFormValues = z.infer<typeof expenseSchema>;
 function ExpensesPage() {
   const queryClient = useQueryClient();
   const [isAddOpen, setIsAddOpen] = useState(false);
+  const currentUser = authService.getCurrentUser();
+  const isViewOnly = currentUser?.role === "manager";
 
   const { data: expenses, isLoading: isExpensesLoading } = useQuery({
     queryKey: ["expenses"],
@@ -164,9 +166,15 @@ function ExpensesPage() {
         title="Expenses"
         description="Approvals and financial visibility across operations."
         actions={
-          <Button size="sm" onClick={() => setIsAddOpen(true)}>
-            <Plus className="h-4 w-4" /> New Expense
-          </Button>
+          isViewOnly ? (
+            <div className="flex items-center gap-2 bg-muted px-3 py-1.5 rounded-md border text-xs font-medium text-muted-foreground">
+              <ShieldAlert className="h-3.5 w-3.5 text-amber-500" /> View Only Access
+            </div>
+          ) : (
+            <Button size="sm" onClick={() => setIsAddOpen(true)}>
+              <Plus className="h-4 w-4" /> New Expense
+            </Button>
+          )
         }
       />
       <DataTable
