@@ -6,23 +6,24 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/lib/auth";
 
-const ROLE_TITLES: Record<string, string> = {
+const roleLabels: Record<string, string> = {
+  manager: "Fleet Manager",
+  driver: "Driver",
+  safety: "Safety Officer",
+  finance: "Financial Analyst",
   "fleet-manager": "Fleet Manager",
-  "driver": "Driver",
   "safety-officer": "Safety Officer",
   "financial-analyst": "Financial Analyst",
-  "admin": "System Administrator",
-  "manager": "Fleet Manager",
-  "safety": "Safety Officer",
-  "finance": "Financial Analyst",
+  admin: "System Administrator",
 };
 
 export function TopBar() {
   const { getSession } = useAuth();
-  const user = getSession();
-  
-  const name = user?.name || user?.email?.split("@")[0] || "Alex Morgan";
-  const role = user?.role ? (ROLE_TITLES[user.role] || user.role) : "Fleet Manager";
+  const session = getSession();
+  const user = session || { name: "Alex Morgan", role: "manager" };
+
+  const name = user.name || "Alex Morgan";
+  const role = roleLabels[user.role] || user.role || "Fleet Manager";
 
   const initials = name
     .split(" ")
@@ -37,7 +38,7 @@ export function TopBar() {
       <Separator orientation="vertical" className="h-6 hidden sm:block" />
       <div className="relative flex-1 max-w-md hidden md:block">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input placeholder="Search vehicles, drivers, trips…" className="pl-9 h-9 bg-surface-container-low border-transparent focus-visible:bg-background" />
+        <Input placeholder="Search vehicles, drivers, trips…" className="pl-12 h-9 bg-surface-container-low border-transparent focus-visible:bg-background" />
       </div>
       <div className="flex items-center gap-2 ml-auto">
         <Button variant="ghost" size="icon" aria-label="Notifications" className="relative">

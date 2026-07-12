@@ -3,7 +3,7 @@ import { createFileRoute, Link, useNavigate, redirect } from "@tanstack/react-ro
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Truck, ShieldCheck, PieChart, User, Mail, KeyRound, Loader2, ShieldAlert } from "lucide-react";
+import { Truck, ShieldCheck, PieChart, User, Mail, KeyRound, Loader2, ShieldAlert, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { AuthLayout } from "@/components/auth/AuthLayout";
 import { Label } from "@/components/ui/label";
@@ -51,36 +51,36 @@ const rolesConfig = [
     id: "manager",
     title: "Manager",
     icon: Truck,
-    color: "bg-blue-500/10 text-blue-500 border-blue-500/20",
-    activeColor: "bg-blue-500 text-white border-blue-500",
-    defaultUser: "admin@gmail.com",
-    defaultPass: "admin@123",
+    color: "bg-[#C59B27]/10 text-[#C59B27] border-[#C59B27]/20",
+    activeColor: "bg-[#C59B27] text-white border-[#C59B27]",
+    defaultUser: "manager@transitops.com",
+    defaultPass: "demo1234",
   },
   {
     id: "safety",
     title: "Safety",
     icon: ShieldCheck,
-    color: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
-    activeColor: "bg-emerald-500 text-white border-emerald-500",
-    defaultUser: "safety",
+    color: "bg-[#C59B27]/10 text-[#C59B27] border-[#C59B27]/20",
+    activeColor: "bg-[#C59B27] text-white border-[#C59B27]",
+    defaultUser: "safety@transitops.com",
     defaultPass: "demo1234",
   },
   {
     id: "finance",
     title: "Finance",
     icon: PieChart,
-    color: "bg-purple-500/10 text-purple-500 border-purple-500/20",
-    activeColor: "bg-purple-500 text-white border-purple-500",
-    defaultUser: "finance",
+    color: "bg-[#C59B27]/10 text-[#C59B27] border-[#C59B27]/20",
+    activeColor: "bg-[#C59B27] text-white border-[#C59B27]",
+    defaultUser: "finance@transitops.com",
     defaultPass: "demo1234",
   },
   {
     id: "driver",
     title: "Driver",
     icon: User,
-    color: "bg-orange-500/10 text-orange-500 border-orange-500/20",
-    activeColor: "bg-orange-500 text-white border-orange-500",
-    defaultUser: "driver",
+    color: "bg-[#C59B27]/10 text-[#C59B27] border-[#C59B27]/20",
+    activeColor: "bg-[#C59B27] text-white border-[#C59B27]",
+    defaultUser: "driver@transitops.com",
     defaultPass: "demo1234",
   },
 ];
@@ -91,6 +91,7 @@ function UnifiedLoginPage() {
   const [loading, setLoading] = useState(false);
   const [isOtpMode, setIsOtpMode] = useState(false);
   const [sendingOtp, setSendingOtp] = useState(false);
+  const { login } = useAuth();
 
   const activeRoleConfig = rolesConfig.find((r) => r.id === selectedRole) || rolesConfig[0];
 
@@ -100,7 +101,7 @@ function UnifiedLoginPage() {
     setValue,
     watch,
     formState: { errors },
-  } = useForm<FormValues>({
+  } = useForm<FormValues>(({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       identifier: activeRoleConfig.defaultUser,
@@ -108,7 +109,7 @@ function UnifiedLoginPage() {
       otp: "",
       remember: true,
     },
-  });
+  }) as any);
 
   // Automatically update input fields when role changes
   useEffect(() => {
@@ -120,7 +121,7 @@ function UnifiedLoginPage() {
 
   const handleSendOtp = async () => {
     const email = watchEmail;
-    if (!email || !z.string().email().safeParse(email).success) {
+    if (!email || !email.includes("@")) {
       toast.error("Please enter a valid email address first.");
       return;
     }
@@ -147,8 +148,8 @@ function UnifiedLoginPage() {
         return;
       }
     } else {
-      if (!values.password || values.password.length < 6) {
-        toast.error("Password must be at least 6 characters.");
+      if (!values.password || values.password.length < 4) {
+        toast.error("Password must be at least 4 characters.");
         return;
       }
     }
@@ -157,11 +158,13 @@ function UnifiedLoginPage() {
     try {
       if (isOtpMode) {
         const res = await authService.verifyOtp(values.identifier, values.otp || "", selectedRole);
-        toast.success(`Welcome, ${res.username}`);
+        login({ id: res.id, email: res.email, name: res.name, role: res.role });
+        toast.success(`Welcome, ${res.name}`);
         navigate({ to: "/dashboard" });
       } else {
         const res = await authService.login(values.identifier, values.password || "");
-        toast.success(`Welcome, ${res.username}`);
+        login({ id: res.id, email: res.email, name: res.name, role: res.role });
+        toast.success(`Welcome, ${res.name}`);
         navigate({ to: "/dashboard" });
       }
     } catch (e: any) {
@@ -174,28 +177,28 @@ function UnifiedLoginPage() {
   return (
     <AuthLayout>
       <div className="flex flex-col items-center mb-6">
-        <div className="w-11 h-11 bg-primary rounded-xl flex items-center justify-center mb-3 shadow-lg shadow-primary/25">
-          <Truck className="h-6 w-6 text-primary-foreground" />
+        <div className="w-11 h-11 bg-[#C59B27] rounded-[5px] flex items-center justify-center mb-3 shadow-lg">
+          <Truck className="h-6 w-6 text-white" />
         </div>
-        <h1 className="text-xl font-bold tracking-tight text-foreground">Welcome to TransitOps</h1>
+        <h1 className="text-xl font-bold tracking-tight text-foreground font-serif">Welcome to TransitOps</h1>
         <p className="text-xs text-muted-foreground mt-0.5">Please sign in to continue</p>
       </div>
 
-      <section className="bg-card rounded-xl p-5 border shadow-sm w-full max-w-[440px] mx-auto space-y-4">
+      <section className="bg-card rounded-[5px] p-5 border shadow-sm w-full max-w-[440px] mx-auto space-y-4">
         {/* Horizontal Role Selector Row */}
-        <div className="flex flex-row gap-1.5 justify-between w-full p-1 bg-muted rounded-lg">
+        <div className="flex flex-row gap-1.5 justify-between w-full p-1 bg-muted rounded-[5px]">
           {rolesConfig.map((role) => {
-            const isActive = role.id === selectedRole;
+            const isActive = selectedRole === role.id;
             return (
               <button
                 key={role.id}
                 type="button"
                 onClick={() => setSelectedRole(role.id)}
-                className={`flex-1 flex flex-col items-center gap-1 py-1.5 px-1 rounded-md transition-all text-center ${
+                className={`flex-1 flex flex-col items-center gap-1 py-1.5 px-1 rounded-[5px] transition-all text-center ${
                   isActive ? "bg-card text-foreground shadow-sm font-semibold" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
-                <div className={`w-7 h-7 rounded-md flex items-center justify-center ${isActive ? role.color : "text-muted-foreground"}`}>
+                <div className={`w-7 h-7 rounded-[5px] flex items-center justify-center ${isActive ? role.color : "text-muted-foreground"}`}>
                   <role.icon className="w-4.5 h-4.5" />
                 </div>
                 <span className="text-[9px] uppercase tracking-wider">{role.title}</span>
@@ -206,10 +209,10 @@ function UnifiedLoginPage() {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* OTP Mode Switcher */}
-          <div className="flex rounded-lg bg-muted p-1 text-xs">
+          <div className="flex rounded-[5px] bg-muted p-1 text-xs">
             <button
               type="button"
-              className={`flex-1 py-1 rounded-md font-medium transition-all text-center ${
+              className={`flex-1 py-1 rounded-[5px] font-medium transition-all text-center ${
                 !isOtpMode ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
               }`}
               onClick={() => setIsOtpMode(false)}
@@ -218,7 +221,7 @@ function UnifiedLoginPage() {
             </button>
             <button
               type="button"
-              className={`flex-1 py-1 rounded-md font-medium transition-all text-center ${
+              className={`flex-1 py-1 rounded-[5px] font-medium transition-all text-center ${
                 isOtpMode ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
               }`}
               onClick={() => setIsOtpMode(true)}
@@ -234,11 +237,11 @@ function UnifiedLoginPage() {
             </Label>
             <div className="flex gap-2">
               <div className="relative flex-1">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-outline" />
-                <Input id="identifier" type="text" className="pl-9" placeholder="Enter credentials" {...register("identifier")} />
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input id="identifier" type="text" className="pl-12" placeholder="Enter credentials" {...register("identifier")} />
               </div>
               {isOtpMode && (
-                <Button type="button" variant="outline" disabled={sendingOtp} onClick={handleSendOtp} className="shrink-0">
+                <Button type="button" variant="outline" disabled={sendingOtp} onClick={handleSendOtp} className="shrink-0 rounded-[5px]">
                   {sendingOtp ? <Loader2 className="h-4 w-4 animate-spin" /> : "Send OTP"}
                 </Button>
               )}
@@ -257,7 +260,10 @@ function UnifiedLoginPage() {
                   Forgot Password?
                 </Link>
               </div>
-              <PasswordInput id="password" {...register("password")} />
+              <div className="relative">
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <PasswordInput id="password" className="pl-12" {...register("password")} />
+              </div>
               {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
             </div>
           ) : (
@@ -266,12 +272,12 @@ function UnifiedLoginPage() {
                 Verification OTP Code
               </Label>
               <div className="relative">
-                <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-outline" />
+                <KeyRound className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="otp"
                   type="text"
                   maxLength={6}
-                  className="pl-9 font-mono tracking-widest text-center text-lg"
+                  className="pl-12 font-mono tracking-widest text-center text-lg"
                   placeholder="000000"
                   {...register("otp")}
                 />
@@ -300,15 +306,18 @@ function UnifiedLoginPage() {
 
       <div className="mt-6 flex justify-center">
         <Link to="/admin/login">
-          <Button variant="ghost" className="text-muted-foreground hover:text-foreground text-xs">
+          <Button variant="ghost" className="text-muted-foreground hover:text-foreground text-xs rounded-[5px]">
             <ShieldAlert className="w-4 h-4 mr-1.5" />
             Administrator Login
           </Button>
         </Link>
       </div>
 
-      <footer className="mt-8 text-center">
-        <p className="text-[10px] text-muted-foreground">© 2026 TransitOps Logistics Systems. All rights reserved.</p>
+      <footer className="mt-8 text-center space-y-2">
+        <p className="text-xs text-muted-foreground">© 2026 TransitOps Systems. Digitizing transport logbooks under strict compliance.</p>
+        <div className="flex justify-center gap-6 text-[10px] font-bold uppercase tracking-wider">
+          <a href="#" className="text-muted-foreground hover:text-primary transition-colors">Security Policy</a>
+        </div>
       </footer>
     </AuthLayout>
   );
