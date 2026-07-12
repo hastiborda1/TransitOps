@@ -126,3 +126,9 @@ BREVO_API_KEY = os.environ.get("BREVO_API_KEY", "")
 
 # Brevo transactional email API key
 BREVO_API_KEY = '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'
+
+AUTHENTICATION_BACKENDS = [
+    'api.authentication.EmailOrUsernameModelBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
