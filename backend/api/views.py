@@ -6,6 +6,7 @@ from decimal import Decimal
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.db import transaction
+from django.conf import settings
 
 from .models import Vehicle, Driver, Trip, Maintenance, FuelLog, Expense
 from .serializers import (
@@ -394,7 +395,10 @@ def send_otp(request):
     except Exception as e:
         print(f"Failed to dispatch email: {e}")
 
-    return Response({"detail": "OTP sent successfully", "dev_otp": otp})
+    response_data = {"detail": "OTP sent successfully"}
+    if getattr(settings, "DEBUG", False):
+        response_data["dev_otp"] = otp
+    return Response(response_data)
 
 @decorators.api_view(['POST'])
 @decorators.permission_classes([])

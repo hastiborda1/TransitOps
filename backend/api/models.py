@@ -7,6 +7,7 @@ class CustomUser(AbstractUser):
         ('driver', 'Driver'),
         ('safety', 'Safety Officer'),
         ('finance', 'Financial Analyst'),
+        ('admin', 'System Administrator'),
     )
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='manager')
 

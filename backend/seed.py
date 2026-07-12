@@ -41,8 +41,8 @@ def seed_db():
         ("financial-analyst", "finance@transitops.com", "finance123", "Financial Analyst User", "finance", False),
         
         # Super Admin accounts
-        ("admin", "admin@transitops.com", "demo1234", "System Administrator", "manager", True),
-        ("admin-user", "admin@transitops.com", "admin123", "System Admin User", "manager", True),
+        ("admin", "admin@transitops.com", "demo1234", "System Administrator", "admin", True),
+        ("admin-user", "admin@transitops.com", "admin123", "System Admin User", "admin", True),
     ]
     for username, email, pwd, name, role, is_admin in users_data:
         if is_admin:
