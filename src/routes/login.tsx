@@ -1,7 +1,10 @@
+import { useEffect } from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { Truck, ShieldCheck, PieChart, User, ShieldAlert } from "lucide-react";
 import { AuthLayout } from "@/components/auth/AuthLayout";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/lib/auth";
 import { authService } from "@/services/api";
 
 export const Route = createFileRoute("/login")({
@@ -54,6 +57,20 @@ const roles = [
 ];
 
 function LoginSelectionPage() {
+  const navigate = useNavigate();
+  const { getUserRole } = useAuth();
+
+  useEffect(() => {
+    const currentRole = getUserRole();
+    if (currentRole) {
+      if (currentRole === "admin") navigate({ to: "/admin" });
+      else if (currentRole === "fleet-manager") navigate({ to: "/dashboard" });
+      else if (currentRole === "safety-officer") navigate({ to: "/safety" });
+      else if (currentRole === "financial-analyst") navigate({ to: "/finance" });
+      else if (currentRole === "driver") navigate({ to: "/driver" });
+    }
+  }, [getUserRole, navigate]);
+
   return (
     <AuthLayout>
       <div className="flex flex-col items-center mb-6">

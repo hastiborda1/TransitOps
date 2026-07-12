@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Link, useNavigate } from "@tanstack/react-router";
+import { Mail, ArrowLeft, LucideIcon, User, Copy } from "lucide-react";
 import { Mail, ArrowLeft, LucideIcon, KeyRound, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
@@ -10,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PasswordInput } from "./PasswordInput";
 import { AuthButton } from "./AuthButton";
-import { useAuth, UserRole } from "@/lib/auth";
+import { useAuth, UserRole, DEMO_CREDENTIALS } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 import { authService } from "@/services/api";
 
@@ -53,11 +54,24 @@ export function LoginForm({
   isAdmin = false,
 }: LoginFormProps) {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, getUserRole } = useAuth();
   const [loading, setLoading] = useState(false);
   const [isOtpMode, setIsOtpMode] = useState(false);
   const [sendingOtp, setSendingOtp] = useState(false);
   const isDark = theme === "dark";
+  const demoCreds = role ? DEMO_CREDENTIALS[role] : null;
+
+  useEffect(() => {
+    // If a user is already logged in, automatically redirect them to their dashboard
+    const currentRole = getUserRole();
+    if (currentRole) {
+      if (currentRole === "admin") navigate({ to: "/admin" });
+      else if (currentRole === "fleet-manager") navigate({ to: "/dashboard" });
+      else if (currentRole === "safety-officer") navigate({ to: "/safety" });
+      else if (currentRole === "financial-analyst") navigate({ to: "/finance" });
+      else if (currentRole === "driver") navigate({ to: "/driver" });
+    }
+  }, [getUserRole, navigate]);
 
   const {
     register,
@@ -66,6 +80,8 @@ export function LoginForm({
     watch,
     formState: { errors },
   } = useForm<FormValues>({
+    resolver: zodResolver(schema),
+    defaultValues: { identifier: "", password: "", remember: true },
     resolver: zodResolver(loginSchema),
     defaultValues: { identifier: defaultIdentifier, password: isAdmin ? "" : "demo1234", otp: "", remember: true },
   });
@@ -158,6 +174,38 @@ export function LoginForm({
     }
 
     setLoading(true);
+    await new Promise((r) => setTimeout(r, 600));
+    setLoading(false);
+    
+    // Validate credentials
+    if (!demoCreds || !role) {
+      toast.error("Invalid role configuration");
+      return;
+    }
+
+    const expectedIdentifier = identifierType === "email" ? (demoCreds as any).email : (demoCreds as any).employeeId;
+
+    if (values.identifier !== expectedIdentifier || values.password !== demoCreds.password) {
+      toast.error("Incorrect credentials. Please check and try again.");
+      return;
+    }
+
+    // Mock login logic mapping to the requested role
+    login(role, values.identifier, demoCreds.name);
+    toast.success(`Welcome, ${title}`);
+    navigate({ to: redirectUrl });
+  };
+
+  const copyCreds = () => {
+    if (!demoCreds) return;
+    const identifier = identifierType === "email" ? (demoCreds as any).email : (demoCreds as any).employeeId;
+    setValue("identifier", identifier);
+    setValue("password", demoCreds.password);
+    toast.success("Demo credentials copied to form");
+  };
+
+  const InputIcon = identifierType === "email" ? Mail : User;
+  const identifierLabel = identifierType === "email" ? (isAdmin ? "Admin ID" : "Email Address") : "Employee ID";
     try {
       if (isOtpMode) {
         const res = await authService.verifyOtp(values.identifier, values.otp || "", role || "driver");
@@ -211,6 +259,7 @@ export function LoginForm({
 
       <section
         className={cn(
+          "rounded-xl p-6 border shadow-sm mb-6",
           "rounded-xl p-6 border shadow-sm w-full max-w-[440px] mx-auto",
           isDark ? "bg-zinc-900/50 border-zinc-800 backdrop-blur-sm" : "bg-card"
         )}
@@ -247,6 +296,23 @@ export function LoginForm({
             >
               {identifierLabel}
             </Label>
+            <div className="relative">
+              <InputIcon
+                className={cn(
+                  "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4",
+                  isDark ? "text-zinc-500" : "text-muted-foreground"
+                )}
+              />
+              <Input
+                id="identifier"
+                type={identifierType === "email" ? "email" : "text"}
+                className={cn(
+                  "pl-9",
+                  isDark && "bg-zinc-950 border-zinc-800 focus-visible:ring-zinc-700 text-zinc-100 placeholder:text-zinc-500"
+                )}
+                placeholder={defaultIdentifier || (identifierType === "email" ? "Enter email" : "Enter ID")}
+                {...register("identifier")}
+              />
             <div className="flex gap-2">
               <div className="relative flex-1">
                 <InputIcon
@@ -407,6 +473,47 @@ export function LoginForm({
           )}
         </form>
       </section>
+
+      {/* Demo Credentials Card */}
+      {demoCreds && (
+        <section
+          className={cn(
+            "rounded-xl p-4 border text-sm",
+            isDark ? "bg-zinc-900/30 border-zinc-800" : "bg-muted/50 border-muted"
+          )}
+        >
+          <div className="flex items-center justify-between mb-3">
+            <h4 className={cn("font-semibold", isDark ? "text-zinc-300" : "text-foreground")}>
+              Demo Credentials
+            </h4>
+            <button
+              onClick={copyCreds}
+              type="button"
+              className={cn(
+                "flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded transition-colors",
+                isDark ? "bg-zinc-800 text-zinc-300 hover:bg-zinc-700" : "bg-background text-foreground shadow-sm hover:bg-muted"
+              )}
+            >
+              <Copy className="w-3 h-3" /> Copy
+            </button>
+          </div>
+          
+          <div className="space-y-2 font-mono text-xs">
+            <div className="flex justify-between">
+              <span className={isDark ? "text-zinc-500" : "text-muted-foreground"}>
+                {identifierType === "email" ? "Email:" : "Employee ID:"}
+              </span>
+              <span className={isDark ? "text-zinc-300 font-bold" : "font-bold"}>
+                {identifierType === "email" ? (demoCreds as any).email : (demoCreds as any).employeeId}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className={isDark ? "text-zinc-500" : "text-muted-foreground"}>Password:</span>
+              <span className={isDark ? "text-zinc-300 font-bold" : "font-bold"}>{demoCreds.password}</span>
+            </div>
+          </div>
+        </section>
+      )}
     </>
   );
 }
