@@ -15,10 +15,10 @@ class CustomUser(AbstractUser):
 
 class Vehicle(models.Model):
     STATUS_CHOICES = (
-        ('idle', 'Available'),
-        ('active', 'On Trip'),
-        ('maintenance', 'In Shop'),
-        ('retired', 'Retired'),
+        ('Available', 'Available'),
+        ('On Trip', 'On Trip'),
+        ('In Shop', 'In Shop'),
+        ('Retired', 'Retired'),
     )
     FUEL_CHOICES = (
         ('Diesel', 'Diesel'),
@@ -37,7 +37,7 @@ class Vehicle(models.Model):
     model = models.CharField(max_length=50)
     year = models.IntegerField()
     type = models.CharField(max_length=20, choices=TYPE_CHOICES)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='idle')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Available')
     odometer = models.IntegerField(default=0)
     fuel_type = models.CharField(max_length=20, choices=FUEL_CHOICES)
     driver = models.CharField(max_length=100, blank=True, null=True)
@@ -49,16 +49,16 @@ class Vehicle(models.Model):
 
 class Driver(models.Model):
     STATUS_CHOICES = (
-        ('available', 'Available'),
-        ('on-trip', 'On Trip'),
-        ('off-duty', 'Off Duty'),
-        ('suspended', 'Suspended'),
+        ('Available', 'Available'),
+        ('On Trip', 'On Trip'),
+        ('Off Duty', 'Off Duty'),
+        ('Suspended', 'Suspended'),
     )
     name = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=50)
     license = models.CharField(max_length=50)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='available')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Available')
     rating = models.DecimalField(max_digits=3, decimal_places=2, default=5.0)
     trips = models.IntegerField(default=0)
     vehicle = models.CharField(max_length=50, blank=True, null=True)
@@ -70,10 +70,10 @@ class Driver(models.Model):
 
 class Trip(models.Model):
     STATUS_CHOICES = (
-        ('scheduled', 'Scheduled'),
-        ('in-progress', 'In Progress'),
-        ('completed', 'Completed'),
-        ('cancelled', 'Cancelled'),
+        ('Draft', 'Draft'),
+        ('Dispatched', 'Dispatched'),
+        ('Completed', 'Completed'),
+        ('Cancelled', 'Cancelled'),
     )
     vehicle = models.CharField(max_length=50)
     driver = models.CharField(max_length=100)
@@ -81,7 +81,7 @@ class Trip(models.Model):
     destination = models.CharField(max_length=100)
     distance = models.IntegerField()
     started_at = models.CharField(max_length=50)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='scheduled')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Draft')
     cargo_weight = models.IntegerField(default=500)
     planned_distance = models.IntegerField(default=100)
 
