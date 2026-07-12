@@ -158,11 +158,6 @@ export function AppSidebar() {
                 <LogOut className="h-4 w-4" />
                 <span>Sign out</span>
               </div>
-            <SidebarMenuButton asChild tooltip="Sign out">
-              <a href="#" onClick={handleSignOut}>
-                <LogOut className="h-4 w-4" />
-                <span>Sign out</span>
-              </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
