@@ -7,7 +7,9 @@ import type {
   Expense,
 } from "@/lib/mock-data";
 
-const BASE_URL = "http://localhost:8000/api";
+const BASE_URL = typeof window !== "undefined" && window.location.hostname.endsWith(".trycloudflare.com") 
+  ? "https://circulation-spread-tomatoes-stress.trycloudflare.com/api" 
+  : "http://localhost:8000/api";
 
 // Helper to get auth header
 function getAuthHeaders(): HeadersInit {
