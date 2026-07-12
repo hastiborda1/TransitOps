@@ -105,7 +105,7 @@ export const api = {
         method: "POST",
         body: JSON.stringify(data),
       }),
-    updateStatus: (data: { tripId: string; status: "in-progress" | "completed" | "cancelled"; actualDistance?: number; fuelConsumed?: number }) =>
+    updateStatus: (data: { tripId: string; status: "Draft" | "Dispatched" | "Completed" | "Cancelled"; actualDistance?: number; fuelConsumed?: number }) =>
       request<Trip>(`/trips/${data.tripId}/update-status/`, {
         method: "POST",
         body: JSON.stringify({
