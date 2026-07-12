@@ -104,7 +104,7 @@ function SignupPage() {
       // 2. Complete registration
       const res = await authService.register(values.username, values.email, values.password, values.role);
       
-      login(res.role, res.email);
+      login(res.role, res.email, res.username || res.email);
       toast.success("Account created successfully!");
       navigate({ to: "/dashboard" });
     } catch (e: any) {

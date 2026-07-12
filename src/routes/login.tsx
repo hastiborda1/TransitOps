@@ -158,13 +158,13 @@ function UnifiedLoginPage() {
     try {
       if (isOtpMode) {
         const res = await authService.verifyOtp(values.identifier, values.otp || "", selectedRole);
-        login({ id: res.id, email: res.email, name: res.name, role: res.role });
-        toast.success(`Welcome, ${res.name}`);
+        login(res.role, res.email, res.username || res.name || res.email);
+        toast.success(`Welcome, ${res.username || res.name || res.email}`);
         navigate({ to: "/dashboard" });
       } else {
         const res = await authService.login(values.identifier, values.password || "");
-        login({ id: res.id, email: res.email, name: res.name, role: res.role });
-        toast.success(`Welcome, ${res.name}`);
+        login(res.role, res.email, res.username || res.name || res.email);
+        toast.success(`Welcome, ${res.username || res.name || res.email}`);
         navigate({ to: "/dashboard" });
       }
     } catch (e: any) {
