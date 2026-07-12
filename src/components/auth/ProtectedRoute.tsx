@@ -11,7 +11,9 @@ interface ProtectedRouteProps {
 const ROUTE_PERMISSIONS: Record<string, UserRole[]> = {
   '/admin': ['admin'],
   '/dashboard': ['fleet-manager'],
+  '/safety': ['safety-officer'],
   '/safety-driver': ['safety-officer'],
+  '/finance': ['financial-analyst'],
   '/financial-analyst': ['financial-analyst'],
   '/driver': ['driver'],
   '/vehicles': ['fleet-manager'],

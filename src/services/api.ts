@@ -7,7 +7,7 @@ import type {
   Expense,
 } from "@/lib/mock-data";
 
-const BASE_URL = typeof window !== "undefined" ? "/api" : "https://barely-shareholders-option-expiration.trycloudflare.com/api";
+const BASE_URL = typeof window !== "undefined" ? "/api" : "http://127.0.0.1:8000/api";
 
 // Map backend role names to frontend role names used by ProtectedRoute
 const BACKEND_TO_FRONTEND_ROLE: Record<string, string> = {
@@ -170,93 +170,50 @@ export const api = {
 
 export const authService = {
   async login(email: string, password?: string) {
-    // Map email input to username for fallback support
     let username = email;
-    let fallbackRole = "manager";
     if (email.includes("@")) {
       const prefix = email.split("@")[0];
       if (["manager", "driver", "safety", "finance"].includes(prefix)) {
         username = prefix;
-        fallbackRole = prefix;
       }
     }
 
-    try {
-      const res = await request<any>("/auth/login/", {
-        method: "POST",
-        body: JSON.stringify({
-          username,
-          password: password || "demo1234",
-        }),
-      });
+    const res = await request<any>("/auth/login/", {
+      method: "POST",
+      body: JSON.stringify({
+        username,
+        password: password || "demo1234",
+      }),
+    });
 
-      const mapped = { ...res, role: mapRole(res.role) };
-      if (typeof window !== "undefined") {
-        localStorage.setItem("user", JSON.stringify(mapped));
-      }
-      return mapped;
-    } catch (err) {
-      console.warn("API login failed, using fallback mock authentication:", err);
-      // Fallback mock login response
-      const mappedFallback = mapRole(fallbackRole);
-      const mockUser = {
-        token: "mock-jwt-token-12345",
-        username: username,
-        email: email,
-        name: username === "safety" ? "Safety Officer" : username === "finance" ? "Financial Analyst" : "Alex Morgan",
-        role: mappedFallback,
-      };
-      if (typeof window !== "undefined") {
-        localStorage.setItem("user", JSON.stringify(mockUser));
-        localStorage.setItem("transitops_auth_role", JSON.stringify({ role: mappedFallback, identifier: email }));
-      }
-      return mockUser;
+    const mapped = { ...res, role: mapRole(res.role) };
+    if (typeof window !== "undefined") {
+      localStorage.setItem("user", JSON.stringify(mapped));
     }
+    return mapped;
   },
   async register(username: string, email: string, password?: string, role: string = "driver") {
-    try {
-      const res = await request<any>("/auth/register/", {
-        method: "POST",
-        body: JSON.stringify({
-          username,
-          email,
-          password: password || "demo1234",
-          role,
-        }),
-      });
-
-      const mapped = { ...res, role: mapRole(res.role) };
-      if (typeof window !== "undefined") {
-        localStorage.setItem("user", JSON.stringify(mapped));
-      }
-      return mapped;
-    } catch (err) {
-      console.warn("API registration failed, using fallback mock signup:", err);
-      const mappedRole = mapRole(role);
-      const mockUser = {
-        token: "mock-jwt-token-signup-12345",
+    const res = await request<any>("/auth/register/", {
+      method: "POST",
+      body: JSON.stringify({
         username,
         email,
-        name: username,
-        role: mappedRole,
-      };
-      if (typeof window !== "undefined") {
-        localStorage.setItem("user", JSON.stringify(mockUser));
-        localStorage.setItem("transitops_auth_role", JSON.stringify({ role: mappedRole, identifier: email }));
-      }
-      return mockUser;
+        password: password || "demo1234",
+        role,
+      }),
+    });
+
+    const mapped = { ...res, role: mapRole(res.role) };
+    if (typeof window !== "undefined") {
+      localStorage.setItem("user", JSON.stringify(mapped));
     }
+    return mapped;
   },
   async sendOtp(email: string) {
-    try {
-      return await request<any>("/auth/send-otp/", {
-        method: "POST",
-        body: JSON.stringify({ email }),
-      });
-    } catch (err) {
-      console.warn("API sendOtp failed, using mock success. Code is: 123456", err);
-      return { message: "Mock OTP sent successfully" };
-    }
+    return await request<any>("/auth/send-otp/", {
+      method: "POST",
+      body: JSON.stringify({ email }),
+    });
   },
   async verifyOtp(email: string, otp: string, role: string = "driver") {
     let fallbackRole = role || "driver";
@@ -267,36 +224,16 @@ export const authService = {
       }
     }
 
-    try {
-      const res = await request<any>("/auth/verify-otp/", {
-        method: "POST",
-        body: JSON.stringify({ email, otp, role: fallbackRole }),
-      });
+    const res = await request<any>("/auth/verify-otp/", {
+      method: "POST",
+      body: JSON.stringify({ email, otp, role: fallbackRole }),
+    });
 
-      const mapped = { ...res, role: mapRole(res.role) };
-      if (typeof window !== "undefined") {
-        localStorage.setItem("user", JSON.stringify(mapped));
-      }
-      return mapped;
-    } catch (err) {
-      console.warn("API verifyOtp failed, using fallback mock validation:", err);
-      if (otp !== "123456" && otp !== "000000" && otp !== "demo12") {
-        throw new Error("Invalid OTP code. Please enter 123456 to bypass.");
-      }
-      const mappedFallback = mapRole(fallbackRole);
-      const mockUser = {
-        token: "mock-jwt-token-otp-12345",
-        username: email.split("@")[0],
-        email: email,
-        name: fallbackRole === "safety" ? "Safety Officer" : fallbackRole === "finance" ? "Financial Analyst" : "Alex Morgan",
-        role: mappedFallback,
-      };
-      if (typeof window !== "undefined") {
-        localStorage.setItem("user", JSON.stringify(mockUser));
-        localStorage.setItem("transitops_auth_role", JSON.stringify({ role: mappedFallback, identifier: email }));
-      }
-      return mockUser;
+    const mapped = { ...res, role: mapRole(res.role) };
+    if (typeof window !== "undefined") {
+      localStorage.setItem("user", JSON.stringify(mapped));
     }
+    return mapped;
   },
   async forgotPassword(email: string) {
     return request<any>("/auth/forgot-password/", {
