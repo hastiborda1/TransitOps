@@ -14,7 +14,6 @@ import { AuthButton } from "./AuthButton";
 import { useAuth, UserRole, DEMO_CREDENTIALS, DEV_BYPASS_AUTH } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 import { authService } from "@/services/api";
-import { Button } from "@/components/ui/button";
 
 const loginSchema = z.object({
   identifier: z.string().min(1, "Email or Employee ID is required"),
