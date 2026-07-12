@@ -14,15 +14,10 @@ import { useAuth, UserRole } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 import { authService } from "@/services/api";
 
-const passwordSchema = z.object({
+const loginSchema = z.object({
   identifier: z.string().email("Enter a valid email"),
-  password: z.string().min(6, "Minimum 6 characters"),
-  remember: z.boolean().optional(),
-});
-
-const otpSchema = z.object({
-  identifier: z.string().email("Enter a valid email"),
-  otp: z.string().length(6, "OTP must be exactly 6 digits"),
+  password: z.string().optional(),
+  otp: z.string().optional(),
   remember: z.boolean().optional(),
 });
 
@@ -75,7 +70,7 @@ export function LoginForm({
     getValues,
     formState: { errors },
   } = useForm<FormValues>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(loginSchema),
     defaultValues: { identifier: defaultIdentifier, password: isAdmin ? "" : "demo1234", otp: "", remember: true },
   });
 
@@ -140,6 +135,18 @@ export function LoginForm({
   };
 
   const onSubmit = async (values: FormValues) => {
+    if (isOtpMode) {
+      if (!values.otp || values.otp.length !== 6) {
+        toast.error("Verification code must be exactly 6 digits.");
+        return;
+      }
+    } else {
+      if (!values.password || values.password.length < 6) {
+        toast.error("Password must be at least 6 characters.");
+        return;
+      }
+    }
+
     setLoading(true);
     try {
       if (isOtpMode) {
@@ -154,7 +161,7 @@ export function LoginForm({
         navigate({ to: redirectUrl });
       }
     } catch (e: any) {
-      toast.error(e.message || "Authentication failed. Check your inputs.");
+      toast.error(e.message || "Authentication failed. Check your credentials.");
     } finally {
       setLoading(false);
     }
