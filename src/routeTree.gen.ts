@@ -20,9 +20,11 @@ import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AppVehiclesRouteImport } from './routes/_app.vehicles'
 import { Route as AppTripsRouteImport } from './routes/_app.trips'
 import { Route as AppSettingsRouteImport } from './routes/_app.settings'
+import { Route as AppSafetyDriverRouteImport } from './routes/_app.safety-driver'
 import { Route as AppSafetyRouteImport } from './routes/_app.safety'
 import { Route as AppMaintenanceRouteImport } from './routes/_app.maintenance'
 import { Route as AppFuelRouteImport } from './routes/_app.fuel'
+import { Route as AppFinancialAnalystRouteImport } from './routes/_app.financial-analyst'
 import { Route as AppFinanceRouteImport } from './routes/_app.finance'
 import { Route as AppExpensesRouteImport } from './routes/_app.expenses'
 import { Route as AppDriversRouteImport } from './routes/_app.drivers'
@@ -85,6 +87,11 @@ const AppSettingsRoute = AppSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AppRoute,
 } as any)
+const AppSafetyDriverRoute = AppSafetyDriverRouteImport.update({
+  id: '/safety-driver',
+  path: '/safety-driver',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppSafetyRoute = AppSafetyRouteImport.update({
   id: '/safety',
   path: '/safety',
@@ -98,6 +105,11 @@ const AppMaintenanceRoute = AppMaintenanceRouteImport.update({
 const AppFuelRoute = AppFuelRouteImport.update({
   id: '/fuel',
   path: '/fuel',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppFinancialAnalystRoute = AppFinancialAnalystRouteImport.update({
+  id: '/financial-analyst',
+  path: '/financial-analyst',
   getParentRoute: () => AppRoute,
 } as any)
 const AppFinanceRoute = AppFinanceRouteImport.update({
@@ -146,9 +158,11 @@ export interface FileRoutesByFullPath {
   '/drivers': typeof AppDriversRoute
   '/expenses': typeof AppExpensesRoute
   '/finance': typeof AppFinanceRoute
+  '/financial-analyst': typeof AppFinancialAnalystRoute
   '/fuel': typeof AppFuelRoute
   '/maintenance': typeof AppMaintenanceRoute
   '/safety': typeof AppSafetyRoute
+  '/safety-driver': typeof AppSafetyDriverRoute
   '/settings': typeof AppSettingsRoute
   '/trips': typeof AppTripsRoute
   '/vehicles': typeof AppVehiclesRoute
@@ -168,9 +182,11 @@ export interface FileRoutesByTo {
   '/drivers': typeof AppDriversRoute
   '/expenses': typeof AppExpensesRoute
   '/finance': typeof AppFinanceRoute
+  '/financial-analyst': typeof AppFinancialAnalystRoute
   '/fuel': typeof AppFuelRoute
   '/maintenance': typeof AppMaintenanceRoute
   '/safety': typeof AppSafetyRoute
+  '/safety-driver': typeof AppSafetyDriverRoute
   '/settings': typeof AppSettingsRoute
   '/trips': typeof AppTripsRoute
   '/vehicles': typeof AppVehiclesRoute
@@ -192,9 +208,11 @@ export interface FileRoutesById {
   '/_app/drivers': typeof AppDriversRoute
   '/_app/expenses': typeof AppExpensesRoute
   '/_app/finance': typeof AppFinanceRoute
+  '/_app/financial-analyst': typeof AppFinancialAnalystRoute
   '/_app/fuel': typeof AppFuelRoute
   '/_app/maintenance': typeof AppMaintenanceRoute
   '/_app/safety': typeof AppSafetyRoute
+  '/_app/safety-driver': typeof AppSafetyDriverRoute
   '/_app/settings': typeof AppSettingsRoute
   '/_app/trips': typeof AppTripsRoute
   '/_app/vehicles': typeof AppVehiclesRoute
@@ -216,9 +234,11 @@ export interface FileRouteTypes {
     | '/drivers'
     | '/expenses'
     | '/finance'
+    | '/financial-analyst'
     | '/fuel'
     | '/maintenance'
     | '/safety'
+    | '/safety-driver'
     | '/settings'
     | '/trips'
     | '/vehicles'
@@ -238,9 +258,11 @@ export interface FileRouteTypes {
     | '/drivers'
     | '/expenses'
     | '/finance'
+    | '/financial-analyst'
     | '/fuel'
     | '/maintenance'
     | '/safety'
+    | '/safety-driver'
     | '/settings'
     | '/trips'
     | '/vehicles'
@@ -261,9 +283,11 @@ export interface FileRouteTypes {
     | '/_app/drivers'
     | '/_app/expenses'
     | '/_app/finance'
+    | '/_app/financial-analyst'
     | '/_app/fuel'
     | '/_app/maintenance'
     | '/_app/safety'
+    | '/_app/safety-driver'
     | '/_app/settings'
     | '/_app/trips'
     | '/_app/vehicles'
@@ -364,6 +388,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSettingsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/safety-driver': {
+      id: '/_app/safety-driver'
+      path: '/safety-driver'
+      fullPath: '/safety-driver'
+      preLoaderRoute: typeof AppSafetyDriverRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/safety': {
       id: '/_app/safety'
       path: '/safety'
@@ -383,6 +414,13 @@ declare module '@tanstack/react-router' {
       path: '/fuel'
       fullPath: '/fuel'
       preLoaderRoute: typeof AppFuelRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/financial-analyst': {
+      id: '/_app/financial-analyst'
+      path: '/financial-analyst'
+      fullPath: '/financial-analyst'
+      preLoaderRoute: typeof AppFinancialAnalystRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/finance': {
@@ -445,9 +483,11 @@ interface AppRouteChildren {
   AppDriversRoute: typeof AppDriversRoute
   AppExpensesRoute: typeof AppExpensesRoute
   AppFinanceRoute: typeof AppFinanceRoute
+  AppFinancialAnalystRoute: typeof AppFinancialAnalystRoute
   AppFuelRoute: typeof AppFuelRoute
   AppMaintenanceRoute: typeof AppMaintenanceRoute
   AppSafetyRoute: typeof AppSafetyRoute
+  AppSafetyDriverRoute: typeof AppSafetyDriverRoute
   AppSettingsRoute: typeof AppSettingsRoute
   AppTripsRoute: typeof AppTripsRoute
   AppVehiclesRoute: typeof AppVehiclesRoute
@@ -461,9 +501,11 @@ const AppRouteChildren: AppRouteChildren = {
   AppDriversRoute: AppDriversRoute,
   AppExpensesRoute: AppExpensesRoute,
   AppFinanceRoute: AppFinanceRoute,
+  AppFinancialAnalystRoute: AppFinancialAnalystRoute,
   AppFuelRoute: AppFuelRoute,
   AppMaintenanceRoute: AppMaintenanceRoute,
   AppSafetyRoute: AppSafetyRoute,
+  AppSafetyDriverRoute: AppSafetyDriverRoute,
   AppSettingsRoute: AppSettingsRoute,
   AppTripsRoute: AppTripsRoute,
   AppVehiclesRoute: AppVehiclesRoute,

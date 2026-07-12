@@ -1,4 +1,4 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import {
   LayoutDashboard,
   Truck,
@@ -10,6 +10,8 @@ import {
   BarChart3,
   Settings,
   LogOut,
+  Shield,
+  TrendingUp,
 } from "lucide-react";
 import {
   Sidebar,
@@ -24,6 +26,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { authService } from "@/services/api";
 
 const mainNav = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
@@ -36,6 +39,8 @@ const opsNav = [
   { title: "Maintenance", url: "/maintenance", icon: Wrench },
   { title: "Fuel Logs", url: "/fuel", icon: Fuel },
   { title: "Expenses", url: "/expenses", icon: Receipt },
+  { title: "Safety Driver", url: "/safety-driver", icon: Shield },
+  { title: "Financial Analyst", url: "/financial-analyst", icon: TrendingUp },
   { title: "Analytics", url: "/analytics", icon: BarChart3 },
 ] as const;
 

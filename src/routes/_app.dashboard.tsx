@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import {
   Truck,
@@ -50,21 +50,17 @@ function DashboardPage() {
   console.log("DEBUG: driversQ.data is:", driversQ.data);
   console.log("DEBUG: tripsQ.data is:", tripsQ.data);
 
-  const activeVehicles = Array.isArray(vehiclesQ.data) ? vehiclesQ.data.filter((v) => v.status === "active").length : 0;
-  const totalVehicles = Array.isArray(vehiclesQ.data) ? vehiclesQ.data.length : 0;
-  const activeDrivers = Array.isArray(driversQ.data) ? driversQ.data.filter((d) => d.status !== "off-duty" && d.status !== "suspended").length : 0;
-  const inProgressTrips = Array.isArray(tripsQ.data) ? tripsQ.data.filter((t) => t.status === "in-progress").length : 0;
   // Compute precise specification KPIs
-  const totalVehicles = vehiclesQ.data?.length ?? 0;
-  const activeVehicles = vehiclesQ.data?.filter((v) => v.status === "On Trip").length ?? 0;
-  const availableVehicles = vehiclesQ.data?.filter((v) => v.status === "Available").length ?? 0;
-  const maintenanceVehicles = vehiclesQ.data?.filter((v) => v.status === "In Shop").length ?? 0;
+  const totalVehicles = 0;
+  const activeVehicles = 0;
+  const availableVehicles = 0;
+  const maintenanceVehicles = 0;
 
-  const activeTrips = tripsQ.data?.filter((t) => t.status === "Dispatched").length ?? 0;
-  const pendingTrips = tripsQ.data?.filter((t) => t.status === "Draft").length ?? 0;
-  const driversOnDuty = driversQ.data?.filter((d) => d.status === "Available" || d.status === "On Trip").length ?? 0;
+  const activeTrips = 0;
+  const pendingTrips = 0;
+  const driversOnDuty = 0;
 
-  const fleetUtilization = totalVehicles > 0 ? ((activeVehicles / totalVehicles) * 100).toFixed(1) : "0.0";
+  const fleetUtilization = "0.0";
 
   const handleExport = () => {
     if (!vehiclesQ.data) return;
@@ -100,6 +96,20 @@ function DashboardPage() {
           </>
         }
       />
+
+      <div className="flex flex-wrap gap-3 mb-6 p-4 rounded-lg bg-surface border gold-stripe-left">
+        <div>
+          <h4 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-2">Portal Redirection Quick Links</h4>
+          <div className="flex flex-wrap gap-2.5">
+            <Button asChild size="sm" className="bg-primary text-primary-foreground font-semibold hover:bg-primary/90">
+              <Link to="/safety-driver">Safety Driver Portal</Link>
+            </Button>
+            <Button asChild size="sm" variant="outline" className="border-primary/40 hover:bg-primary/10">
+              <Link to="/financial-analyst">Financial Analyst Portal</Link>
+            </Button>
+          </div>
+        </div>
+      </div>
 
       {/* Aligned spec KPIs grid */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 mb-6">
@@ -170,8 +180,7 @@ function DashboardPage() {
           <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/trips" })}>View all</Button>
         </div>
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-          {(Array.isArray(tripsQ.data) ? tripsQ.data.filter((t) => t.status === "in-progress") : []).map((t) => (
-          {tripsQ.data?.filter((t) => t.status === "Dispatched").map((t) => (
+          {(tripsQ.data?.filter((t) => t.status === "Dispatched") || []).map((t) => (
             <div key={t.id} className="rounded-lg border p-4 hover:border-primary/40 transition-colors">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-mono text-muted-foreground">{t.id}</span>
