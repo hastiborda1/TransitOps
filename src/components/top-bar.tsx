@@ -6,7 +6,6 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/lib/auth";
 
-<<<<<<< HEAD
 const roleLabels: Record<string, string> = {
   manager: "Fleet Manager",
   driver: "Driver",
@@ -26,26 +25,6 @@ export function TopBar() {
   const name = user.name || "Alex Morgan";
   const role = roleLabels[user.role] || user.role || "Fleet Manager";
 
-=======
-const ROLE_TITLES: Record<string, string> = {
-  "fleet-manager": "Fleet Manager",
-  "driver": "Driver",
-  "safety-officer": "Safety Officer",
-  "financial-analyst": "Financial Analyst",
-  "admin": "System Administrator",
-  "manager": "Fleet Manager",
-  "safety": "Safety Officer",
-  "finance": "Financial Analyst",
-};
-
-export function TopBar() {
-  const { getSession } = useAuth();
-  const user = getSession();
-  
-  const name = user?.name || user?.email?.split("@")[0] || "Alex Morgan";
-  const role = user?.role ? (ROLE_TITLES[user.role] || user.role) : "Fleet Manager";
-
->>>>>>> main
   const initials = name
     .split(" ")
     .map((n: string) => n[0])
