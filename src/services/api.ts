@@ -180,6 +180,62 @@ export const authService = {
     }
     return res;
   },
+  async register(username: string, email: string, password?: string, role: string = "driver") {
+    const res = await request<any>("/auth/register/", {
+      method: "POST",
+      body: JSON.stringify({
+        username,
+        email,
+        password: password || "demo1234",
+        role,
+      }),
+    });
+
+    if (typeof window !== "undefined") {
+      localStorage.setItem("user", JSON.stringify(res));
+    }
+    return res;
+  },
+  async sendOtp(email: string) {
+    return request<any>("/auth/send-otp/", {
+      method: "POST",
+      body: JSON.stringify({ email }),
+    });
+  },
+  async verifyOtp(email: string, otp: string, role: string = "driver") {
+    const res = await request<any>("/auth/verify-otp/", {
+      method: "POST",
+      body: JSON.stringify({ email, otp, role }),
+    });
+
+    if (typeof window !== "undefined") {
+      localStorage.setItem("user", JSON.stringify(res));
+    }
+    return res;
+  },
+  async forgotPassword(email: string) {
+    return request<any>("/auth/forgot-password/", {
+      method: "POST",
+      body: JSON.stringify({ email }),
+    });
+  },
+  async resetPassword(email: string, otp: string, password?: string) {
+    return request<any>("/auth/reset-password/", {
+      method: "POST",
+      body: JSON.stringify({ email, otp, password }),
+    });
+  },
+  async googleLogin(credential: string, role: string = "manager") {
+    const res = await request<any>("/auth/google/", {
+      method: "POST",
+      body: JSON.stringify({ credential, role }),
+    });
+
+    if (typeof window !== "undefined") {
+      localStorage.setItem("user", JSON.stringify(res));
+    }
+    return res;
+  },
   async logout() {
     if (typeof window !== "undefined") {
       localStorage.removeItem("user");
