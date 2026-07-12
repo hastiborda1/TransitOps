@@ -13,7 +13,6 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PasswordInput } from "@/components/auth/PasswordInput";
 import { AuthButton } from "@/components/auth/AuthButton";
-import { useAuth } from "@/lib/auth";
 import { authService } from "@/services/api";
 
 export const Route = createFileRoute("/login")({
