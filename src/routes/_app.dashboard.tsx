@@ -46,6 +46,11 @@ function DashboardPage() {
   const tripsQ = useQuery({ queryKey: ["trips"], queryFn: api.trips.list });
   const monthlyQ = useQuery({ queryKey: ["analytics", "monthly"], queryFn: api.analytics.monthly });
 
+  // Compute precise specification KPIs
+  const totalVehicles = vehiclesQ.data?.length ?? 0;
+  const activeVehicles = vehiclesQ.data?.filter((v) => v.status === "On Trip").length ?? 0;
+  const availableVehicles = vehiclesQ.data?.filter((v) => v.status === "Available").length ?? 0;
+  const maintenanceVehicles = vehiclesQ.data?.filter((v) => v.status === "In Shop").length ?? 0;
   console.log("DEBUG: vehiclesQ.data is:", vehiclesQ.data);
   console.log("DEBUG: driversQ.data is:", driversQ.data);
   console.log("DEBUG: tripsQ.data is:", tripsQ.data);
@@ -165,6 +170,7 @@ function DashboardPage() {
           <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/trips" })}>View all</Button>
         </div>
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          {tripsQ.data?.filter((t) => t.status === "Dispatched").map((t) => (
           {(Array.isArray(tripsQ.data) ? tripsQ.data.filter((t) => t.status === "in-progress") : []).map((t) => (
             <div key={t.id} className="rounded-lg border p-4 hover:border-primary/40 transition-colors">
               <div className="flex items-center justify-between mb-2">
