@@ -13,6 +13,7 @@ def seed_db():
     print("Clearing database to prepare for relational seeding...")
 
     # Clear existing data
+    User.objects.all().delete()
     Trip.objects.all().delete()
     Maintenance.objects.all().delete()
     FuelLog.objects.all().delete()
@@ -22,13 +23,37 @@ def seed_db():
 
     # Seed Users
     users_data = [
-        ("manager", "manager@transitops.com", "demo1234", "Manager User", "manager"),
-        ("driver", "driver@transitops.com", "demo1234", "Driver User", "driver"),
-        ("safety", "safety@transitops.com", "demo1234", "Safety Officer", "safety"),
-        ("finance", "finance@transitops.com", "demo1234", "Financial Analyst", "finance"),
+        # Fleet Manager accounts
+        ("manager", "manager@transitops.com", "demo1234", "Manager User", "manager", False),
+        ("fleet", "fleet@transitops.com", "fleet123", "Fleet Manager User", "manager", False),
+        
+        # Driver accounts
+        ("driver", "driver@transitops.com", "demo1234", "Driver User", "driver", False),
+        ("DRV-001", "driver@transitops.com", "driver123", "Driver DRV-001", "driver", False),
+        ("DRV001", "driver@transitops.com", "driver123", "Driver DRV001", "driver", False),
+        
+        # Safety Officer accounts
+        ("safety", "safety@transitops.com", "demo1234", "Safety Officer", "safety", False),
+        ("safety-officer", "safety@transitops.com", "safety123", "Safety Officer User", "safety", False),
+        
+        # Financial Analyst accounts
+        ("finance", "finance@transitops.com", "demo1234", "Financial Analyst", "finance", False),
+        ("financial-analyst", "finance@transitops.com", "finance123", "Financial Analyst User", "finance", False),
+        
+        # Super Admin accounts
+        ("admin", "admin@transitops.com", "demo1234", "System Administrator", "manager", True),
+        ("admin-user", "admin@transitops.com", "admin123", "System Admin User", "manager", True),
     ]
-    for username, email, pwd, name, role in users_data:
-        if not User.objects.filter(username=username).exists():
+    for username, email, pwd, name, role, is_admin in users_data:
+        if is_admin:
+            user = User.objects.create_superuser(
+                username=username,
+                email=email,
+                password=pwd,
+                first_name=name,
+                role=role
+            )
+        else:
             user = User.objects.create_user(
                 username=username,
                 email=email,
@@ -36,7 +61,8 @@ def seed_db():
                 first_name=name,
                 role=role
             )
-            print(f"Created user: {user}")
+        print(f"Created user: {user.username} ({user.role})")
+
 
     # Seed Vehicles
     vehicles_data = [
