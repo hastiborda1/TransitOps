@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Route as RouteIcon, MapPin, Loader2, Play, CheckCircle, XCircle } from "lucide-react";
+import { Plus, Route as RouteIcon, MapPin, Loader2, Play, CheckCircle, XCircle, Download } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -29,6 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { Trip } from "@/lib/mock-data";
+import { exportToCsv } from "@/lib/utils";
 
 export const Route = createFileRoute("/_app/trips")({
   head: () => ({
@@ -78,9 +79,9 @@ function TripsPage() {
     queryFn: api.drivers.list,
   });
 
-  // Filter available drivers & vehicles
-  const availableVehicles = vehicles?.filter((v) => v.status === "idle") ?? [];
-  const availableDrivers = drivers?.filter((d) => d.status === "available") ?? [];
+  // Filter dynamically for Available vehicles and drivers
+  const availableVehicles = vehicles?.filter((v) => v.status === "Available") ?? [];
+  const availableDrivers = drivers?.filter((d) => d.status === "Available") ?? [];
 
   const createMutation = useMutation({
     mutationFn: api.trips.create,
@@ -88,12 +89,12 @@ function TripsPage() {
       queryClient.invalidateQueries({ queryKey: ["trips"] });
       queryClient.invalidateQueries({ queryKey: ["vehicles"] });
       queryClient.invalidateQueries({ queryKey: ["drivers"] });
-      toast.success("Trip scheduled successfully");
+      toast.success("Trip drafted successfully");
       setIsAddOpen(false);
       reset();
     },
     onError: (err: any) => {
-      toast.error(err.message || "Failed to schedule trip");
+      toast.error(err.message || "Failed to draft trip");
     },
   });
 
@@ -157,7 +158,7 @@ function TripsPage() {
     if (!activeTripId) return;
     updateStatusMutation.mutate({
       tripId: activeTripId,
-      status: "completed",
+      status: "Completed",
       actualDistance: values.actualDistance,
       fuelConsumed: values.fuelConsumed,
     });
@@ -166,14 +167,14 @@ function TripsPage() {
   const handleDispatch = (tripId: string) => {
     updateStatusMutation.mutate({
       tripId,
-      status: "in-progress",
+      status: "Dispatched",
     });
   };
 
   const handleCancel = (tripId: string) => {
     updateStatusMutation.mutate({
       tripId,
-      status: "cancelled",
+      status: "Cancelled",
     });
   };
 
@@ -182,6 +183,22 @@ function TripsPage() {
     setCompleteValue("actualDistance", trip.distance);
     setCompleteValue("fuelConsumed", Math.round(trip.distance * 0.25)); // default estimate
     setIsCompleteOpen(true);
+  };
+
+  const handleExport = () => {
+    if (!trips) return;
+    const headers = ["Trip ID", "Origin", "Destination", "Distance (km)", "Driver", "Vehicle", "Start Time", "Status"];
+    const rows = trips.map((t: any) => [
+      t.id,
+      t.origin,
+      t.destination,
+      t.distance,
+      t.driver,
+      t.vehicle,
+      t.startedAt,
+      t.status,
+    ]);
+    exportToCsv("TransitOps_Trips_Ledger", headers, rows);
   };
 
   const columns: Column<Trip>[] = [
@@ -237,7 +254,7 @@ function TripsPage() {
       key: "actions",
       header: "Actions",
       accessor: (r) => {
-        if (r.status === "scheduled") {
+        if (r.status === "Draft") {
           return (
             <div className="flex gap-2">
               <Button size="xs" onClick={() => handleDispatch(r.id)}>
@@ -249,7 +266,7 @@ function TripsPage() {
             </div>
           );
         }
-        if (r.status === "in-progress") {
+        if (r.status === "Dispatched") {
           return (
             <div className="flex gap-2">
               <Button size="xs" variant="success" className="bg-emerald-600 hover:bg-emerald-700 text-white" onClick={() => openCompleteModal(r)}>
@@ -272,9 +289,14 @@ function TripsPage() {
         title="Trips"
         description="Track journeys from dispatch to delivery."
         actions={
-          <Button size="sm" onClick={() => setIsAddOpen(true)}>
-            <Plus className="h-4 w-4" /> Schedule Trip
-          </Button>
+          <>
+            <Button variant="outline" size="sm" onClick={handleExport} className="mr-2">
+              <Download className="h-4 w-4" /> Export CSV
+            </Button>
+            <Button size="sm" onClick={() => setIsAddOpen(true)}>
+              <Plus className="h-4 w-4" /> Schedule Trip
+            </Button>
+          </>
         }
       />
       <DataTable
