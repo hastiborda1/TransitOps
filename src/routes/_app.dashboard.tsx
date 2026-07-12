@@ -52,15 +52,15 @@ function DashboardPage() {
   const tripsQ = useQuery({ queryKey: ["trips"], queryFn: api.trips.list });
   const monthlyQ = useQuery({ queryKey: ["analytics", "monthly"], queryFn: api.analytics.monthly });
 
-  const user = authService.getCurrentUser() || { role: "manager" };
+  const user = authService.getCurrentUser() || { role: "fleet-manager" };
   const role = user.role;
-  const canNewTrip = role === "manager" || role === "admin";
+  const canNewTrip = role === "fleet-manager" || role === "admin";
   const canExport = role !== "driver";
 
   // Data mapping from backend queries
-  const vehiclesList = vehiclesQ.data || [];
-  const driversList = driversQ.data || [];
-  const tripsList = tripsQ.data || [];
+  const vehiclesList = Array.isArray(vehiclesQ.data) ? vehiclesQ.data : [];
+  const driversList = Array.isArray(driversQ.data) ? driversQ.data : [];
+  const tripsList = Array.isArray(tripsQ.data) ? tripsQ.data : [];
 
   const totalVehicles = vehiclesList.length;
   const activeVehicles = vehiclesList.filter((v) => v.status === "active" || v.status === "On Trip").length;
@@ -73,7 +73,7 @@ function DashboardPage() {
   const fleetUtilization = totalVehicles > 0 ? ((activeVehicles / totalVehicles) * 100).toFixed(1) : "0.0";
 
   const handleExport = () => {
-    if (!vehiclesQ.data) return;
+    if (!Array.isArray(vehiclesList) || !vehiclesList.length) return;
     const headers = ["Plate", "Make", "Model", "Type", "Status", "Odometer", "Fuel Type", "Max Load (kg)", "Acquisition Cost ($)"];
     const rows = vehiclesList.map((v: any) => [
       v.plate,
@@ -90,7 +90,7 @@ function DashboardPage() {
   };
 
   // 1. Safety Officer view
-  if (role === "safety") {
+  if (role === "safety-officer") {
     const totalDrivers = driversList.length;
     const avgSafetyScore = totalDrivers > 0 
       ? Math.round((driversList.reduce((acc, d) => acc + (d.rating || 0), 0) / totalDrivers) * 20) 
@@ -188,7 +188,7 @@ function DashboardPage() {
   }
 
   // 2. Financial Analyst view
-  if (role === "finance") {
+  if (role === "financial-analyst") {
     const mockMonthlyData = [
       { month: "Jan", revenue: 45000, expenses: 32000, profit: 13000 },
       { month: "Feb", revenue: 48000, expenses: 31000, profit: 17000 },
@@ -340,7 +340,7 @@ function DashboardPage() {
               <Skeleton className="h-full w-full" />
             ) : (
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={monthlyQ.data}>
+                <AreaChart data={Array.isArray(monthlyQ.data) ? monthlyQ.data : []}>
                   <defs>
                     <linearGradient id="tripsFill" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor="var(--color-chart-1)" stopOpacity={0.4} />

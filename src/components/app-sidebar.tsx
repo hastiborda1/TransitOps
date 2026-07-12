@@ -55,7 +55,7 @@ export function AppSidebar() {
   const navigate = useNavigate();
   const isActive = (url: string) => pathname === url || pathname.startsWith(url + "/");
 
-  const user = authService.getCurrentUser() || { role: "manager" };
+  const user = authService.getCurrentUser() || { role: "fleet-manager" };
   const role = user.role;
 
   const handleSignOut = async (e: React.MouseEvent) => {
@@ -72,7 +72,7 @@ export function AppSidebar() {
   });
 
   const filteredOpsNav = opsNav.filter((item) => {
-    if (role === "safety") {
+    if (role === "safety-officer") {
       // Safety Officer: No Fuel Logs, No Expenses
       return item.title !== "Fuel Logs" && item.title !== "Expenses";
     }

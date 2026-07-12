@@ -180,7 +180,7 @@ function FuelPage() {
         }
       />
       <DataTable
-        data={logs ?? []}
+        data={Array.isArray(logs) ? logs : []}
         columns={columns}
         isLoading={isLogsLoading}
         searchKeys={["id", "vehicle", "driver", "station"]}

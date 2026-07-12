@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PasswordInput } from "@/components/auth/PasswordInput";
 import { AuthButton } from "@/components/auth/AuthButton";
+import { useAuth } from "@/lib/auth";
 import { authService } from "@/services/api";
 
 export const Route = createFileRoute("/login")({
@@ -51,13 +52,8 @@ const rolesConfig = [
     id: "manager",
     title: "Manager",
     icon: Truck,
-<<<<<<< Updated upstream
-    color: "bg-[#C59B27]/10 text-[#C59B27] border-[#C59B27]/20",
-    activeColor: "bg-[#C59B27] text-white border-[#C59B27]",
-=======
     color: "bg-blue-500/10 text-blue-500 border-blue-500/20",
     activeColor: "bg-blue-500 text-white border-blue-500",
->>>>>>> Stashed changes
     defaultUser: "manager@transitops.com",
     defaultPass: "demo1234",
   },
@@ -65,13 +61,8 @@ const rolesConfig = [
     id: "safety",
     title: "Safety",
     icon: ShieldCheck,
-<<<<<<< Updated upstream
-    color: "bg-[#C59B27]/10 text-[#C59B27] border-[#C59B27]/20",
-    activeColor: "bg-[#C59B27] text-white border-[#C59B27]",
-=======
     color: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
     activeColor: "bg-emerald-500 text-white border-emerald-500",
->>>>>>> Stashed changes
     defaultUser: "safety@transitops.com",
     defaultPass: "demo1234",
   },
@@ -79,13 +70,8 @@ const rolesConfig = [
     id: "finance",
     title: "Finance",
     icon: PieChart,
-<<<<<<< Updated upstream
-    color: "bg-[#C59B27]/10 text-[#C59B27] border-[#C59B27]/20",
-    activeColor: "bg-[#C59B27] text-white border-[#C59B27]",
-=======
     color: "bg-purple-500/10 text-purple-500 border-purple-500/20",
     activeColor: "bg-purple-500 text-white border-purple-500",
->>>>>>> Stashed changes
     defaultUser: "finance@transitops.com",
     defaultPass: "demo1234",
   },
@@ -93,13 +79,8 @@ const rolesConfig = [
     id: "driver",
     title: "Driver",
     icon: User,
-<<<<<<< Updated upstream
-    color: "bg-[#C59B27]/10 text-[#C59B27] border-[#C59B27]/20",
-    activeColor: "bg-[#C59B27] text-white border-[#C59B27]",
-=======
     color: "bg-orange-500/10 text-orange-500 border-orange-500/20",
     activeColor: "bg-orange-500 text-white border-orange-500",
->>>>>>> Stashed changes
     defaultUser: "driver@transitops.com",
     defaultPass: "demo1234",
   },
@@ -179,23 +160,22 @@ function UnifiedLoginPage() {
     try {
       if (isOtpMode) {
         const res = await authService.verifyOtp(values.identifier, values.otp || "", selectedRole);
-<<<<<<< Updated upstream
         login({ id: res.id, email: res.email, name: res.name, role: res.role });
-        toast.success(`Welcome, ${res.name}`);
+        toast.success(`Welcome, ${res.username || res.name}`);
         navigate({ to: "/dashboard" });
       } else {
         const res = await authService.login(values.identifier, values.password || "");
         login({ id: res.id, email: res.email, name: res.name, role: res.role });
-        toast.success(`Welcome, ${res.name}`);
+        toast.success(`Welcome, ${res.username || res.name}`);
 =======
-        login(res.role, res.email);
-        toast.success(`Welcome, ${res.username || res.name}`);
+        login(res.role, res.email, res.username || res.name || res.email);
+        toast.success(`Welcome, ${res.username || res.name || res.email}`);
         navigate({ to: "/dashboard" });
       } else {
         const res = await authService.login(values.identifier, values.password || "");
-        login(res.role, res.email);
-        toast.success(`Welcome, ${res.username || res.name}`);
->>>>>>> Stashed changes
+        login(res.role, res.email, res.username || res.name || res.email);
+        toast.success(`Welcome, ${res.username || res.name || res.email}`);
+>>>>>>> f225225de45f21bc8e06ac5f184b546decfd0b8a
         navigate({ to: "/dashboard" });
       }
     } catch (e: any) {
@@ -303,11 +283,7 @@ function UnifiedLoginPage() {
                 Verification OTP Code
               </Label>
               <div className="relative">
-<<<<<<< Updated upstream
                 <KeyRound className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-=======
-                <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-outline" />
->>>>>>> Stashed changes
                 <Input
                   id="otp"
                   type="text"

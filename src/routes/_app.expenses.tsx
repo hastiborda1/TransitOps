@@ -55,7 +55,7 @@ function ExpensesPage() {
   const queryClient = useQueryClient();
   const [isAddOpen, setIsAddOpen] = useState(false);
   const currentUser = authService.getCurrentUser();
-  const isViewOnly = currentUser?.role === "manager";
+  const isViewOnly = currentUser?.role === "fleet-manager";
 
   const { data: expenses, isLoading: isExpensesLoading } = useQuery({
     queryKey: ["expenses"],
@@ -178,7 +178,7 @@ function ExpensesPage() {
         }
       />
       <DataTable
-        data={expenses ?? []}
+        data={Array.isArray(expenses) ? expenses : []}
         columns={columns}
         isLoading={isExpensesLoading}
         searchKeys={["id", "description", "category", "vehicle"]}
