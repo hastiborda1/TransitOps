@@ -9,6 +9,8 @@ import {
   DollarSign,
   Plus,
   Download,
+  Shield,
+  Calendar,
 } from "lucide-react";
 import {
   Area,
@@ -20,7 +22,7 @@ import {
   YAxis,
   Legend,
 } from "recharts";
-import { api } from "@/services/api";
+import { api, authService } from "@/services/api";
 import { PageHeader } from "@/components/page-header";
 import { KpiCard } from "@/components/kpi-card";
 import { StatusBadge } from "@/components/status-badge";
@@ -45,7 +47,12 @@ function DashboardPage() {
   const driversQ = useQuery({ queryKey: ["drivers"], queryFn: api.drivers.list });
   const tripsQ = useQuery({ queryKey: ["trips"], queryFn: api.trips.list });
   const monthlyQ = useQuery({ queryKey: ["analytics", "monthly"], queryFn: api.analytics.monthly });
+  const user = authService.getCurrentUser() || { role: "manager" };
+  const canNewTrip = user.role === "manager" || user.role === "admin";
+  const canExport = user.role !== "driver";
+  const role = user.role;
 
+<<<<<<< Updated upstream
   console.log("DEBUG: vehiclesQ.data is:", vehiclesQ.data);
   console.log("DEBUG: driversQ.data is:", driversQ.data);
   console.log("DEBUG: tripsQ.data is:", tripsQ.data);
@@ -78,6 +85,129 @@ function DashboardPage() {
     ]);
     exportToCsv("TransitOps_Fleet_Status_Report", headers, rows);
   };
+=======
+  const activeVehicles = vehiclesQ.data?.filter((v) => v.status === "active").length ?? 0;
+  const availableVehicles = vehiclesQ.data?.filter((v) => v.status === "idle").length ?? 0;
+  const inMaintenanceVehicles = vehiclesQ.data?.filter((v) => v.status === "maintenance").length ?? 0;
+  const totalVehicles = vehiclesQ.data?.length ?? 0;
+  const activeDrivers = driversQ.data?.filter((d) => d.status !== "off-duty" && d.status !== "suspended").length ?? 0;
+  const inProgressTrips = tripsQ.data?.filter((t) => t.status === "in-progress").length ?? 0;
+  const pendingTrips = tripsQ.data?.filter((t) => t.status === "scheduled").length ?? 0;
+  const fleetUtilization = totalVehicles > 0 ? Math.round((activeVehicles / totalVehicles) * 100) : 0;
+
+  if (role === "safety") {
+    const driversList = driversQ.data || [];
+    
+    // Safety & Compliance metrics
+    const totalDrivers = driversList.length;
+    const avgSafetyScore = totalDrivers > 0 
+      ? Math.round((driversList.reduce((acc, d) => acc + (d.rating || 0), 0) / totalDrivers) * 20) 
+      : 90;
+      
+    const suspendedDrivers = driversList.filter(d => d.status === "suspended").length;
+    
+    const expiredLicenses = driversList.filter(d => {
+      if (!d.licenseExpiry) return false;
+      return new Date(d.licenseExpiry) < new Date();
+    });
+
+    const activeComplianceAlerts = driversList.filter(d => {
+      return d.status === "suspended" || (d.licenseExpiry && new Date(d.licenseExpiry) < new Date());
+    });
+
+    return (
+      <>
+        <PageHeader
+          title="Safety & Compliance Portal"
+          description="Ensures driver compliance, tracks license validity, and monitors safety scores."
+          breadcrumbs={[{ label: "Dashboard" }]}
+          actions={
+            canExport && <Button variant="outline" size="sm"><Download className="h-4 w-4" /> Export Report</Button>
+          }
+        />
+
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4 mb-6">
+          <KpiCard label="Average Safety Score" value={`${avgSafetyScore} / 100`} delta={1.8} hint="compliance target > 85" icon={Shield} tone="success" />
+          <KpiCard label="Active Drivers" value={`${activeDrivers}`} delta={2.1} hint="on-duty" icon={Users} tone="primary" />
+          <KpiCard label="Suspended Accounts" value={suspendedDrivers.toString()} delta={0} hint="immediate review" icon={AlertTriangle} tone={suspendedDrivers > 0 ? "destructive" : "info"} />
+          <KpiCard label="Expired Licenses" value={expiredLicenses.length.toString()} delta={0} hint="action required" icon={Calendar} tone={expiredLicenses.length > 0 ? "destructive" : "info"} />
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-3 mb-6">
+          <Card className="p-5 lg:col-span-2 gold-stripe-left">
+            <h3 className="font-semibold text-base mb-1">Driver Compliance Status</h3>
+            <p className="text-xs text-muted-foreground mb-4">Live license status and compliance checklist</p>
+            <div className="space-y-4">
+              {driversQ.isLoading ? (
+                <Skeleton className="h-40 w-full" />
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm text-left">
+                    <thead>
+                      <tr className="border-b text-muted-foreground text-xs uppercase tracking-wider">
+                        <th className="py-2">Driver</th>
+                        <th className="py-2">License Category</th>
+                        <th className="py-2">Expiry Date</th>
+                        <th className="py-2">Safety Score</th>
+                        <th className="py-2 text-right">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {driversList.map(d => {
+                        const score = Math.round((d.rating || 0) * 20);
+                        const isExp = d.licenseExpiry ? new Date(d.licenseExpiry) < new Date() : false;
+                        return (
+                          <tr key={d.id} className="border-b last:border-0 hover:bg-muted/50 transition-colors">
+                            <td className="py-2.5 font-medium">{d.name}</td>
+                            <td className="py-2.5 text-muted-foreground">{d.licenseCategory || "Light Truck"}</td>
+                            <td className="py-2.5">
+                              <span className={isExp ? "text-destructive font-semibold" : ""}>
+                                {d.licenseExpiry || "N/A"}
+                              </span>
+                            </td>
+                            <td className="py-2.5 font-semibold">{score} %</td>
+                            <td className="py-2.5 text-right">
+                              <span className={`text-xs px-2 py-0.5 rounded font-semibold ${isExp || d.status === "suspended" ? "bg-red-50 text-red-600 border border-red-200" : "bg-green-50 text-green-600 border border-green-200"}`}>
+                                {isExp ? "Expired" : d.status === "suspended" ? "Suspended" : "Compliant"}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </Card>
+
+          <Card className="p-5">
+            <h3 className="font-semibold mb-1">Compliance Alerts</h3>
+            <p className="text-xs text-muted-foreground mb-4">Requires immediate intervention</p>
+            <ul className="space-y-3">
+              {activeComplianceAlerts.length === 0 ? (
+                <li className="text-sm text-muted-foreground text-center py-6">All drivers are compliant</li>
+              ) : (
+                activeComplianceAlerts.map(d => {
+                  const isExp = d.licenseExpiry ? new Date(d.licenseExpiry) < new Date() : false;
+                  return (
+                    <AlertRow
+                      key={d.id}
+                      icon={<AlertTriangle className="h-4 w-4" />}
+                      tone="destructive"
+                      title={isExp ? `${d.name} License Expired` : `${d.name} Suspended`}
+                      meta={isExp ? `Expired on ${d.licenseExpiry}` : "Suspended from operations"}
+                    />
+                  );
+                })
+              )}
+            </ul>
+          </Card>
+        </div>
+      </>
+    );
+  }
+>>>>>>> Stashed changes
 
   return (
     <>
@@ -87,12 +217,17 @@ function DashboardPage() {
         breadcrumbs={[{ label: "Dashboard" }]}
         actions={
           <>
+<<<<<<< Updated upstream
             <Button variant="outline" size="sm" onClick={handleExport}>
               <Download className="h-4 w-4" /> Export CSV
             </Button>
             <Button size="sm" onClick={() => navigate({ to: "/trips" })}>
               <Plus className="h-4 w-4" /> New Trip
             </Button>
+=======
+            {canExport && <Button variant="outline" size="sm"><Download className="h-4 w-4" /> Export</Button>}
+            {canNewTrip && <Button size="sm"><Plus className="h-4 w-4" /> New Trip</Button>}
+>>>>>>> Stashed changes
           </>
         }
       />

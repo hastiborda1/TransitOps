@@ -3,6 +3,13 @@ import { Truck, ShieldCheck, PieChart, User, ShieldAlert } from "lucide-react";
 import { AuthLayout } from "@/components/auth/AuthLayout";
 import { RoleCard } from "@/components/auth/RoleCard";
 import { Button } from "@/components/ui/button";
+<<<<<<< Updated upstream
+=======
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { authService } from "@/services/api";
+>>>>>>> Stashed changes
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -14,6 +21,7 @@ export const Route = createFileRoute("/login")({
   component: LoginSelectionPage,
 });
 
+<<<<<<< Updated upstream
 const roles = [
   {
     id: "fleet-manager",
@@ -48,6 +56,43 @@ const roles = [
     color: "bg-orange-500/10 text-orange-500",
   },
 ];
+=======
+const schema = z.object({
+  email: z.string().email("Enter a valid email"),
+  password: z.string().min(6, "Minimum 6 characters"),
+  remember: z.boolean().optional(),
+});
+
+type FormValues = z.infer<typeof schema>;
+
+function LoginPage() {
+  const navigate = useNavigate();
+  const [showPw, setShowPw] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<FormValues>({
+    resolver: zodResolver(schema),
+    defaultValues: { email: "manager@transitops.com", password: "demo1234", remember: true },
+  });
+
+  const onSubmit = async (values: FormValues) => {
+    setLoading(true);
+    try {
+      await authService.login(values.email, values.password);
+      setLoading(false);
+      toast.success("Welcome back to TransitOps");
+      navigate({ to: "/dashboard" });
+    } catch (err: any) {
+      setLoading(false);
+      toast.error(err.message || "Invalid credentials");
+    }
+  };
+>>>>>>> Stashed changes
 
 function LoginSelectionPage() {
   return (
