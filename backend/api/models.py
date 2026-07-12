@@ -15,6 +15,10 @@ class CustomUser(AbstractUser):
 
 class Vehicle(models.Model):
     STATUS_CHOICES = (
+        ('Available', 'Available'),
+        ('On Trip', 'On Trip'),
+        ('In Shop', 'In Shop'),
+        ('Retired', 'Retired'),
         ('idle', 'Available'),
         ('active', 'On Trip'),
         ('maintenance', 'In Shop'),
@@ -37,6 +41,7 @@ class Vehicle(models.Model):
     model = models.CharField(max_length=50)
     year = models.IntegerField()
     type = models.CharField(max_length=20, choices=TYPE_CHOICES)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Available')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='idle')
     odometer = models.IntegerField(default=0)
     fuel_type = models.CharField(max_length=20, choices=FUEL_CHOICES)
@@ -49,6 +54,10 @@ class Vehicle(models.Model):
 
 class Driver(models.Model):
     STATUS_CHOICES = (
+        ('Available', 'Available'),
+        ('On Trip', 'On Trip'),
+        ('Off Duty', 'Off Duty'),
+        ('Suspended', 'Suspended'),
         ('available', 'Available'),
         ('on-trip', 'On Trip'),
         ('off-duty', 'Off Duty'),
@@ -58,6 +67,7 @@ class Driver(models.Model):
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=50)
     license = models.CharField(max_length=50)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Available')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='available')
     rating = models.DecimalField(max_digits=3, decimal_places=2, default=5.0)
     trips = models.IntegerField(default=0)
@@ -70,6 +80,10 @@ class Driver(models.Model):
 
 class Trip(models.Model):
     STATUS_CHOICES = (
+        ('Draft', 'Draft'),
+        ('Dispatched', 'Dispatched'),
+        ('Completed', 'Completed'),
+        ('Cancelled', 'Cancelled'),
         ('scheduled', 'Scheduled'),
         ('in-progress', 'In Progress'),
         ('completed', 'Completed'),
@@ -81,6 +95,7 @@ class Trip(models.Model):
     destination = models.CharField(max_length=100)
     distance = models.IntegerField()
     started_at = models.CharField(max_length=50)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Draft')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='scheduled')
     cargo_weight = models.IntegerField(default=500)
     planned_distance = models.IntegerField(default=100)
@@ -140,3 +155,12 @@ class Expense(models.Model):
 
     def __str__(self):
         return f"Expense: {self.category} - {self.amount}"
+
+class OTPStore(models.Model):
+    email = models.CharField(max_length=150)
+    otp = models.CharField(max_length=10)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_verified = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.email} - {self.otp}"

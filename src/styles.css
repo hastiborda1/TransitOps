@@ -65,57 +65,57 @@
 
 :root {
   --radius: 0.5rem;
-  /* TransitOps palette — preserved from Stitch export */
-  --background: oklch(0.985 0.005 285);
-  --foreground: oklch(0.22 0.03 265);
-  --surface: oklch(0.985 0.005 285);
-  --surface-container-lowest: oklch(1 0 0);
-  --surface-container-low: oklch(0.97 0.008 285);
-  --surface-container: oklch(0.945 0.012 265);
-  --surface-container-high: oklch(0.925 0.015 265);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.22 0.03 265);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.22 0.03 265);
-  --primary: oklch(0.42 0.24 296); /* #5300b7 */
-  --primary-foreground: oklch(1 0 0);
-  --primary-container: oklch(0.5 0.24 295);
-  --primary-fixed: oklch(0.92 0.05 295);
-  --secondary: oklch(0.55 0.14 160);
-  --secondary-foreground: oklch(1 0 0);
-  --secondary-container: oklch(0.9 0.14 160);
-  --muted: oklch(0.955 0.01 265);
-  --muted-foreground: oklch(0.5 0.03 265);
-  --accent: oklch(0.945 0.02 295);
-  --accent-foreground: oklch(0.42 0.24 296);
+  /* TransitOps palette - Gold, Cream, & Charcoal Industrial Aesthetic */
+  --background: #EBE9E1;
+  --foreground: #1F1F1F;
+  --surface: #EBE9E1;
+  --surface-container-lowest: #FFFFFF;
+  --surface-container-low: #F4F2EB;
+  --surface-container: #EBE9E1;
+  --surface-container-high: #D1CFC7;
+  --card: #FFFFFF;
+  --card-foreground: #1F1F1F;
+  --popover: #FFFFFF;
+  --popover-foreground: #1F1F1F;
+  --primary: #C59B27;
+  --primary-foreground: #F5F5F7;
+  --primary-container: #C5A059;
+  --primary-fixed: #C5A059;
+  --secondary: #1A1A1A;
+  --secondary-foreground: #F5F5F7;
+  --secondary-container: #1A1A1A;
+  --muted: #F4F2EB;
+  --muted-foreground: #66645E;
+  --accent: #C59B27;
+  --accent-foreground: #1F1F1F;
   --destructive: oklch(0.58 0.22 25);
-  --destructive-foreground: oklch(1 0 0);
+  --destructive-foreground: #FFFFFF;
   --success: oklch(0.62 0.16 160);
-  --success-foreground: oklch(1 0 0);
-  --warning: oklch(0.75 0.15 75);
-  --warning-foreground: oklch(0.22 0.03 265);
+  --success-foreground: #FFFFFF;
+  --warning: #C59B27;
+  --warning-foreground: #1F1F1F;
   --info: oklch(0.65 0.15 240);
-  --info-foreground: oklch(1 0 0);
-  --border: oklch(0.9 0.012 265);
-  --input: oklch(0.9 0.012 265);
-  --ring: oklch(0.42 0.24 296);
-  --outline: oklch(0.55 0.02 285);
-  --outline-variant: oklch(0.87 0.012 285);
-  --on-surface: oklch(0.22 0.03 265);
-  --on-surface-variant: oklch(0.4 0.03 285);
-  --chart-1: oklch(0.55 0.22 295);
-  --chart-2: oklch(0.62 0.16 160);
-  --chart-3: oklch(0.7 0.16 75);
-  --chart-4: oklch(0.6 0.18 25);
-  --chart-5: oklch(0.6 0.15 240);
-  --sidebar: oklch(1 0 0);
-  --sidebar-foreground: oklch(0.22 0.03 265);
-  --sidebar-primary: oklch(0.42 0.24 296);
-  --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.955 0.02 295);
-  --sidebar-accent-foreground: oklch(0.42 0.24 296);
-  --sidebar-border: oklch(0.92 0.012 265);
-  --sidebar-ring: oklch(0.42 0.24 296);
+  --info-foreground: #FFFFFF;
+  --border: #D1CFC7;
+  --input: #D1CFC7;
+  --ring: #C59B27;
+  --outline: #66645E;
+  --outline-variant: #D1CFC7;
+  --on-surface: #1F1F1F;
+  --on-surface-variant: #66645E;
+  --chart-1: #C59B27;
+  --chart-2: #1A1A1A;
+  --chart-3: #C5A059;
+  --chart-4: #66645E;
+  --chart-5: #1F1F1F;
+  --sidebar: #1A1A1A;
+  --sidebar-foreground: #F5F5F7;
+  --sidebar-primary: #C59B27;
+  --sidebar-primary-foreground: #F5F5F7;
+  --sidebar-accent: #262626;
+  --sidebar-accent-foreground: #F5F5F7;
+  --sidebar-border: #2E2E2E;
+  --sidebar-ring: #C59B27;
 }
 
 .dark {
@@ -181,4 +181,26 @@
     font-family: var(--font-sans);
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
+}
+
+/* Custom premium hover and brand accents */
+.btn-gold-arrow:hover svg,
+.btn-gold-arrow:hover img {
+  transform: translateX(3px);
+  transition: transform 0.2s ease-in-out;
+}
+
+.gold-stripe-left {
+  position: relative;
+}
+.gold-stripe-left::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background-color: var(--color-primary);
+  border-top-left-radius: inherit;
+  border-bottom-left-radius: inherit;
 }

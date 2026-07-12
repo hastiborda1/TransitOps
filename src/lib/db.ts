@@ -1,4 +1,3 @@
-import pg from "pg";
 import {
   vehicles as mockVehicles,
   drivers as mockDrivers,
@@ -17,8 +16,12 @@ import {
 const connectionString =
   process.env.DATABASE_URL || "postgresql://postgres:postgres@localhost:5432/Transit";
 
-let pool: pg.Pool | null = null;
-let useFallbackDb = false;
+let pool: any = null;
+<<<<<<< Updated upstream
+let useFallbackDb = true;
+=======
+let useFallbackDb = typeof window !== "undefined";
+>>>>>>> Stashed changes
 
 // Fallback in-memory database extending the mock data with business rules requirements
 export const fallbackDb = {
@@ -48,23 +51,53 @@ export const fallbackDb = {
   expenses: [...mockExpenses],
 };
 
-// Initialize pool
-try {
-  pool = new pg.Pool({
-    connectionString,
-    connectionTimeoutMillis: 2000,
-  });
-} catch (e) {
-  console.warn("PostgreSQL connection failed to initialize, using in-memory store instead:", e);
-  useFallbackDb = true;
+<<<<<<< Updated upstream
+async function getPool() {
+=======
+// Helper to initialize pool dynamically on the server
+async function ensurePool() {
+  if (useFallbackDb) return null;
+  if (pool) return pool;
+
+>>>>>>> Stashed changes
+  if (typeof window !== "undefined") {
+    useFallbackDb = true;
+    return null;
+  }
+<<<<<<< Updated upstream
+  if (pool) return pool;
+  try {
+    const pg = await import("pg");
+    pool = new pg.default.Pool({
+=======
+
+  try {
+    const pgModule = await import("pg");
+    const PoolClass = pgModule.default?.Pool || pgModule.Pool;
+    pool = new PoolClass({
+>>>>>>> Stashed changes
+      connectionString,
+      connectionTimeoutMillis: 2000,
+    });
+    return pool;
+  } catch (e) {
+    console.warn("PostgreSQL connection failed to initialize, using in-memory store instead:", e);
+    useFallbackDb = true;
+    return null;
+  }
 }
 
 export async function query<T = any>(text: string, params?: any[]): Promise<T[]> {
-  if (useFallbackDb || !pool) {
+<<<<<<< Updated upstream
+  const activePool = await getPool();
+=======
+  const activePool = await ensurePool();
+>>>>>>> Stashed changes
+  if (useFallbackDb || !activePool) {
     return mockQueryFallback(text, params);
   }
   try {
-    const res = await pool.query(text, params);
+    const res = await activePool.query(text, params);
     return res.rows as T[];
   } catch (err) {
     console.error("Database query error, falling back to in-memory store:", err);
@@ -105,17 +138,36 @@ function mockQueryFallback(text: string, params?: any[]): any[] {
 }
 
 export async function initDb() {
-  if (useFallbackDb || !pool) {
-    console.log("Using in-memory database store.");
+<<<<<<< Updated upstream
+  if (typeof window !== "undefined") return;
+  
+  // Only attempt PostgreSQL connection if a connection string is set
+  if (!process.env.DATABASE_URL) {
+    console.log("No DATABASE_URL configured. Using in-memory database store.");
+    useFallbackDb = true;
     return;
   }
 
+  const activePool = await getPool();
+  if (!activePool) {
+    console.log("Failed to initialize database pool. Using in-memory database store.");
+    useFallbackDb = true;
+=======
+  const activePool = await ensurePool();
+  if (useFallbackDb || !activePool) {
+    console.log("Using in-memory database store.");
+>>>>>>> Stashed changes
+    return;
+  }
+  pool = activePool;
+
   try {
-    const client = await pool.connect();
+    const client = await activePool.connect();
     client.release();
     console.log("Connected to PostgreSQL database successfully.");
+    useFallbackDb = false;
 
-    await pool.query(`
+    await activePool.query(`
       CREATE TABLE IF NOT EXISTS users (
         id VARCHAR(50) PRIMARY KEY,
         email VARCHAR(100) UNIQUE NOT NULL,
@@ -125,7 +177,7 @@ export async function initDb() {
       );
     `);
 
-    await pool.query(`
+    await activePool.query(`
       CREATE TABLE IF NOT EXISTS vehicles (
         id VARCHAR(50) PRIMARY KEY,
         plate VARCHAR(50) UNIQUE NOT NULL,
@@ -142,7 +194,7 @@ export async function initDb() {
       );
     `);
 
-    await pool.query(`
+    await activePool.query(`
       CREATE TABLE IF NOT EXISTS drivers (
         id VARCHAR(50) PRIMARY KEY,
         name VARCHAR(100) NOT NULL,
@@ -158,7 +210,7 @@ export async function initDb() {
       );
     `);
 
-    await pool.query(`
+    await activePool.query(`
       CREATE TABLE IF NOT EXISTS trips (
         id VARCHAR(50) PRIMARY KEY,
         vehicle VARCHAR(50) NOT NULL,
@@ -173,7 +225,7 @@ export async function initDb() {
       );
     `);
 
-    await pool.query(`
+    await activePool.query(`
       CREATE TABLE IF NOT EXISTS maintenance (
         id VARCHAR(50) PRIMARY KEY,
         vehicle VARCHAR(50) NOT NULL,
@@ -185,7 +237,7 @@ export async function initDb() {
       );
     `);
 
-    await pool.query(`
+    await activePool.query(`
       CREATE TABLE IF NOT EXISTS fuel_logs (
         id VARCHAR(50) PRIMARY KEY,
         vehicle VARCHAR(50) NOT NULL,
@@ -198,7 +250,7 @@ export async function initDb() {
       );
     `);
 
-    await pool.query(`
+    await activePool.query(`
       CREATE TABLE IF NOT EXISTS expenses (
         id VARCHAR(50) PRIMARY KEY,
         date VARCHAR(50) NOT NULL,
@@ -210,54 +262,54 @@ export async function initDb() {
       );
     `);
 
-    const usersCount = await pool.query("SELECT COUNT(*) FROM users");
+    const usersCount = await activePool.query("SELECT COUNT(*) FROM users");
     if (parseInt(usersCount.rows[0].count) === 0) {
       console.log("Seeding default DB tables...");
 
       for (const u of fallbackDb.users) {
-        await pool.query(
+        await activePool.query(
           "INSERT INTO users (id, email, password, name, role) VALUES ($1, $2, $3, $4, $5)",
           [u.id, u.email, u.password, u.name, u.role]
         );
       }
 
       for (const v of fallbackDb.vehicles) {
-        await pool.query(
+        await activePool.query(
           "INSERT INTO vehicles (id, plate, make, model, year, type, status, odometer, fuel_type, driver, max_load, acquisition_cost) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)",
           [v.id, v.plate, v.make, v.model, v.year, v.type, v.status, v.odometer, v.fuelType, v.driver || null, v.maxLoad, v.acquisitionCost]
         );
       }
 
       for (const d of fallbackDb.drivers) {
-        await pool.query(
+        await activePool.query(
           "INSERT INTO drivers (id, name, email, phone, license, status, rating, trips, vehicle, license_category, license_expiry) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)",
           [d.id, d.name, d.email, d.phone, d.license, d.status, d.rating, d.trips, d.vehicle || null, d.licenseCategory, d.licenseExpiry]
         );
       }
 
       for (const t of fallbackDb.trips) {
-        await pool.query(
+        await activePool.query(
           "INSERT INTO trips (id, vehicle, driver, origin, destination, distance, started_at, status, cargo_weight, planned_distance) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)",
           [t.id, t.vehicle, t.driver, t.origin, t.destination, t.distance, t.startedAt, t.status, t.cargoWeight, t.plannedDistance]
         );
       }
 
       for (const m of fallbackDb.maintenance) {
-        await pool.query(
+        await activePool.query(
           "INSERT INTO maintenance (id, vehicle, type, due_date, cost, status, workshop) VALUES ($1, $2, $3, $4, $5, $6, $7)",
           [m.id, m.vehicle, m.type, m.dueDate, m.cost, m.status, m.workshop]
         );
       }
 
       for (const f of fallbackDb.fuelLogs) {
-        await pool.query(
+        await activePool.query(
           "INSERT INTO fuel_logs (id, vehicle, driver, date, liters, cost, odometer, station) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
           [f.id, f.vehicle, f.driver, f.date, f.liters, f.cost, f.odometer, f.station]
         );
       }
 
       for (const e of fallbackDb.expenses) {
-        await pool.query(
+        await activePool.query(
           "INSERT INTO expenses (id, date, category, vehicle, description, amount, status) VALUES ($1, $2, $3, $4, $5, $6, $7)",
           [e.id, e.date, e.category, e.vehicle || null, e.description, e.amount, e.status]
         );

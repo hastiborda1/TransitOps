@@ -9,22 +9,45 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SignupRouteImport } from './routes/signup'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as LoginSafetyOfficerRouteImport } from './routes/login_.safety-officer'
+import { Route as LoginFleetManagerRouteImport } from './routes/login_.fleet-manager'
+import { Route as LoginFinancialAnalystRouteImport } from './routes/login_.financial-analyst'
+import { Route as LoginDriverRouteImport } from './routes/login_.driver'
+import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AppVehiclesRouteImport } from './routes/_app.vehicles'
 import { Route as AppTripsRouteImport } from './routes/_app.trips'
 import { Route as AppSettingsRouteImport } from './routes/_app.settings'
+import { Route as AppSafetyDriverRouteImport } from './routes/_app.safety-driver'
+import { Route as AppSafetyRouteImport } from './routes/_app.safety'
 import { Route as AppMaintenanceRouteImport } from './routes/_app.maintenance'
 import { Route as AppFuelRouteImport } from './routes/_app.fuel'
+import { Route as AppFinancialAnalystRouteImport } from './routes/_app.financial-analyst'
+import { Route as AppFinanceRouteImport } from './routes/_app.finance'
 import { Route as AppExpensesRouteImport } from './routes/_app.expenses'
 import { Route as AppDriversRouteImport } from './routes/_app.drivers'
+import { Route as AppDriverRouteImport } from './routes/_app.driver'
 import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
 import { Route as AppAnalyticsRouteImport } from './routes/_app.analytics'
+import { Route as AppAdminRouteImport } from './routes/_app.admin'
 
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppRoute = AppRouteImport.update({
@@ -34,6 +57,31 @@ const AppRoute = AppRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginSafetyOfficerRoute = LoginSafetyOfficerRouteImport.update({
+  id: '/login_/safety-officer',
+  path: '/login/safety-officer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginFleetManagerRoute = LoginFleetManagerRouteImport.update({
+  id: '/login_/fleet-manager',
+  path: '/login/fleet-manager',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginFinancialAnalystRoute = LoginFinancialAnalystRouteImport.update({
+  id: '/login_/financial-analyst',
+  path: '/login/financial-analyst',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginDriverRoute = LoginDriverRouteImport.update({
+  id: '/login_/driver',
+  path: '/login/driver',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/admin/login',
+  path: '/admin/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppVehiclesRoute = AppVehiclesRouteImport.update({
@@ -51,6 +99,16 @@ const AppSettingsRoute = AppSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AppRoute,
 } as any)
+const AppSafetyDriverRoute = AppSafetyDriverRouteImport.update({
+  id: '/safety-driver',
+  path: '/safety-driver',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSafetyRoute = AppSafetyRouteImport.update({
+  id: '/safety',
+  path: '/safety',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppMaintenanceRoute = AppMaintenanceRouteImport.update({
   id: '/maintenance',
   path: '/maintenance',
@@ -59,6 +117,16 @@ const AppMaintenanceRoute = AppMaintenanceRouteImport.update({
 const AppFuelRoute = AppFuelRouteImport.update({
   id: '/fuel',
   path: '/fuel',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppFinancialAnalystRoute = AppFinancialAnalystRouteImport.update({
+  id: '/financial-analyst',
+  path: '/financial-analyst',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppFinanceRoute = AppFinanceRouteImport.update({
+  id: '/finance',
+  path: '/finance',
   getParentRoute: () => AppRoute,
 } as any)
 const AppExpensesRoute = AppExpensesRouteImport.update({
@@ -71,6 +139,11 @@ const AppDriversRoute = AppDriversRouteImport.update({
   path: '/drivers',
   getParentRoute: () => AppRoute,
 } as any)
+const AppDriverRoute = AppDriverRouteImport.update({
+  id: '/driver',
+  path: '/driver',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppDashboardRoute = AppDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -81,104 +154,208 @@ const AppAnalyticsRoute = AppAnalyticsRouteImport.update({
   path: '/analytics',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAdminRoute = AppAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
+  '/admin': typeof AppAdminRoute
   '/analytics': typeof AppAnalyticsRoute
   '/dashboard': typeof AppDashboardRoute
+  '/driver': typeof AppDriverRoute
   '/drivers': typeof AppDriversRoute
   '/expenses': typeof AppExpensesRoute
+  '/finance': typeof AppFinanceRoute
+  '/financial-analyst': typeof AppFinancialAnalystRoute
   '/fuel': typeof AppFuelRoute
   '/maintenance': typeof AppMaintenanceRoute
+  '/safety': typeof AppSafetyRoute
+  '/safety-driver': typeof AppSafetyDriverRoute
   '/settings': typeof AppSettingsRoute
   '/trips': typeof AppTripsRoute
   '/vehicles': typeof AppVehiclesRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/login/driver': typeof LoginDriverRoute
+  '/login/financial-analyst': typeof LoginFinancialAnalystRoute
+  '/login/fleet-manager': typeof LoginFleetManagerRoute
+  '/login/safety-officer': typeof LoginSafetyOfficerRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
+  '/admin': typeof AppAdminRoute
   '/analytics': typeof AppAnalyticsRoute
   '/dashboard': typeof AppDashboardRoute
+  '/driver': typeof AppDriverRoute
   '/drivers': typeof AppDriversRoute
   '/expenses': typeof AppExpensesRoute
+  '/finance': typeof AppFinanceRoute
+  '/financial-analyst': typeof AppFinancialAnalystRoute
   '/fuel': typeof AppFuelRoute
   '/maintenance': typeof AppMaintenanceRoute
+  '/safety': typeof AppSafetyRoute
+  '/safety-driver': typeof AppSafetyDriverRoute
   '/settings': typeof AppSettingsRoute
   '/trips': typeof AppTripsRoute
   '/vehicles': typeof AppVehiclesRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/login/driver': typeof LoginDriverRoute
+  '/login/financial-analyst': typeof LoginFinancialAnalystRoute
+  '/login/fleet-manager': typeof LoginFleetManagerRoute
+  '/login/safety-officer': typeof LoginSafetyOfficerRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_app': typeof AppRouteWithChildren
+  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
+  '/_app/admin': typeof AppAdminRoute
   '/_app/analytics': typeof AppAnalyticsRoute
   '/_app/dashboard': typeof AppDashboardRoute
+  '/_app/driver': typeof AppDriverRoute
   '/_app/drivers': typeof AppDriversRoute
   '/_app/expenses': typeof AppExpensesRoute
+  '/_app/finance': typeof AppFinanceRoute
+  '/_app/financial-analyst': typeof AppFinancialAnalystRoute
   '/_app/fuel': typeof AppFuelRoute
   '/_app/maintenance': typeof AppMaintenanceRoute
+  '/_app/safety': typeof AppSafetyRoute
+  '/_app/safety-driver': typeof AppSafetyDriverRoute
   '/_app/settings': typeof AppSettingsRoute
   '/_app/trips': typeof AppTripsRoute
   '/_app/vehicles': typeof AppVehiclesRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/login_/driver': typeof LoginDriverRoute
+  '/login_/financial-analyst': typeof LoginFinancialAnalystRoute
+  '/login_/fleet-manager': typeof LoginFleetManagerRoute
+  '/login_/safety-officer': typeof LoginSafetyOfficerRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/forgot-password'
     | '/login'
+    | '/signup'
+    | '/admin'
     | '/analytics'
     | '/dashboard'
+    | '/driver'
     | '/drivers'
     | '/expenses'
+    | '/finance'
+    | '/financial-analyst'
     | '/fuel'
     | '/maintenance'
+    | '/safety'
+    | '/safety-driver'
     | '/settings'
     | '/trips'
     | '/vehicles'
+    | '/admin/login'
+    | '/login/driver'
+    | '/login/financial-analyst'
+    | '/login/fleet-manager'
+    | '/login/safety-officer'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/forgot-password'
     | '/login'
+    | '/signup'
+    | '/admin'
     | '/analytics'
     | '/dashboard'
+    | '/driver'
     | '/drivers'
     | '/expenses'
+    | '/finance'
+    | '/financial-analyst'
     | '/fuel'
     | '/maintenance'
+    | '/safety'
+    | '/safety-driver'
     | '/settings'
     | '/trips'
     | '/vehicles'
+    | '/admin/login'
+    | '/login/driver'
+    | '/login/financial-analyst'
+    | '/login/fleet-manager'
+    | '/login/safety-officer'
   id:
     | '__root__'
     | '/'
     | '/_app'
+    | '/forgot-password'
     | '/login'
+    | '/signup'
+    | '/_app/admin'
     | '/_app/analytics'
     | '/_app/dashboard'
+    | '/_app/driver'
     | '/_app/drivers'
     | '/_app/expenses'
+    | '/_app/finance'
+    | '/_app/financial-analyst'
     | '/_app/fuel'
     | '/_app/maintenance'
+    | '/_app/safety'
+    | '/_app/safety-driver'
     | '/_app/settings'
     | '/_app/trips'
     | '/_app/vehicles'
+    | '/admin/login'
+    | '/login_/driver'
+    | '/login_/financial-analyst'
+    | '/login_/fleet-manager'
+    | '/login_/safety-officer'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
+  SignupRoute: typeof SignupRoute
+  AdminLoginRoute: typeof AdminLoginRoute
+  LoginDriverRoute: typeof LoginDriverRoute
+  LoginFinancialAnalystRoute: typeof LoginFinancialAnalystRoute
+  LoginFleetManagerRoute: typeof LoginFleetManagerRoute
+  LoginSafetyOfficerRoute: typeof LoginSafetyOfficerRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app': {
@@ -193,6 +370,41 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login_/safety-officer': {
+      id: '/login_/safety-officer'
+      path: '/login/safety-officer'
+      fullPath: '/login/safety-officer'
+      preLoaderRoute: typeof LoginSafetyOfficerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login_/fleet-manager': {
+      id: '/login_/fleet-manager'
+      path: '/login/fleet-manager'
+      fullPath: '/login/fleet-manager'
+      preLoaderRoute: typeof LoginFleetManagerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login_/financial-analyst': {
+      id: '/login_/financial-analyst'
+      path: '/login/financial-analyst'
+      fullPath: '/login/financial-analyst'
+      preLoaderRoute: typeof LoginFinancialAnalystRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login_/driver': {
+      id: '/login_/driver'
+      path: '/login/driver'
+      fullPath: '/login/driver'
+      preLoaderRoute: typeof LoginDriverRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/admin/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app/vehicles': {
@@ -216,6 +428,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSettingsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/safety-driver': {
+      id: '/_app/safety-driver'
+      path: '/safety-driver'
+      fullPath: '/safety-driver'
+      preLoaderRoute: typeof AppSafetyDriverRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/safety': {
+      id: '/_app/safety'
+      path: '/safety'
+      fullPath: '/safety'
+      preLoaderRoute: typeof AppSafetyRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/maintenance': {
       id: '/_app/maintenance'
       path: '/maintenance'
@@ -228,6 +454,20 @@ declare module '@tanstack/react-router' {
       path: '/fuel'
       fullPath: '/fuel'
       preLoaderRoute: typeof AppFuelRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/financial-analyst': {
+      id: '/_app/financial-analyst'
+      path: '/financial-analyst'
+      fullPath: '/financial-analyst'
+      preLoaderRoute: typeof AppFinancialAnalystRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/finance': {
+      id: '/_app/finance'
+      path: '/finance'
+      fullPath: '/finance'
+      preLoaderRoute: typeof AppFinanceRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/expenses': {
@@ -244,6 +484,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDriversRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/driver': {
+      id: '/_app/driver'
+      path: '/driver'
+      fullPath: '/driver'
+      preLoaderRoute: typeof AppDriverRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/dashboard': {
       id: '/_app/dashboard'
       path: '/dashboard'
@@ -258,28 +505,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAnalyticsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/admin': {
+      id: '/_app/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AppAdminRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
 interface AppRouteChildren {
+  AppAdminRoute: typeof AppAdminRoute
   AppAnalyticsRoute: typeof AppAnalyticsRoute
   AppDashboardRoute: typeof AppDashboardRoute
+  AppDriverRoute: typeof AppDriverRoute
   AppDriversRoute: typeof AppDriversRoute
   AppExpensesRoute: typeof AppExpensesRoute
+  AppFinanceRoute: typeof AppFinanceRoute
+  AppFinancialAnalystRoute: typeof AppFinancialAnalystRoute
   AppFuelRoute: typeof AppFuelRoute
   AppMaintenanceRoute: typeof AppMaintenanceRoute
+  AppSafetyRoute: typeof AppSafetyRoute
+  AppSafetyDriverRoute: typeof AppSafetyDriverRoute
   AppSettingsRoute: typeof AppSettingsRoute
   AppTripsRoute: typeof AppTripsRoute
   AppVehiclesRoute: typeof AppVehiclesRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppAdminRoute: AppAdminRoute,
   AppAnalyticsRoute: AppAnalyticsRoute,
   AppDashboardRoute: AppDashboardRoute,
+  AppDriverRoute: AppDriverRoute,
   AppDriversRoute: AppDriversRoute,
   AppExpensesRoute: AppExpensesRoute,
+  AppFinanceRoute: AppFinanceRoute,
+  AppFinancialAnalystRoute: AppFinancialAnalystRoute,
   AppFuelRoute: AppFuelRoute,
   AppMaintenanceRoute: AppMaintenanceRoute,
+  AppSafetyRoute: AppSafetyRoute,
+  AppSafetyDriverRoute: AppSafetyDriverRoute,
   AppSettingsRoute: AppSettingsRoute,
   AppTripsRoute: AppTripsRoute,
   AppVehiclesRoute: AppVehiclesRoute,
@@ -290,7 +556,14 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
+  ForgotPasswordRoute: ForgotPasswordRoute,
   LoginRoute: LoginRoute,
+  SignupRoute: SignupRoute,
+  AdminLoginRoute: AdminLoginRoute,
+  LoginDriverRoute: LoginDriverRoute,
+  LoginFinancialAnalystRoute: LoginFinancialAnalystRoute,
+  LoginFleetManagerRoute: LoginFleetManagerRoute,
+  LoginSafetyOfficerRoute: LoginSafetyOfficerRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

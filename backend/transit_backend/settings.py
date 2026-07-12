@@ -61,12 +61,8 @@ WSGI_APPLICATION = 'transit_backend.wsgi.application'
 # Database configuration targeting Transit PostgreSQL database
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'Transit',
-        'USER': 'postgres',
-        'PASSWORD': 'admin@1087',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -121,3 +117,6 @@ SIMPLE_JWT = {
     'SIGNING_KEY': SECRET_KEY,
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
+
+# Brevo transactional email API key
+BREVO_API_KEY = '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'
