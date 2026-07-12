@@ -23,7 +23,7 @@ export function TopBar() {
   const user = session || { name: "Alex Morgan", role: "manager" };
 
   const name = user.name || "Alex Morgan";
-  const role = roleLabels[user.role] || user.role || "Fleet Manager";
+  const role = (user.role && roleLabels[user.role]) || user.role || "Fleet Manager";
 
   const initials = name
     .split(" ")

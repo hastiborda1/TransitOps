@@ -1,7 +1,7 @@
 // Mock data used by all pages until Django REST endpoints are wired.
 // Kept in one file so switching to real API calls only touches src/services/*.
 
-export type VehicleStatus = "active" | "maintenance" | "idle" | "retired";
+export type VehicleStatus = "active" | "maintenance" | "idle" | "retired" | "Available" | "On Trip" | "In Shop" | "Retired";
 export type Vehicle = {
   id: string;
   plate: string;
@@ -26,7 +26,7 @@ export const vehicles: Vehicle[] = [
   { id: "V-008", plate: "TX-2251", make: "MAN", model: "TGX", year: 2023, type: "Truck", status: "active", odometer: 61220, fuelType: "Diesel", driver: "Ahmed Al-Farsi" },
 ];
 
-export type DriverStatus = "on-trip" | "available" | "off-duty" | "suspended";
+export type DriverStatus = "on-trip" | "available" | "off-duty" | "suspended" | "Available" | "On Trip" | "Off Duty" | "Suspended";
 export type Driver = {
   id: string;
   name: string;
@@ -37,6 +37,8 @@ export type Driver = {
   rating: number;
   trips: number;
   vehicle?: string;
+  licenseCategory?: string;
+  licenseExpiry?: string;
 };
 
 export const drivers: Driver[] = [
@@ -49,7 +51,7 @@ export const drivers: Driver[] = [
   { id: "D-107", name: "Lena Müller", email: "lena@transitops.com", phone: "+49 151 555 7788", license: "CDL-A", status: "suspended", rating: 3.9, trips: 88 },
 ];
 
-export type TripStatus = "in-progress" | "scheduled" | "completed" | "cancelled";
+export type TripStatus = "in-progress" | "scheduled" | "completed" | "cancelled" | "Draft" | "Dispatched" | "Completed" | "Cancelled";
 export type Trip = {
   id: string;
   vehicle: string;

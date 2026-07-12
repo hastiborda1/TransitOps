@@ -6,6 +6,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Load local environment variables from .env file
 env_path = BASE_DIR / '.env'
+if not env_path.exists():
+    env_path = BASE_DIR.parent / '.env'
 if env_path.exists():
     with open(env_path) as f:
         for line in f:
@@ -68,12 +70,41 @@ TEMPLATES = [
 WSGI_APPLICATION = 'transit_backend.wsgi.application'
 
 # Database configuration targeting Transit PostgreSQL database
+# Dynamic fallback to SQLite if connection fails
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+db_url = os.environ.get('DATABASE_URL')
+if db_url:
+    import urllib.parse as urlparse
+    import psycopg2
+    try:
+        url = urlparse.urlparse(db_url)
+        conn = psycopg2.connect(
+            dbname=url.path[1:],
+            user=url.username,
+            password=url.password,
+            host=url.hostname,
+            port=url.port or 5432,
+            connect_timeout=2
+        )
+        conn.close()
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': url.path[1:],
+                'USER': url.username,
+                'PASSWORD': url.password,
+                'HOST': url.hostname,
+                'PORT': url.port or '',
+            }
+        }
+    except Exception:
+        pass
 
 AUTH_PASSWORD_VALIDATORS = [
     {

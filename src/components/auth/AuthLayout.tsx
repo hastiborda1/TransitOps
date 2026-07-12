@@ -7,9 +7,10 @@ interface AuthLayoutProps {
   heading?: string;
   subheading?: string;
   steps?: { number: number; text: string; active: boolean }[];
+  theme?: string;
 }
 
-export function AuthLayout({ children }: AuthLayoutProps) {
+export function AuthLayout({ children, theme }: AuthLayoutProps) {
   return (
     <div className="min-h-screen flex flex-col bg-[#0F0E0C] text-[#F5F5F3] font-sans selection:bg-[#C59B27]/30">
       {/* Main split content area using cols grid */}

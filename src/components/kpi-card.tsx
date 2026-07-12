@@ -9,7 +9,7 @@ export type KpiCardProps = {
   delta?: number;
   hint?: string;
   icon: LucideIcon;
-  tone?: "primary" | "success" | "warning" | "info";
+  tone?: "primary" | "success" | "warning" | "info" | "destructive";
 };
 
 const toneBg: Record<NonNullable<KpiCardProps["tone"]>, string> = {
@@ -17,6 +17,7 @@ const toneBg: Record<NonNullable<KpiCardProps["tone"]>, string> = {
   success: "bg-success/12 text-success",
   warning: "bg-warning/15 [color:oklch(0.45_0.15_75)]",
   info: "bg-info/12 text-info",
+  destructive: "bg-destructive/10 text-destructive",
 };
 
 export function KpiCard({ label, value, delta, hint, icon: Icon, tone = "primary" }: KpiCardProps) {

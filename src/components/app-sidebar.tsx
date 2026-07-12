@@ -101,7 +101,7 @@ export function AppSidebar() {
 
   const filteredOpsNav = opsNav.filter((item) => hasAccess(item.url, role));
 
-  const finalOpsNav = [...filteredOpsNav];
+  const finalOpsNav: { title: string; url: any; icon: any }[] = [...filteredOpsNav];
   if (role === "admin" && hasAccess("/admin", role)) {
     // Add System admin dashboard for administrative role
     finalOpsNav.push({ title: "System Admin", url: "/admin" as any, icon: Shield });
