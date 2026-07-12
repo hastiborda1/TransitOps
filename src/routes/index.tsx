@@ -1,7 +1,22 @@
+<<<<<<< Updated upstream
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Truck, Navigation, ShieldCheck, DollarSign, ArrowRight, Database } from "lucide-react";
+=======
+
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { Truck, Navigation, ShieldCheck, DollarSign, ArrowRight, Phone, Database } from "lucide-react";
+import { authService } from "@/services/api";
+>>>>>>> Stashed changes
 
 export const Route = createFileRoute("/")({
+  beforeLoad: () => {
+    const user = authService.getCurrentUser();
+    if (user) {
+      throw redirect({
+        to: "/dashboard",
+      });
+    }
+  },
   head: () => ({
     meta: [
       { title: "TransitOps — Smart Transport Operations Platform" },

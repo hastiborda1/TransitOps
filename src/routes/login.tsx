@@ -52,8 +52,13 @@ const rolesConfig = [
     id: "manager",
     title: "Manager",
     icon: Truck,
+<<<<<<< Updated upstream
     color: "bg-[#C59B27]/10 text-[#C59B27] border-[#C59B27]/20",
     activeColor: "bg-[#C59B27] text-white border-[#C59B27]",
+=======
+    color: "bg-blue-500/10 text-blue-500 border-blue-500/20",
+    activeColor: "bg-blue-500 text-white border-blue-500",
+>>>>>>> Stashed changes
     defaultUser: "manager@transitops.com",
     defaultPass: "demo1234",
   },
@@ -61,8 +66,13 @@ const rolesConfig = [
     id: "safety",
     title: "Safety",
     icon: ShieldCheck,
+<<<<<<< Updated upstream
     color: "bg-[#C59B27]/10 text-[#C59B27] border-[#C59B27]/20",
     activeColor: "bg-[#C59B27] text-white border-[#C59B27]",
+=======
+    color: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
+    activeColor: "bg-emerald-500 text-white border-emerald-500",
+>>>>>>> Stashed changes
     defaultUser: "safety@transitops.com",
     defaultPass: "demo1234",
   },
@@ -70,8 +80,13 @@ const rolesConfig = [
     id: "finance",
     title: "Finance",
     icon: PieChart,
+<<<<<<< Updated upstream
     color: "bg-[#C59B27]/10 text-[#C59B27] border-[#C59B27]/20",
     activeColor: "bg-[#C59B27] text-white border-[#C59B27]",
+=======
+    color: "bg-purple-500/10 text-purple-500 border-purple-500/20",
+    activeColor: "bg-purple-500 text-white border-purple-500",
+>>>>>>> Stashed changes
     defaultUser: "finance@transitops.com",
     defaultPass: "demo1234",
   },
@@ -79,8 +94,13 @@ const rolesConfig = [
     id: "driver",
     title: "Driver",
     icon: User,
+<<<<<<< Updated upstream
     color: "bg-[#C59B27]/10 text-[#C59B27] border-[#C59B27]/20",
     activeColor: "bg-[#C59B27] text-white border-[#C59B27]",
+=======
+    color: "bg-orange-500/10 text-orange-500 border-orange-500/20",
+    activeColor: "bg-orange-500 text-white border-orange-500",
+>>>>>>> Stashed changes
     defaultUser: "driver@transitops.com",
     defaultPass: "demo1234",
   },
@@ -88,6 +108,7 @@ const rolesConfig = [
 
 function UnifiedLoginPage() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [selectedRole, setSelectedRole] = useState<string>("manager");
   const [loading, setLoading] = useState(false);
   const [isOtpMode, setIsOtpMode] = useState(false);
@@ -130,7 +151,7 @@ function UnifiedLoginPage() {
     setSendingOtp(true);
     try {
       await authService.sendOtp(email);
-      toast.success("OTP verification code sent to your email!");
+      toast.success("OTP verification code sent! Enter 123456 to bypass.");
     } catch (e: any) {
       toast.error(e.message || "Failed to send OTP code");
     } finally {
@@ -159,6 +180,7 @@ function UnifiedLoginPage() {
     try {
       if (isOtpMode) {
         const res = await authService.verifyOtp(values.identifier, values.otp || "", selectedRole);
+<<<<<<< Updated upstream
         login({ id: res.id, email: res.email, name: res.name, role: res.role });
         toast.success(`Welcome, ${res.name}`);
         navigate({ to: "/dashboard" });
@@ -166,6 +188,15 @@ function UnifiedLoginPage() {
         const res = await authService.login(values.identifier, values.password || "");
         login({ id: res.id, email: res.email, name: res.name, role: res.role });
         toast.success(`Welcome, ${res.name}`);
+=======
+        login(res.role, res.email);
+        toast.success(`Welcome, ${res.username || res.name}`);
+        navigate({ to: "/dashboard" });
+      } else {
+        const res = await authService.login(values.identifier, values.password || "");
+        login(res.role, res.email);
+        toast.success(`Welcome, ${res.username || res.name}`);
+>>>>>>> Stashed changes
         navigate({ to: "/dashboard" });
       }
     } catch (e: any) {
@@ -273,7 +304,11 @@ function UnifiedLoginPage() {
                 Verification OTP Code
               </Label>
               <div className="relative">
+<<<<<<< Updated upstream
                 <KeyRound className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+=======
+                <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-outline" />
+>>>>>>> Stashed changes
                 <Input
                   id="otp"
                   type="text"

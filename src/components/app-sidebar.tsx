@@ -64,11 +64,11 @@ export function AppSidebar() {
     navigate({ to: "/login" });
   };
 
-  const filteredMainNav = mainNav.filter((item) => {
-    if (role === "driver") {
-      return true;
+  const filteredMainNav = mainNav.map((item) => {
+    if (item.title === "Dashboard" && role === "driver") {
+      return { ...item, url: "/driver" as any };
     }
-    return true;
+    return item;
   });
 
   const filteredOpsNav = opsNav.filter((item) => {
@@ -77,11 +77,17 @@ export function AppSidebar() {
       return item.title !== "Fuel Logs" && item.title !== "Expenses";
     }
     if (role === "driver") {
-      // Driver: Fuel Logs (Add Own - Optional)
+      // Driver: Fuel Logs
       return item.title === "Fuel Logs";
     }
     return true;
   });
+
+  const finalOpsNav = [...filteredOpsNav];
+  if (role === "admin") {
+    // Add System admin dashboard for administrative role
+    finalOpsNav.push({ title: "System Admin", url: "/admin" as any, icon: Shield });
+  }
 
   return (
     <Sidebar collapsible="icon">
@@ -122,7 +128,7 @@ export function AppSidebar() {
           <SidebarGroupLabel>Operations</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {filteredOpsNav.map((item) => (
+              {finalOpsNav.map((item) => (
                 <SidebarMenuItem key={item.url}>
                   <SidebarMenuButton asChild isActive={isActive(item.url)} tooltip={item.title}>
                     <Link to={item.url}>
