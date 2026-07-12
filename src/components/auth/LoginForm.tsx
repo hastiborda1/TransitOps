@@ -60,8 +60,6 @@ export function LoginForm({
   const [sendingOtp, setSendingOtp] = useState(false);
   const isDark = theme === "dark";
 
-  const schema = isOtpMode ? otpSchema : passwordSchema;
-
   const {
     register,
     handleSubmit,
