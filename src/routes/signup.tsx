@@ -106,7 +106,14 @@ function SignupPage() {
       
       login(res.role, res.email, res.username || res.email);
       toast.success("Account created successfully!");
-      navigate({ to: "/dashboard" });
+      const targetUrl = 
+        res.role === "admin" ? "/admin" :
+        res.role === "fleet-manager" ? "/dashboard" :
+        res.role === "safety-officer" ? "/safety-driver" :
+        res.role === "financial-analyst" ? "/financial-analyst" :
+        res.role === "driver" ? "/driver" : "/dashboard";
+        
+      navigate({ to: targetUrl });
     } catch (e: any) {
       toast.error(e.message || "Sign up failed. Please check details or verify OTP.");
     } finally {

@@ -88,6 +88,8 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
     }
   }
 
+  console.log("ProtectedRoute check:", { role, currentPath, isAuthorized });
+
   if (!isAuthorized) {
     return <UnauthorizedAccess />;
   }

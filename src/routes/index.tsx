@@ -6,8 +6,14 @@ export const Route = createFileRoute("/")({
   beforeLoad: () => {
     const user = authService.getCurrentUser();
     if (user) {
+      const targetUrl = 
+        user.role === "admin" ? "/admin" :
+        user.role === "fleet-manager" ? "/dashboard" :
+        user.role === "safety-officer" ? "/safety-driver" :
+        user.role === "financial-analyst" ? "/financial-analyst" :
+        user.role === "driver" ? "/driver" : "/dashboard";
       throw redirect({
-        to: "/dashboard",
+        to: targetUrl,
       });
     }
   },
