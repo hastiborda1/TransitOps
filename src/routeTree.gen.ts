@@ -33,7 +33,6 @@ import { Route as AppDriversRouteImport } from './routes/_app.drivers'
 import { Route as AppDriverRouteImport } from './routes/_app.driver'
 import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
 import { Route as AppAnalyticsRouteImport } from './routes/_app.analytics'
-import { Route as AppAdminRouteImport } from './routes/_app.admin'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -154,18 +153,12 @@ const AppAnalyticsRoute = AppAnalyticsRouteImport.update({
   path: '/analytics',
   getParentRoute: () => AppRoute,
 } as any)
-const AppAdminRoute = AppAdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => AppRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
-  '/admin': typeof AppAdminRoute
   '/analytics': typeof AppAnalyticsRoute
   '/dashboard': typeof AppDashboardRoute
   '/driver': typeof AppDriverRoute
@@ -191,7 +184,6 @@ export interface FileRoutesByTo {
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
-  '/admin': typeof AppAdminRoute
   '/analytics': typeof AppAnalyticsRoute
   '/dashboard': typeof AppDashboardRoute
   '/driver': typeof AppDriverRoute
@@ -219,7 +211,6 @@ export interface FileRoutesById {
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
-  '/_app/admin': typeof AppAdminRoute
   '/_app/analytics': typeof AppAnalyticsRoute
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/driver': typeof AppDriverRoute
@@ -247,7 +238,6 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/login'
     | '/signup'
-    | '/admin'
     | '/analytics'
     | '/dashboard'
     | '/driver'
@@ -273,7 +263,6 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/login'
     | '/signup'
-    | '/admin'
     | '/analytics'
     | '/dashboard'
     | '/driver'
@@ -300,7 +289,6 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/login'
     | '/signup'
-    | '/_app/admin'
     | '/_app/analytics'
     | '/_app/dashboard'
     | '/_app/driver'
@@ -505,18 +493,10 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAnalyticsRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/admin': {
-      id: '/_app/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AppAdminRouteImport
-      parentRoute: typeof AppRoute
-    }
   }
 }
 
 interface AppRouteChildren {
-  AppAdminRoute: typeof AppAdminRoute
   AppAnalyticsRoute: typeof AppAnalyticsRoute
   AppDashboardRoute: typeof AppDashboardRoute
   AppDriverRoute: typeof AppDriverRoute
@@ -534,7 +514,6 @@ interface AppRouteChildren {
 }
 
 const AppRouteChildren: AppRouteChildren = {
-  AppAdminRoute: AppAdminRoute,
   AppAnalyticsRoute: AppAnalyticsRoute,
   AppDashboardRoute: AppDashboardRoute,
   AppDriverRoute: AppDriverRoute,
