@@ -8,12 +8,11 @@ interface ProtectedRouteProps {
   allowedRoles?: UserRole[];
 }
 
-// Role-based route authorization map
 const ROUTE_PERMISSIONS: Record<string, UserRole[]> = {
   '/admin': ['admin'],
   '/dashboard': ['fleet-manager'],
-  '/safety': ['safety-officer'],
-  '/finance': ['financial-analyst'],
+  '/safety-driver': ['safety-officer'],
+  '/financial-analyst': ['financial-analyst'],
   '/driver': ['driver'],
   '/vehicles': ['fleet-manager'],
   '/trips': ['fleet-manager'],
@@ -49,8 +48,8 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
     if (location.pathname === "/") {
       if (role === "admin") router.navigate({ to: "/admin", replace: true });
       else if (role === "fleet-manager") router.navigate({ to: "/dashboard", replace: true });
-      else if (role === "safety-officer") router.navigate({ to: "/safety", replace: true });
-      else if (role === "financial-analyst") router.navigate({ to: "/finance", replace: true });
+      else if (role === "safety-officer") router.navigate({ to: "/safety-driver", replace: true });
+      else if (role === "financial-analyst") router.navigate({ to: "/financial-analyst", replace: true });
       else if (role === "driver") router.navigate({ to: "/driver", replace: true });
     }
   }, [isClient, role, location.pathname, router]);
