@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 import { authService } from "@/services/api";
 
 const loginSchema = z.object({
-  identifier: z.string().email("Enter a valid email"),
+  identifier: z.string().min(1, "Email or Employee ID is required"),
   password: z.string().optional(),
   otp: z.string().optional(),
   remember: z.boolean().optional(),
@@ -144,6 +144,10 @@ export function LoginForm({
 
   const onSubmit = async (values: FormValues) => {
     if (isOtpMode) {
+      if (!values.identifier || !values.identifier.includes("@")) {
+        toast.error("A valid email address is required to sign in with OTP.");
+        return;
+      }
       if (!values.otp || values.otp.length !== 6) {
         toast.error("Verification code must be exactly 6 digits.");
         return;
