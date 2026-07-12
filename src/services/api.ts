@@ -7,7 +7,7 @@ import type {
   Expense,
 } from "@/lib/mock-data";
 
-const BASE_URL = typeof window !== "undefined" ? "/api" : "http://localhost:8000/api";
+const BASE_URL = typeof window !== "undefined" ? "/api" : "https://barely-shareholders-option-expiration.trycloudflare.com/api";
 
 // Map backend role names to frontend role names used by ProtectedRoute
 const BACKEND_TO_FRONTEND_ROLE: Record<string, string> = {
