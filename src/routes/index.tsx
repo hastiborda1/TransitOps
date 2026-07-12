@@ -126,7 +126,7 @@ function LandingPage() {
                 </div>
                 <div className="flex justify-between items-center bg-white/5 p-4 rounded-[5px] border border-white/5">
                   <span className="text-xs text-gray-300 font-medium">Utilization Percentage</span>
-                  <span className="text-sm font-extrabold text-[#C59B27]">98.2%</span>
+                  <span className="text-sm font-extrabold text-[#C59B27]">0.0%</span>
                 </div>
               </div>
             </div>
@@ -307,12 +307,10 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="bg-[#12110E] text-[#7E7B72] border-t border-white/5 py-10 text-xs text-center relative z-10">
         <div className="max-w-7xl mx-auto px-8 flex flex-col md:flex-row items-center justify-between gap-6">
           <p>© 2026 TransitOps Systems. Digitizing transport logbooks under strict compliance.</p>
           <div className="flex gap-8 uppercase tracking-widest font-bold text-[10px]">
-            <a href="/UI_RULEBOOK.html" target="_blank" className="hover:text-[#C59B27] transition-colors">UI System Guide</a>
             <a href="#" className="hover:text-[#C59B27] transition-colors">Security Policy</a>
           </div>
         </div>
