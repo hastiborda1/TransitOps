@@ -50,19 +50,14 @@ function DashboardPage() {
   console.log("DEBUG: driversQ.data is:", driversQ.data);
   console.log("DEBUG: tripsQ.data is:", tripsQ.data);
 
-  const activeVehicles = Array.isArray(vehiclesQ.data) ? vehiclesQ.data.filter((v) => v.status === "active").length : 0;
   const totalVehicles = Array.isArray(vehiclesQ.data) ? vehiclesQ.data.length : 0;
-  const activeDrivers = Array.isArray(driversQ.data) ? driversQ.data.filter((d) => d.status !== "off-duty" && d.status !== "suspended").length : 0;
-  const inProgressTrips = Array.isArray(tripsQ.data) ? tripsQ.data.filter((t) => t.status === "in-progress").length : 0;
-  // Compute precise specification KPIs
-  const totalVehicles = vehiclesQ.data?.length ?? 0;
-  const activeVehicles = vehiclesQ.data?.filter((v) => v.status === "On Trip").length ?? 0;
-  const availableVehicles = vehiclesQ.data?.filter((v) => v.status === "Available").length ?? 0;
-  const maintenanceVehicles = vehiclesQ.data?.filter((v) => v.status === "In Shop").length ?? 0;
+  const activeVehicles = Array.isArray(vehiclesQ.data) ? vehiclesQ.data.filter((v) => v.status === "active" || v.status === "On Trip").length : 0;
+  const availableVehicles = Array.isArray(vehiclesQ.data) ? vehiclesQ.data.filter((v) => v.status === "Available" || v.status === "idle").length : 0;
+  const maintenanceVehicles = Array.isArray(vehiclesQ.data) ? vehiclesQ.data.filter((v) => v.status === "In Shop" || v.status === "maintenance").length : 0;
 
-  const activeTrips = tripsQ.data?.filter((t) => t.status === "Dispatched").length ?? 0;
-  const pendingTrips = tripsQ.data?.filter((t) => t.status === "Draft").length ?? 0;
-  const driversOnDuty = driversQ.data?.filter((d) => d.status === "Available" || d.status === "On Trip").length ?? 0;
+  const activeTrips = Array.isArray(tripsQ.data) ? tripsQ.data.filter((t) => t.status === "Dispatched" || t.status === "in-progress").length : 0;
+  const pendingTrips = Array.isArray(tripsQ.data) ? tripsQ.data.filter((t) => t.status === "Draft" || t.status === "scheduled").length : 0;
+  const driversOnDuty = Array.isArray(driversQ.data) ? driversQ.data.filter((d) => d.status === "Available" || d.status === "available" || d.status === "On Trip" || d.status === "on-trip").length : 0;
 
   const fleetUtilization = totalVehicles > 0 ? ((activeVehicles / totalVehicles) * 100).toFixed(1) : "0.0";
 
@@ -171,7 +166,6 @@ function DashboardPage() {
         </div>
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           {(Array.isArray(tripsQ.data) ? tripsQ.data.filter((t) => t.status === "in-progress") : []).map((t) => (
-          {tripsQ.data?.filter((t) => t.status === "Dispatched").map((t) => (
             <div key={t.id} className="rounded-lg border p-4 hover:border-primary/40 transition-colors">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-mono text-muted-foreground">{t.id}</span>
