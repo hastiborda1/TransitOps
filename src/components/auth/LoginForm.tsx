@@ -131,12 +131,12 @@ export function LoginForm({
     try {
       if (isOtpMode) {
         const res = await authService.verifyOtp(values.identifier, values.otp || "", role);
-        login({ id: res.id, email: res.email, name: res.name, role: res.role });
+        login(res.role, res.email, res.name || res.username || res.email);
         toast.success(`Welcome, ${res.name}`);
         navigate({ to: redirectUrl });
       } else {
         const res = await authService.login(values.identifier, values.password || "");
-        login({ id: res.id, email: res.email, name: res.name, role: res.role });
+        login(res.role, res.email, res.name || res.username || res.email);
         toast.success(`Welcome, ${res.name}`);
         navigate({ to: redirectUrl });
       }
