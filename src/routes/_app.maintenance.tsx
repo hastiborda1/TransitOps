@@ -192,7 +192,7 @@ function MaintenancePage() {
         }
       />
       <DataTable
-        data={tickets ?? []}
+        data={Array.isArray(tickets) ? tickets : []}
         columns={columns}
         isLoading={isTicketsLoading}
         searchKeys={["id", "vehicle", "type", "workshop"]}

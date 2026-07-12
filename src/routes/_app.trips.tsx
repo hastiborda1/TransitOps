@@ -186,7 +186,7 @@ function TripsPage() {
   };
 
   const handleExport = () => {
-    if (!trips) return;
+    if (!Array.isArray(trips)) return;
     const headers = ["Trip ID", "Origin", "Destination", "Distance (km)", "Driver", "Vehicle", "Start Time", "Status"];
     const rows = trips.map((t: any) => [
       t.id,
@@ -198,7 +198,7 @@ function TripsPage() {
       t.startedAt,
       t.status,
     ]);
-    exportToCsv("TransitOps_Trips_Ledger", headers, rows);
+    exportToCsv("TransitOps_Trips_Manifest", headers, rows);
   };
 
   const columns: Column<Trip>[] = [
@@ -300,7 +300,7 @@ function TripsPage() {
         }
       />
       <DataTable
-        data={trips ?? []}
+        data={Array.isArray(trips) ? trips : []}
         columns={columns}
         isLoading={isTripsLoading}
         searchKeys={["id", "origin", "destination", "driver", "vehicle"]}

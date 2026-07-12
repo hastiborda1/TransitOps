@@ -5,7 +5,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Truck, ShieldCheck, PieChart, User, Mail, KeyRound, Loader2, ShieldAlert, Lock } from "lucide-react";
 import { toast } from "sonner";
-import { useAuth } from "@/lib/auth";
 import { AuthLayout } from "@/components/auth/AuthLayout";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -159,13 +158,13 @@ function UnifiedLoginPage() {
     try {
       if (isOtpMode) {
         const res = await authService.verifyOtp(values.identifier, values.otp || "", selectedRole);
-        login({ id: res.id, email: res.email, name: res.name, role: res.role });
-        toast.success(`Welcome, ${res.name}`);
+        login(res.role, res.email, res.username || res.name || res.email);
+        toast.success(`Welcome, ${res.username || res.name || res.email}`);
         navigate({ to: "/dashboard" });
       } else {
         const res = await authService.login(values.identifier, values.password || "");
-        login({ id: res.id, email: res.email, name: res.name, role: res.role });
-        toast.success(`Welcome, ${res.name}`);
+        login(res.role, res.email, res.username || res.name || res.email);
+        toast.success(`Welcome, ${res.username || res.name || res.email}`);
         navigate({ to: "/dashboard" });
       }
     } catch (e: any) {
