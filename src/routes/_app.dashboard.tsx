@@ -82,6 +82,12 @@ function DashboardPage() {
             <Button asChild size="sm" variant="outline" className="border-primary/40 hover:bg-primary/10">
               <Link to="/financial-analyst">Financial Analyst Portal</Link>
             </Button>
+            <Button asChild size="sm" variant="secondary">
+              <Link to="/login">Sign In</Link>
+            </Button>
+            <Button asChild size="sm" variant="secondary">
+              <Link to="/signup">Sign Up</Link>
+            </Button>
           </div>
         </div>
       </div>
