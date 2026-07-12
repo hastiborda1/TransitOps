@@ -78,28 +78,38 @@ export function LoginForm({
 
   // Google Login Integration
   useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://accounts.google.com/gsi/client";
-    script.async = true;
-    script.defer = true;
-    document.body.appendChild(script);
+    const btnContainer = document.getElementById("google-signin-btn");
+    if (!btnContainer) return;
 
-    script.onload = () => {
-      if (window.google) {
+    const initializeGoogle = () => {
+      if (window.google && btnContainer) {
         window.google.accounts.id.initialize({
           client_id: "901970136857-g9taqknvcb75apssmtt91ftqoluoterh.apps.googleusercontent.com",
           callback: handleGoogleLogin,
         });
         window.google.accounts.id.renderButton(
-          document.getElementById("google-signin-btn"),
+          btnContainer,
           { theme: isDark ? "dark" : "outline", size: "large", width: 380 }
         );
       }
     };
 
-    return () => {
-      document.body.removeChild(script);
-    };
+    if (window.google) {
+      initializeGoogle();
+    } else {
+      const script = document.createElement("script");
+      script.src = "https://accounts.google.com/gsi/client";
+      script.async = true;
+      script.defer = true;
+      script.onload = initializeGoogle;
+      document.body.appendChild(script);
+
+      return () => {
+        if (document.body.contains(script)) {
+          document.body.removeChild(script);
+        }
+      };
+    }
   }, [isDark]);
 
   const handleGoogleLogin = async (response: any) => {
