@@ -185,19 +185,26 @@ function UnifiedLoginPage() {
     }
   };
 
+  const steps = [
+    { number: 1, text: "Select Role", active: true },
+    { number: 2, text: "Authenticate", active: true },
+    { number: 3, text: "Access Hub", active: false }
+  ];
+
   return (
-    <AuthLayout>
-      <div className="flex flex-col items-center mb-6">
-        <div className="w-11 h-11 bg-[#C59B27] rounded-[5px] flex items-center justify-center mb-3 shadow-lg">
-          <Truck className="h-6 w-6 text-white" />
-        </div>
-        <h1 className="text-xl font-bold tracking-tight text-foreground font-serif">Welcome to TransitOps</h1>
-        <p className="text-xs text-muted-foreground mt-0.5">Please sign in to continue</p>
+    <AuthLayout
+      heading="Welcome Back to the Hub"
+      subheading="Centralize your fleet logs, driver compliance checks, and automated trip schedules."
+      steps={steps}
+    >
+      <div className="flex flex-col items-center mb-6 text-center">
+        <h1 className="text-2xl font-bold tracking-tight text-white font-serif">Sign In Account</h1>
+        <p className="text-xs text-[#7E7B72] mt-1">Please enter your credentials to authenticate</p>
       </div>
 
-      <section className="bg-card rounded-[5px] p-5 border shadow-sm w-full max-w-[440px] mx-auto space-y-4">
+      <section className="bg-[#12110E] rounded-[5px] p-6 border border-white/5 shadow-2xl w-full mx-auto space-y-4">
         {/* Horizontal Role Selector Row */}
-        <div className="flex flex-row gap-1.5 justify-between w-full p-1 bg-muted rounded-[5px]">
+        <div className="flex flex-row gap-1.5 justify-between w-full p-1 bg-white/5 rounded-[5px]">
           {rolesConfig.map((role) => {
             const isActive = selectedRole === role.id;
             return (
@@ -206,10 +213,10 @@ function UnifiedLoginPage() {
                 type="button"
                 onClick={() => setSelectedRole(role.id)}
                 className={`flex-1 flex flex-col items-center gap-1 py-1.5 px-1 rounded-[5px] transition-all text-center ${
-                  isActive ? "bg-card text-foreground shadow-sm font-semibold" : "text-muted-foreground hover:text-foreground"
+                  isActive ? "bg-white/10 text-white shadow-sm font-semibold" : "text-[#7E7B72] hover:text-[#F5F5F3]"
                 }`}
               >
-                <div className={`w-7 h-7 rounded-[5px] flex items-center justify-center ${isActive ? role.color : "text-muted-foreground"}`}>
+                <div className={`w-7 h-7 rounded-[5px] flex items-center justify-center ${isActive ? "text-[#C59B27]" : "text-[#7E7B72]"}`}>
                   <role.icon className="w-4.5 h-4.5" />
                 </div>
                 <span className="text-[9px] uppercase tracking-wider">{role.title}</span>
@@ -220,11 +227,11 @@ function UnifiedLoginPage() {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* OTP Mode Switcher */}
-          <div className="flex rounded-[5px] bg-muted p-1 text-xs">
+          <div className="flex rounded-[5px] bg-white/5 p-1 text-xs">
             <button
               type="button"
               className={`flex-1 py-1 rounded-[5px] font-medium transition-all text-center ${
-                !isOtpMode ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
+                !isOtpMode ? "bg-white/10 text-white shadow-sm" : "text-[#7E7B72]"
               }`}
               onClick={() => setIsOtpMode(false)}
             >
@@ -233,7 +240,7 @@ function UnifiedLoginPage() {
             <button
               type="button"
               className={`flex-1 py-1 rounded-[5px] font-medium transition-all text-center ${
-                isOtpMode ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
+                isOtpMode ? "bg-white/10 text-white shadow-sm" : "text-[#7E7B72]"
               }`}
               onClick={() => setIsOtpMode(true)}
             >
@@ -243,16 +250,16 @@ function UnifiedLoginPage() {
 
           {/* Identifier Input */}
           <div className="space-y-1.5">
-            <Label htmlFor="identifier" className="text-xs uppercase tracking-wider text-muted-foreground">
+            <Label htmlFor="identifier" className="text-xs uppercase tracking-wider text-[#7E7B72]">
               Email or Username
             </Label>
             <div className="flex gap-2">
               <div className="relative flex-1">
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input id="identifier" type="text" className="pl-12" placeholder="Enter credentials" {...register("identifier")} />
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#7E7B72]" />
+                <Input id="identifier" type="text" className="pl-12 bg-white/5 border-white/10 text-white focus-visible:bg-[#12110E]" placeholder="Enter credentials" {...register("identifier")} />
               </div>
               {isOtpMode && (
-                <Button type="button" variant="outline" disabled={sendingOtp} onClick={handleSendOtp} className="shrink-0 rounded-[5px]">
+                <Button type="button" variant="outline" disabled={sendingOtp} onClick={handleSendOtp} className="shrink-0 rounded-[5px] bg-white/5 border-white/10 text-white hover:bg-white/10">
                   {sendingOtp ? <Loader2 className="h-4 w-4 animate-spin" /> : "Send OTP"}
                 </Button>
               )}
@@ -264,31 +271,31 @@ function UnifiedLoginPage() {
           {!isOtpMode ? (
             <div className="space-y-1.5">
               <div className="flex justify-between items-center">
-                <Label htmlFor="password" className="text-xs uppercase tracking-wider text-muted-foreground">
+                <Label htmlFor="password" className="text-xs uppercase tracking-wider text-[#7E7B72]">
                   Password
                 </Label>
-                <Link to="/forgot-password" className="text-xs font-semibold hover:underline text-primary">
+                <Link to="/forgot-password" className="text-xs font-semibold hover:underline text-[#C59B27]">
                   Forgot Password?
                 </Link>
               </div>
               <div className="relative">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <PasswordInput id="password" className="pl-12" {...register("password")} />
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#7E7B72]" />
+                <PasswordInput id="password" className="pl-12 bg-white/5 border-white/10 text-white" {...register("password")} />
               </div>
               {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
             </div>
           ) : (
             <div className="space-y-1.5">
-              <Label htmlFor="otp" className="text-xs uppercase tracking-wider text-muted-foreground">
+              <Label htmlFor="otp" className="text-xs uppercase tracking-wider text-[#7E7B72]">
                 Verification OTP Code
               </Label>
               <div className="relative">
-                <KeyRound className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <KeyRound className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#7E7B72]" />
                 <Input
                   id="otp"
                   type="text"
                   maxLength={6}
-                  className="pl-12 font-mono tracking-widest text-center text-lg"
+                  className="pl-12 font-mono tracking-widest text-center text-lg bg-white/5 border-white/10 text-white focus-visible:bg-[#12110E]"
                   placeholder="000000"
                   {...register("otp")}
                 />
@@ -298,17 +305,17 @@ function UnifiedLoginPage() {
           )}
 
           <div className="flex items-center gap-2">
-            <Checkbox id="remember" checked={!!watch("remember")} onCheckedChange={(c) => setValue("remember", !!c)} />
-            <Label htmlFor="remember" className="text-sm font-normal cursor-pointer text-muted-foreground">
+            <Checkbox id="remember" className="border-white/20 data-[state=checked]:bg-[#C59B27]" checked={!!watch("remember")} onCheckedChange={(c) => setValue("remember", !!c)} />
+            <Label htmlFor="remember" className="text-sm font-normal cursor-pointer text-[#7E7B72]">
               Remember Me
             </Label>
           </div>
 
           <AuthButton label="Sign In" loading={loading} />
 
-          <div className="text-center text-sm pt-4 border-t border-muted/50">
-            <span className="text-muted-foreground">Don't have an account? </span>
-            <Link to="/signup" className="font-semibold text-primary hover:underline">
+          <div className="text-center text-sm pt-4 border-t border-white/5">
+            <span className="text-[#7E7B72]">Don't have an account? </span>
+            <Link to="/signup" className="font-semibold text-[#C59B27] hover:underline">
               Sign Up
             </Link>
           </div>
@@ -317,19 +324,12 @@ function UnifiedLoginPage() {
 
       <div className="mt-6 flex justify-center">
         <Link to="/admin/login">
-          <Button variant="ghost" className="text-muted-foreground hover:text-foreground text-xs rounded-[5px]">
+          <Button variant="ghost" className="text-[#7E7B72] hover:text-[#F5F5F3] hover:bg-white/5 text-xs rounded-[5px]">
             <ShieldAlert className="w-4 h-4 mr-1.5" />
             Administrator Login
           </Button>
         </Link>
       </div>
-
-      <footer className="mt-8 text-center space-y-2">
-        <p className="text-xs text-muted-foreground">© 2026 TransitOps Systems. Digitizing transport logbooks under strict compliance.</p>
-        <div className="flex justify-center gap-6 text-[10px] font-bold uppercase tracking-wider">
-          <a href="#" className="text-muted-foreground hover:text-primary transition-colors">Security Policy</a>
-        </div>
-      </footer>
     </AuthLayout>
   );
 }
