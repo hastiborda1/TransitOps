@@ -1,3 +1,26 @@
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import { AUTH_KEY } from "@/lib/auth";
+
+export const Route = createFileRoute("/")({
+  beforeLoad: () => {
+    if (typeof window !== "undefined") {
+      try {
+        const data = localStorage.getItem(AUTH_KEY);
+        if (data) {
+          const parsed = JSON.parse(data);
+          const role = parsed?.role;
+          if (role === "admin") throw redirect({ to: "/admin" });
+          if (role === "fleet-manager") throw redirect({ to: "/dashboard" });
+          if (role === "safety-officer") throw redirect({ to: "/safety" });
+          if (role === "financial-analyst") throw redirect({ to: "/finance" });
+          if (role === "driver") throw redirect({ to: "/driver" });
+        }
+      } catch (e) {
+        // Ignored
+      }
+    }
+    throw redirect({ to: "/login" });
+  },
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Truck, Navigation, ShieldCheck, DollarSign, ArrowRight, Phone, Database } from "lucide-react";
 
@@ -37,10 +60,15 @@ function LandingPage() {
             <a href="#features" className="hover:text-[#C59B27] transition-all">Modules</a>
           </nav>
 
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-3">
             <Link to="/login">
-              <button className="bg-[#C59B27] hover:bg-[#b08920] text-white text-xs font-bold uppercase tracking-widest px-6 py-3 rounded-[5px] transition-all duration-300">
-                Client Portal
+              <button className="bg-transparent hover:bg-white/5 text-xs font-bold uppercase tracking-widest px-4 py-2.5 rounded-[5px] border border-white/10 transition-all text-[#F5F5F3]">
+                Sign In
+              </button>
+            </Link>
+            <Link to="/signup">
+              <button className="bg-[#C59B27] hover:bg-[#b08920] text-white text-xs font-bold uppercase tracking-widest px-4 py-2.5 rounded-[5px] transition-all duration-300">
+                Sign Up
               </button>
             </Link>
           </div>
@@ -72,15 +100,15 @@ function LandingPage() {
             </p>
             <div className="pt-2 flex flex-wrap gap-4">
               <Link to="/login">
-                <button className="bg-[#C59B27] hover:bg-[#b08920] text-white font-extrabold uppercase tracking-widest text-xs px-8 py-4.5 rounded-[5px] transition-all duration-300 hover:translate-x-1 flex items-center gap-3">
-                  Enter System Portal <ArrowRight className="h-4 w-4" />
+                <button className="bg-[#C59B27] hover:bg-[#b08920] text-white font-extrabold uppercase tracking-widest text-xs px-8 py-4 rounded-[5px] transition-all duration-300 hover:translate-x-1 flex items-center gap-2">
+                  Sign In <ArrowRight className="h-4 w-4" />
                 </button>
               </Link>
-              <a href="/UI_RULEBOOK.html" target="_blank">
-                <button className="bg-white/5 hover:bg-white/10 border border-white/10 text-white font-extrabold uppercase tracking-widest text-xs px-8 py-4.5 rounded-[5px] transition-all">
-                  Design Specifications
+              <Link to="/signup">
+                <button className="bg-white/5 hover:bg-white/10 border border-white/10 text-white font-extrabold uppercase tracking-widest text-xs px-8 py-4 rounded-[5px] transition-all">
+                  Sign Up
                 </button>
-              </a>
+              </Link>
             </div>
           </div>
 
@@ -264,10 +292,15 @@ function LandingPage() {
           <p className="text-[#D1CFC7] max-w-md mx-auto text-xs leading-relaxed tracking-wider">
             Move beyond manual ledger tracking. Establish secure RBAC credentials, coordinate trips, and retrieve reports automatically.
           </p>
-          <div className="pt-2">
+          <div className="pt-2 flex justify-center gap-4">
             <Link to="/login">
-              <button className="bg-[#C59B27] hover:bg-[#b08920] text-white font-extrabold uppercase tracking-widest text-xs px-12 py-5 rounded-[5px] transition-all duration-300 hover:translate-x-1 flex items-center gap-3 mx-auto">
-                Access System Portal <ArrowRight className="h-4 w-4" />
+              <button className="bg-[#C59B27] hover:bg-[#b08920] text-white font-extrabold uppercase tracking-widest text-xs px-8 py-4 rounded-[5px] transition-all duration-300">
+                Sign In
+              </button>
+            </Link>
+            <Link to="/signup">
+              <button className="bg-white/5 hover:bg-white/10 border border-white/10 text-white font-extrabold uppercase tracking-widest text-xs px-8 py-4 rounded-[5px] transition-all">
+                Sign Up
               </button>
             </Link>
           </div>

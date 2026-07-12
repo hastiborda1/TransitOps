@@ -1,4 +1,4 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import {
   LayoutDashboard,
   Truck,
@@ -10,6 +10,8 @@ import {
   BarChart3,
   Settings,
   LogOut,
+  Shield,
+  TrendingUp,
 } from "lucide-react";
 import {
   Sidebar,
@@ -24,6 +26,8 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { useAuth } from "@/lib/auth";
+import { authService } from "@/services/api";
 
 const mainNav = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
@@ -36,6 +40,8 @@ const opsNav = [
   { title: "Maintenance", url: "/maintenance", icon: Wrench },
   { title: "Fuel Logs", url: "/fuel", icon: Fuel },
   { title: "Expenses", url: "/expenses", icon: Receipt },
+  { title: "Safety Driver", url: "/safety-driver", icon: Shield },
+  { title: "Financial Analyst", url: "/financial-analyst", icon: TrendingUp },
   { title: "Analytics", url: "/analytics", icon: BarChart3 },
 ] as const;
 
@@ -43,9 +49,39 @@ const bottomNav = [{ title: "Settings", url: "/settings", icon: Settings }] as c
 
 export function AppSidebar() {
   const { state } = useSidebar();
+  const { logout } = useAuth();
   const collapsed = state === "collapsed";
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const navigate = useNavigate();
   const isActive = (url: string) => pathname === url || pathname.startsWith(url + "/");
+
+  const user = authService.getCurrentUser() || { role: "manager" };
+  const role = user.role;
+
+  const handleSignOut = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    await authService.logout();
+    navigate({ to: "/login" });
+  };
+
+  const filteredMainNav = mainNav.filter((item) => {
+    if (role === "driver") {
+      return true;
+    }
+    return true;
+  });
+
+  const filteredOpsNav = opsNav.filter((item) => {
+    if (role === "safety") {
+      // Safety Officer: No Fuel Logs, No Expenses
+      return item.title !== "Fuel Logs" && item.title !== "Expenses";
+    }
+    if (role === "driver") {
+      // Driver: Fuel Logs (Add Own - Optional)
+      return item.title === "Fuel Logs";
+    }
+    return true;
+  });
 
   return (
     <Sidebar collapsible="icon">
@@ -68,7 +104,7 @@ export function AppSidebar() {
           <SidebarGroupLabel>Overview</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {mainNav.map((item) => (
+              {filteredMainNav.map((item) => (
                 <SidebarMenuItem key={item.url}>
                   <SidebarMenuButton asChild isActive={isActive(item.url)} tooltip={item.title}>
                     <Link to={item.url}>
@@ -86,7 +122,7 @@ export function AppSidebar() {
           <SidebarGroupLabel>Operations</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {opsNav.map((item) => (
+              {filteredOpsNav.map((item) => (
                 <SidebarMenuItem key={item.url}>
                   <SidebarMenuButton asChild isActive={isActive(item.url)} tooltip={item.title}>
                     <Link to={item.url}>
@@ -114,11 +150,19 @@ export function AppSidebar() {
             </SidebarMenuItem>
           ))}
           <SidebarMenuItem>
-            <SidebarMenuButton asChild tooltip="Sign out">
-              <Link to="/login">
+            <SidebarMenuButton tooltip="Sign out" onClick={() => {
+              logout();
+              window.location.href = "/login";
+            }}>
+              <div className="flex items-center gap-2 cursor-pointer w-full text-left">
                 <LogOut className="h-4 w-4" />
                 <span>Sign out</span>
-              </Link>
+              </div>
+            <SidebarMenuButton asChild tooltip="Sign out">
+              <a href="#" onClick={handleSignOut}>
+                <LogOut className="h-4 w-4" />
+                <span>Sign out</span>
+              </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -126,3 +170,4 @@ export function AppSidebar() {
     </Sidebar>
   );
 }
+

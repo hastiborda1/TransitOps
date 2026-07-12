@@ -17,7 +17,11 @@ const connectionString =
   process.env.DATABASE_URL || "postgresql://postgres:postgres@localhost:5432/Transit";
 
 let pool: any = null;
+<<<<<<< Updated upstream
 let useFallbackDb = true;
+=======
+let useFallbackDb = typeof window !== "undefined";
+>>>>>>> Stashed changes
 
 // Fallback in-memory database extending the mock data with business rules requirements
 export const fallbackDb = {
@@ -35,15 +39,31 @@ export const fallbackDb = {
   expenses: [] as any[],
 };
 
+<<<<<<< Updated upstream
 async function getPool() {
+=======
+// Helper to initialize pool dynamically on the server
+async function ensurePool() {
+  if (useFallbackDb) return null;
+  if (pool) return pool;
+
+>>>>>>> Stashed changes
   if (typeof window !== "undefined") {
     useFallbackDb = true;
     return null;
   }
+<<<<<<< Updated upstream
   if (pool) return pool;
   try {
     const pg = await import("pg");
     pool = new pg.default.Pool({
+=======
+
+  try {
+    const pgModule = await import("pg");
+    const PoolClass = pgModule.default?.Pool || pgModule.Pool;
+    pool = new PoolClass({
+>>>>>>> Stashed changes
       connectionString,
       connectionTimeoutMillis: 2000,
     });
@@ -56,7 +76,11 @@ async function getPool() {
 }
 
 export async function query<T = any>(text: string, params?: any[]): Promise<T[]> {
+<<<<<<< Updated upstream
   const activePool = await getPool();
+=======
+  const activePool = await ensurePool();
+>>>>>>> Stashed changes
   if (useFallbackDb || !activePool) {
     return mockQueryFallback(text, params);
   }
@@ -102,6 +126,7 @@ function mockQueryFallback(text: string, params?: any[]): any[] {
 }
 
 export async function initDb() {
+<<<<<<< Updated upstream
   if (typeof window !== "undefined") return;
   
   // Only attempt PostgreSQL connection if a connection string is set
@@ -115,8 +140,14 @@ export async function initDb() {
   if (!activePool) {
     console.log("Failed to initialize database pool. Using in-memory database store.");
     useFallbackDb = true;
+=======
+  const activePool = await ensurePool();
+  if (useFallbackDb || !activePool) {
+    console.log("Using in-memory database store.");
+>>>>>>> Stashed changes
     return;
   }
+  pool = activePool;
 
   try {
     const client = await activePool.connect();

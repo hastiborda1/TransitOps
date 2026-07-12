@@ -8,7 +8,13 @@ from .views import (
     FuelLogViewSet,
     ExpenseViewSet,
     AnalyticsView,
-    CustomTokenObtainPairView
+    CustomTokenObtainPairView,
+    register_user,
+    send_otp,
+    verify_otp,
+    forgot_password,
+    reset_password,
+    google_login
 )
 
 router = DefaultRouter()
@@ -22,5 +28,11 @@ router.register(r'analytics', AnalyticsView, basename='analytics')
 
 urlpatterns = [
     path('auth/login/', CustomTokenObtainPairView.as_view(), name='auth_login'),
+    path('auth/register/', register_user, name='auth_register'),
+    path('auth/send-otp/', send_otp, name='auth_send_otp'),
+    path('auth/verify-otp/', verify_otp, name='auth_verify_otp'),
+    path('auth/forgot-password/', forgot_password, name='auth_forgot_password'),
+    path('auth/reset-password/', reset_password, name='auth_reset_password'),
+    path('auth/google/', google_login, name='auth_google_login'),
     path('', include(router.urls)),
 ]
