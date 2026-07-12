@@ -24,6 +24,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { useAuth } from "@/lib/auth";
 
 const mainNav = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
@@ -43,6 +44,7 @@ const bottomNav = [{ title: "Settings", url: "/settings", icon: Settings }] as c
 
 export function AppSidebar() {
   const { state } = useSidebar();
+  const { logout } = useAuth();
   const collapsed = state === "collapsed";
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isActive = (url: string) => pathname === url || pathname.startsWith(url + "/");
@@ -114,11 +116,14 @@ export function AppSidebar() {
             </SidebarMenuItem>
           ))}
           <SidebarMenuItem>
-            <SidebarMenuButton asChild tooltip="Sign out">
-              <Link to="/login">
+            <SidebarMenuButton tooltip="Sign out" onClick={() => {
+              logout();
+              window.location.href = "/login";
+            }}>
+              <div className="flex items-center gap-2 cursor-pointer w-full text-left">
                 <LogOut className="h-4 w-4" />
                 <span>Sign out</span>
-              </Link>
+              </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -126,3 +131,4 @@ export function AppSidebar() {
     </Sidebar>
   );
 }
+
