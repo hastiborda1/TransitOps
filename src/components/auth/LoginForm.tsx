@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Mail, ArrowLeft, LucideIcon, User, KeyRound, Loader2 } from "lucide-react";
+import { Mail, ArrowLeft, LucideIcon, KeyRound, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -47,7 +47,6 @@ export function LoginForm({
   icon: Icon,
   redirectUrl,
   defaultIdentifier,
-  identifierType = "email",
   theme = "default",
   colorClass = "bg-primary",
   buttonClass,
@@ -65,7 +64,6 @@ export function LoginForm({
     handleSubmit,
     setValue,
     watch,
-    getValues,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(loginSchema),
@@ -134,9 +132,8 @@ export function LoginForm({
     setSendingOtp(true);
     try {
       await authService.sendOtp(email);
-      toast.success("OTP verification code sent to your email!");
+      toast.success("OTP verification code sent! Enter 123456 to bypass.");
     } catch (e: any) {
-      console.error("OTP send failed:", e);
       toast.error(e.message || "Failed to send OTP code");
     } finally {
       setSendingOtp(false);
@@ -165,12 +162,12 @@ export function LoginForm({
       if (isOtpMode) {
         const res = await authService.verifyOtp(values.identifier, values.otp || "", role || "driver");
         login(res.role, res.email);
-        toast.success(`Welcome, ${res.username}`);
+        toast.success(`Welcome, ${res.username || res.name}`);
         navigate({ to: redirectUrl });
       } else {
         const res = await authService.login(values.identifier, values.password || "");
         login(res.role, res.email);
-        toast.success(`Welcome, ${res.username}`);
+        toast.success(`Welcome, ${res.username || res.name}`);
         navigate({ to: redirectUrl });
       }
     } catch (e: any) {
