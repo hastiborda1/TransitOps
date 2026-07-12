@@ -4,8 +4,25 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { authService } from "@/services/api";
+import { useAuth } from "@/lib/auth";
 
+const ROLE_TITLES: Record<string, string> = {
+  "fleet-manager": "Fleet Manager",
+  "driver": "Driver",
+  "safety-officer": "Safety Officer",
+  "financial-analyst": "Financial Analyst",
+  "admin": "System Administrator",
+};
+
+export function TopBar() {
+  const { getSession } = useAuth();
+  const user = getSession();
+  
+  const name = user?.name || "Alex Morgan";
+  const role = user?.role ? (ROLE_TITLES[user.role] || user.role) : "Fleet Manager";
+  
+  // Initials for avatar fallback
+  const initials = name
 const roleLabels: Record<string, string> = {
   manager: "Fleet Manager",
   driver: "Driver",
