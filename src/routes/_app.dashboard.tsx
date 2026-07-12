@@ -52,9 +52,9 @@ function DashboardPage() {
   const tripsQ = useQuery({ queryKey: ["trips"], queryFn: api.trips.list });
   const monthlyQ = useQuery({ queryKey: ["analytics", "monthly"], queryFn: api.analytics.monthly });
 
-  const user = authService.getCurrentUser() || { role: "manager" };
+  const user = authService.getCurrentUser() || { role: "fleet-manager" };
   const role = user.role;
-  const canNewTrip = role === "manager" || role === "admin";
+  const canNewTrip = role === "fleet-manager" || role === "admin";
   const canExport = role !== "driver";
 
   // Data mapping from backend queries
@@ -90,7 +90,7 @@ function DashboardPage() {
   };
 
   // 1. Safety Officer view
-  if (role === "safety") {
+  if (role === "safety-officer") {
     const totalDrivers = driversList.length;
     const avgSafetyScore = totalDrivers > 0 
       ? Math.round((driversList.reduce((acc, d) => acc + (d.rating || 0), 0) / totalDrivers) * 20) 
@@ -188,7 +188,7 @@ function DashboardPage() {
   }
 
   // 2. Financial Analyst view
-  if (role === "finance") {
+  if (role === "financial-analyst") {
     const mockMonthlyData = [
       { month: "Jan", revenue: 45000, expenses: 32000, profit: 13000 },
       { month: "Feb", revenue: 48000, expenses: 31000, profit: 17000 },

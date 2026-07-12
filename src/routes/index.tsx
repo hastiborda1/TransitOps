@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Truck, Navigation, ShieldCheck, DollarSign, ArrowRight, Database } from "lucide-react";
+import { Truck, Navigation, ShieldCheck, DollarSign, ArrowRight, Database, Linkedin, Mail, Phone } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -19,7 +19,7 @@ function LandingPage() {
       <div className="absolute bottom-[20%] right-[-10%] w-[600px] h-[600px] bg-[#7E7B72]/10 rounded-full blur-[200px] pointer-events-none" />
 
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-[#1E1C18] text-[#F5F5F3] border-b border-white/5 transition-all">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-transparent backdrop-blur-sm text-[#F5F5F3] transition-all">
         <div className="max-w-7xl mx-auto px-8 h-20 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="grid h-10 w-10 place-items-center rounded-[5px] bg-[#C59B27]">
@@ -37,10 +37,15 @@ function LandingPage() {
             <a href="#features" className="hover:text-[#C59B27] transition-all">Modules</a>
           </nav>
 
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-3">
             <Link to="/login">
+              <button className="bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs font-bold uppercase tracking-widest px-6 py-3 rounded-[5px] transition-all duration-300">
+                Login
+              </button>
+            </Link>
+            <Link to="/signup">
               <button className="bg-[#C59B27] hover:bg-[#b08920] text-white text-xs font-bold uppercase tracking-widest px-6 py-3 rounded-[5px] transition-all duration-300">
-                Client Portal
+                Sign Up
               </button>
             </Link>
           </div>
@@ -73,11 +78,6 @@ function LandingPage() {
                   Enter System Portal <ArrowRight className="h-4 w-4" />
                 </button>
               </Link>
-              <a href="/UI_RULEBOOK.html" target="_blank">
-                <button className="bg-white/5 hover:bg-white/10 border border-white/10 text-white font-extrabold uppercase tracking-widest text-xs px-8 py-4.5 rounded-[5px] transition-all">
-                  Design Specifications
-                </button>
-              </a>
             </div>
           </div>
 
@@ -272,11 +272,38 @@ function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#12110E] text-[#7E7B72] border-t border-white/5 py-10 text-xs text-center relative z-10">
-        <div className="max-w-7xl mx-auto px-8 flex flex-col md:flex-row items-center justify-between gap-6">
-          <p>© 2026 TransitOps Systems. Digitizing transport logbooks under strict compliance.</p>
-          <div className="flex gap-8 uppercase tracking-widest font-bold text-[10px]">
-            <a href="#" className="hover:text-[#C59B27] transition-colors">Security Policy</a>
+      <footer className="bg-[#12110E] text-[#7E7B72] border-t border-white/5 py-14 text-xs relative z-10">
+        <div className="max-w-7xl mx-auto px-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-10">
+            {/* About Us */}
+            <div className="space-y-3">
+              <h4 className="text-[#F5F5F3] font-bold uppercase tracking-widest text-sm">About Us</h4>
+              <p className="text-[#7E7B72] leading-relaxed text-xs">
+                TransitOps is a smart transport operations platform designed to replace manual logbooks with a centralized, role-based digital system for fleet management, driver compliance, trip dispatching, and financial intelligence.
+              </p>
+            </div>
+            {/* Contact Us */}
+            <div className="space-y-3">
+              <h4 className="text-[#F5F5F3] font-bold uppercase tracking-widest text-sm">Contact Us</h4>
+              <div className="space-y-2">
+                <a href="tel:+919876543210" className="flex items-center gap-2 text-[#7E7B72] hover:text-[#C59B27] transition-colors">
+                  <Phone className="h-3.5 w-3.5" /> +91 98765 43210
+                </a>
+                <a href="mailto:contact@transitops.in" className="flex items-center gap-2 text-[#7E7B72] hover:text-[#C59B27] transition-colors">
+                  <Mail className="h-3.5 w-3.5" /> contact@transitops.in
+                </a>
+              </div>
+            </div>
+            {/* Connect */}
+            <div className="space-y-3">
+              <h4 className="text-[#F5F5F3] font-bold uppercase tracking-widest text-sm">Connect</h4>
+              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[#7E7B72] hover:text-[#C59B27] transition-colors">
+                <Linkedin className="h-4 w-4" /> LinkedIn
+              </a>
+            </div>
+          </div>
+          <div className="border-t border-white/5 pt-6 text-center text-[10px] uppercase tracking-widest text-[#7E7B72]">
+            © 2026 TransitOps Systems. All rights reserved.
           </div>
         </div>
       </footer>

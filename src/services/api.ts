@@ -7,7 +7,19 @@ import type {
   Expense,
 } from "@/lib/mock-data";
 
-const BASE_URL = typeof window !== "undefined" ? "/api" : "http://localhost:8000/api";
+const BASE_URL = typeof window !== "undefined" ? "/api" : "https://barely-shareholders-option-expiration.trycloudflare.com/api";
+
+// Map backend role names to frontend role names used by ProtectedRoute
+const BACKEND_TO_FRONTEND_ROLE: Record<string, string> = {
+  manager: "fleet-manager",
+  safety: "safety-officer",
+  finance: "financial-analyst",
+  driver: "driver",
+  admin: "admin",
+};
+function mapRole(backendRole: string): string {
+  return BACKEND_TO_FRONTEND_ROLE[backendRole] || backendRole;
+}
 
 // Helper to get auth header
 function getAuthHeaders(): HeadersInit {
@@ -178,23 +190,25 @@ export const authService = {
         }),
       });
 
+      const mapped = { ...res, role: mapRole(res.role) };
       if (typeof window !== "undefined") {
-        localStorage.setItem("user", JSON.stringify(res));
+        localStorage.setItem("user", JSON.stringify(mapped));
       }
-      return res;
+      return mapped;
     } catch (err) {
       console.warn("API login failed, using fallback mock authentication:", err);
       // Fallback mock login response
+      const mappedFallback = mapRole(fallbackRole);
       const mockUser = {
         token: "mock-jwt-token-12345",
         username: username,
         email: email,
         name: username === "safety" ? "Safety Officer" : username === "finance" ? "Financial Analyst" : "Alex Morgan",
-        role: fallbackRole,
+        role: mappedFallback,
       };
       if (typeof window !== "undefined") {
         localStorage.setItem("user", JSON.stringify(mockUser));
-        localStorage.setItem("transitops_auth_role", JSON.stringify({ role: fallbackRole, identifier: email }));
+        localStorage.setItem("transitops_auth_role", JSON.stringify({ role: mappedFallback, identifier: email }));
       }
       return mockUser;
     }
@@ -211,22 +225,24 @@ export const authService = {
         }),
       });
 
+      const mapped = { ...res, role: mapRole(res.role) };
       if (typeof window !== "undefined") {
-        localStorage.setItem("user", JSON.stringify(res));
+        localStorage.setItem("user", JSON.stringify(mapped));
       }
-      return res;
+      return mapped;
     } catch (err) {
       console.warn("API registration failed, using fallback mock signup:", err);
+      const mappedRole = mapRole(role);
       const mockUser = {
         token: "mock-jwt-token-signup-12345",
         username,
         email,
         name: username,
-        role,
+        role: mappedRole,
       };
       if (typeof window !== "undefined") {
         localStorage.setItem("user", JSON.stringify(mockUser));
-        localStorage.setItem("transitops_auth_role", JSON.stringify({ role, identifier: email }));
+        localStorage.setItem("transitops_auth_role", JSON.stringify({ role: mappedRole, identifier: email }));
       }
       return mockUser;
     }
@@ -257,25 +273,27 @@ export const authService = {
         body: JSON.stringify({ email, otp, role: fallbackRole }),
       });
 
+      const mapped = { ...res, role: mapRole(res.role) };
       if (typeof window !== "undefined") {
-        localStorage.setItem("user", JSON.stringify(res));
+        localStorage.setItem("user", JSON.stringify(mapped));
       }
-      return res;
+      return mapped;
     } catch (err) {
       console.warn("API verifyOtp failed, using fallback mock validation:", err);
       if (otp !== "123456" && otp !== "000000" && otp !== "demo12") {
         throw new Error("Invalid OTP code. Please enter 123456 to bypass.");
       }
+      const mappedFallback = mapRole(fallbackRole);
       const mockUser = {
         token: "mock-jwt-token-otp-12345",
         username: email.split("@")[0],
         email: email,
         name: fallbackRole === "safety" ? "Safety Officer" : fallbackRole === "finance" ? "Financial Analyst" : "Alex Morgan",
-        role: fallbackRole,
+        role: mappedFallback,
       };
       if (typeof window !== "undefined") {
         localStorage.setItem("user", JSON.stringify(mockUser));
-        localStorage.setItem("transitops_auth_role", JSON.stringify({ role: fallbackRole, identifier: email }));
+        localStorage.setItem("transitops_auth_role", JSON.stringify({ role: mappedFallback, identifier: email }));
       }
       return mockUser;
     }
@@ -298,10 +316,11 @@ export const authService = {
       body: JSON.stringify({ credential, role }),
     });
 
+    const mapped = { ...res, role: mapRole(res.role) };
     if (typeof window !== "undefined") {
-      localStorage.setItem("user", JSON.stringify(res));
+      localStorage.setItem("user", JSON.stringify(mapped));
     }
-    return res;
+    return mapped;
   },
   async logout() {
     if (typeof window !== "undefined") {
