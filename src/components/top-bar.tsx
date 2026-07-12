@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { authService } from "@/services/api";
 
-const ROLE_TITLES: Record<string, string> = {
+const roleLabels: Record<string, string> = {
   manager: "Fleet Manager",
   driver: "Driver",
   safety: "Safety Officer",
@@ -14,14 +14,10 @@ const ROLE_TITLES: Record<string, string> = {
 };
 
 export function TopBar() {
-  const user = authService.getCurrentUser();
-  const name = user?.name || "Alex Morgan";
-  const role = user?.role ? (ROLE_TITLES[user.role] || user.role) : "Fleet Manager";
-  
-  // Initials for avatar fallback
-  const initials = name
+  const user = authService.getCurrentUser() || { name: "Alex Morgan", role: "manager" };
+  const initials = user.name
     .split(" ")
-    .map((n) => n[0])
+    .map((n: string) => n[0])
     .join("")
     .toUpperCase()
     .slice(0, 2);
@@ -41,8 +37,8 @@ export function TopBar() {
         </Button>
         <div className="hidden sm:flex items-center gap-2 pl-2">
           <div className="text-right leading-tight">
-            <p className="text-xs font-semibold">{name}</p>
-            <p className="text-[10px] text-muted-foreground">{role}</p>
+            <p className="text-xs font-semibold">{user.name}</p>
+            <p className="text-[10px] text-muted-foreground">{roleLabels[user.role] || user.role}</p>
           </div>
           <Avatar className="h-8 w-8">
             <AvatarFallback className="bg-primary text-primary-foreground text-xs font-semibold">{initials}</AvatarFallback>
