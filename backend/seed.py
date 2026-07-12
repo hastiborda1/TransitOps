@@ -19,6 +19,7 @@ def seed_db():
     Maintenance.objects.all().delete()
     FuelLog.objects.all().delete()
     Expense.objects.all().delete()
+    print("Seeding database...")
 
     # Seed Users
     users_data = [
@@ -79,6 +80,48 @@ def seed_db():
     for t in trips_data:
         Trip.objects.create(**t)
         print(f"Created trip: {t['origin']} -> {t['destination']}")
+        {"plate": "TX-4821", "make": "Volvo", "model": "FH16", "year": 2022, "type": "Truck", "status": "active", "odometer": 128430, "fuel_type": "Diesel", "driver": "James Carter", "max_load": 15000, "acquisition_cost": 85000},
+        {"plate": "TX-9012", "make": "Mercedes", "model": "Actros", "year": 2021, "type": "Truck", "status": "maintenance", "odometer": 214800, "fuel_type": "Diesel", "driver": "Priya Shah", "max_load": 15000, "acquisition_cost": 85000},
+        {"plate": "TX-1145", "make": "Ford", "model": "Transit", "year": 2023, "type": "Van", "status": "active", "odometer": 45200, "fuel_type": "Diesel", "driver": "Mia Nguyen", "max_load": 2500, "acquisition_cost": 35000},
+        {"plate": "TX-7788", "make": "Tesla", "model": "Semi", "year": 2024, "type": "Truck", "status": "idle", "odometer": 12030, "fuel_type": "Electric", "max_load": 15000, "acquisition_cost": 150000},
+        {"plate": "TX-3391", "make": "Scania", "model": "R500", "year": 2020, "type": "Truck", "status": "active", "odometer": 302180, "fuel_type": "Diesel", "driver": "Daniel Ochieng", "max_load": 15000, "acquisition_cost": 85000},
+        {"plate": "TX-6620", "make": "Renault", "model": "Master", "year": 2022, "type": "Van", "status": "active", "odometer": 76540, "fuel_type": "Diesel", "driver": "Sofia Rossi", "max_load": 2500, "acquisition_cost": 35000},
+        {"plate": "TX-8834", "make": "Iveco", "model": "Daily", "year": 2019, "type": "Van", "status": "retired", "odometer": 410500, "fuel_type": "Diesel", "max_load": 2500, "acquisition_cost": 35000},
+        {"plate": "TX-2251", "make": "MAN", "model": "TGX", "year": 2023, "type": "Truck", "status": "active", "odometer": 61220, "fuel_type": "Diesel", "driver": "Ahmed Al-Farsi", "max_load": 15000, "acquisition_cost": 85000},
+    ]
+    for v in vehicles_data:
+        if not Vehicle.objects.filter(plate=v["plate"]).exists():
+            Vehicle.objects.create(**v)
+            print(f"Created vehicle: {v['plate']}")
+
+    # Seed Drivers
+    drivers_data = [
+        {"name": "James Carter", "email": "james@transitops.com", "phone": "+1 415 555 0142", "license": "CDL-A", "status": "on-trip", "rating": 4.8, "trips": 312, "vehicle": "TX-4821", "license_category": "Heavy Truck", "license_expiry": "2027-12-31"},
+        {"name": "Priya Shah", "email": "priya@transitops.com", "phone": "+1 415 555 0178", "license": "CDL-A", "status": "off-duty", "rating": 4.9, "trips": 428, "license_category": "Heavy Truck", "license_expiry": "2027-12-31"},
+        {"name": "Mia Nguyen", "email": "mia@transitops.com", "phone": "+1 415 555 0154", "license": "CDL-B", "status": "on-trip", "rating": 4.7, "trips": 201, "vehicle": "TX-1145", "license_category": "Light Truck", "license_expiry": "2027-12-31"},
+        {"name": "Daniel Ochieng", "email": "daniel@transitops.com", "phone": "+254 700 123456", "license": "CDL-A", "status": "available", "rating": 4.6, "trips": 178, "vehicle": "TX-3391", "license_category": "Heavy Truck", "license_expiry": "2027-12-31"},
+        {"name": "Sofia Rossi", "email": "sofia@transitops.com", "phone": "+39 331 555 8821", "license": "CDL-B", "status": "on-trip", "rating": 4.9, "trips": 355, "vehicle": "TX-6620", "license_category": "Light Truck", "license_expiry": "2027-12-31"},
+        {"name": "Ahmed Al-Farsi", "email": "ahmed@transitops.com", "phone": "+971 50 555 3311", "license": "CDL-A", "status": "available", "rating": 4.5, "trips": 142, "vehicle": "TX-2251", "license_category": "Heavy Truck", "license_expiry": "2027-12-31"},
+        {"name": "Lena Müller", "email": "lena@transitops.com", "phone": "+49 151 555 7788", "license": "CDL-A", "status": "suspended", "rating": 3.9, "trips": 88, "license_category": "Heavy Truck", "license_expiry": "2024-01-01"},
+    ]
+    for d in drivers_data:
+        if not Driver.objects.filter(email=d["email"]).exists():
+            Driver.objects.create(**d)
+            print(f"Created driver: {d['name']}")
+
+    # Seed Trips
+    trips_data = [
+        {"vehicle": "TX-4821", "driver": "James Carter", "origin": "San Francisco, CA", "destination": "Los Angeles, CA", "distance": 615, "started_at": "2026-07-11 06:20", "status": "in-progress", "cargo_weight": 450, "planned_distance": 615},
+        {"vehicle": "TX-1145", "driver": "Mia Nguyen", "origin": "Oakland, CA", "destination": "Sacramento, CA", "distance": 138, "started_at": "2026-07-11 08:00", "status": "in-progress", "cargo_weight": 300, "planned_distance": 138},
+        {"vehicle": "TX-3391", "driver": "Daniel Ochieng", "origin": "Portland, OR", "destination": "Seattle, WA", "distance": 280, "started_at": "2026-07-11 05:15", "status": "completed", "cargo_weight": 800, "planned_distance": 280},
+        {"vehicle": "TX-6620", "driver": "Sofia Rossi", "origin": "Milan, IT", "destination": "Rome, IT", "distance": 580, "started_at": "2026-07-12 07:00", "status": "scheduled", "cargo_weight": 600, "planned_distance": 580},
+        {"vehicle": "TX-2251", "driver": "Ahmed Al-Farsi", "origin": "Dubai, AE", "destination": "Abu Dhabi, AE", "distance": 150, "started_at": "2026-07-10 14:30", "status": "completed", "cargo_weight": 200, "planned_distance": 150},
+        {"vehicle": "TX-4821", "driver": "James Carter", "origin": "Fresno, CA", "destination": "San Diego, CA", "distance": 520, "started_at": "2026-07-09 09:00", "status": "cancelled", "cargo_weight": 400, "planned_distance": 520},
+    ]
+    for t in trips_data:
+        if not Trip.objects.filter(started_at=t["started_at"], vehicle=t["vehicle"]).exists():
+            Trip.objects.create(**t)
+            print(f"Created trip: {t['origin']} -> {t['destination']}")
 
     # Seed Maintenance
     maintenance_data = [
@@ -92,6 +135,9 @@ def seed_db():
     for m in maintenance_data:
         Maintenance.objects.create(**m)
         print(f"Created maintenance: {m['type']} for {m['vehicle']}")
+        if not Maintenance.objects.filter(vehicle=m["vehicle"], due_date=m["due_date"]).exists():
+            Maintenance.objects.create(**m)
+            print(f"Created maintenance: {m['type']} for {m['vehicle']}")
 
     # Seed Fuel Logs
     fuel_data = [
@@ -104,6 +150,9 @@ def seed_db():
     for f in fuel_data:
         FuelLog.objects.create(**f)
         print(f"Created fuel log: {f['vehicle']} on {f['date']}")
+        if not FuelLog.objects.filter(vehicle=f["vehicle"], date=f["date"]).exists():
+            FuelLog.objects.create(**f)
+            print(f"Created fuel log: {f['vehicle']} on {f['date']}")
 
     # Seed Expenses
     expenses_data = [
@@ -117,6 +166,9 @@ def seed_db():
     for e in expenses_data:
         Expense.objects.create(**e)
         print(f"Created expense: {e['description']}")
+        if not Expense.objects.filter(description=e["description"], date=e["date"]).exists():
+            Expense.objects.create(**e)
+            print(f"Created expense: {e['description']}")
 
     print("Database seeding completed.")
 
