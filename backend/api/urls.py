@@ -33,6 +33,6 @@ urlpatterns = [
     path('auth/verify-otp/', verify_otp, name='auth_verify_otp'),
     path('auth/forgot-password/', forgot_password, name='auth_forgot_password'),
     path('auth/reset-password/', reset_password, name='auth_reset_password'),
-    path('auth/google/', google_login, name='auth_google'),
+    path('auth/google/', google_login, name='auth_google_login'),
     path('', include(router.urls)),
 ]
