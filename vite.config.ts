@@ -13,7 +13,7 @@ export default defineConfig({
       allowedHosts: ["localhost", ".trycloudflare.com"],
       proxy: {
         "/api": {
-          target: "https://barely-shareholders-option-expiration.trycloudflare.com",
+          target: "http://127.0.0.1:8000",
           changeOrigin: true,
         },
       },
