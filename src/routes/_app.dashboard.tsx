@@ -58,9 +58,9 @@ function DashboardPage() {
   const canExport = role !== "driver";
 
   // Data mapping from backend queries
-  const vehiclesList = vehiclesQ.data || [];
-  const driversList = driversQ.data || [];
-  const tripsList = tripsQ.data || [];
+  const vehiclesList = Array.isArray(vehiclesQ.data) ? vehiclesQ.data : [];
+  const driversList = Array.isArray(driversQ.data) ? driversQ.data : [];
+  const tripsList = Array.isArray(tripsQ.data) ? tripsQ.data : [];
 
   const totalVehicles = vehiclesList.length;
   const activeVehicles = vehiclesList.filter((v) => v.status === "active" || v.status === "On Trip").length;
@@ -73,7 +73,7 @@ function DashboardPage() {
   const fleetUtilization = totalVehicles > 0 ? ((activeVehicles / totalVehicles) * 100).toFixed(1) : "0.0";
 
   const handleExport = () => {
-    if (!vehiclesQ.data) return;
+    if (!Array.isArray(vehiclesList) || !vehiclesList.length) return;
     const headers = ["Plate", "Make", "Model", "Type", "Status", "Odometer", "Fuel Type", "Max Load (kg)", "Acquisition Cost ($)"];
     const rows = vehiclesList.map((v: any) => [
       v.plate,
@@ -316,7 +316,7 @@ function DashboardPage() {
         </div>
       </div>
 
-      {/* Aligned spec KPIs grid with zero values */}
+      {/* Aligned spec KPIs grid */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 mb-6">
         <KpiCard label="Active Vehicles" value={activeVehicles} hint={`Total: ${totalVehicles}`} icon={Truck} tone="primary" />
         <KpiCard label="Available Vehicles" value={availableVehicles} hint="Ready for dispatch" icon={Truck} tone="success" />
@@ -340,7 +340,7 @@ function DashboardPage() {
               <Skeleton className="h-full w-full" />
             ) : (
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={monthlyQ.data}>
+                <AreaChart data={Array.isArray(monthlyQ.data) ? monthlyQ.data : []}>
                   <defs>
                     <linearGradient id="tripsFill" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor="var(--color-chart-1)" stopOpacity={0.4} />
@@ -385,8 +385,8 @@ function DashboardPage() {
           <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/trips" })}>View all</Button>
         </div>
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-          {tripsQ.data?.filter((t) => t.status === "Dispatched").length ? (
-            tripsQ.data?.filter((t) => t.status === "Dispatched").map((t) => (
+          {tripsList.filter((t) => t.status === "Dispatched" || t.status === "in-progress").length ? (
+            tripsList.filter((t) => t.status === "Dispatched" || t.status === "in-progress").map((t) => (
               <div key={t.id} className="rounded-lg border p-4 hover:border-primary/40 transition-colors">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs font-mono text-muted-foreground">{t.id}</span>

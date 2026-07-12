@@ -178,7 +178,7 @@ function ExpensesPage() {
         }
       />
       <DataTable
-        data={expenses ?? []}
+        data={Array.isArray(expenses) ? expenses : []}
         columns={columns}
         isLoading={isExpensesLoading}
         searchKeys={["id", "description", "category", "vehicle"]}

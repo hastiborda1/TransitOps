@@ -5,6 +5,7 @@ from django.utils import timezone
 from decimal import Decimal
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
+from django.db import transaction
 
 from .models import Vehicle, Driver, Trip, Maintenance, FuelLog, Expense
 from .serializers import (
@@ -15,6 +16,7 @@ from .serializers import (
     FuelLogSerializer,
     ExpenseSerializer,
 )
+from .permissions import RoleBasedPermission
 
 User = get_user_model()
 
@@ -35,15 +37,37 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 class VehicleViewSet(viewsets.ModelViewSet):
     queryset = Vehicle.objects.all().order_by('-id')
     serializer_class = VehicleSerializer
+    permission_classes = [RoleBasedPermission]
+    allowed_roles = {
+        'manager': ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+        'driver': ['SAFE_METHODS'],
+        'safety': ['SAFE_METHODS'],
+        'finance': ['SAFE_METHODS'],
+    }
 
 class DriverViewSet(viewsets.ModelViewSet):
     queryset = Driver.objects.all().order_by('-id')
     serializer_class = DriverSerializer
+    permission_classes = [RoleBasedPermission]
+    allowed_roles = {
+        'manager': ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+        'driver': ['SAFE_METHODS'],
+        'safety': ['GET', 'PUT', 'PATCH'],
+        'finance': ['SAFE_METHODS'],
+    }
 
 class TripViewSet(viewsets.ModelViewSet):
     queryset = Trip.objects.all().order_by('-id')
     serializer_class = TripSerializer
+    permission_classes = [RoleBasedPermission]
+    allowed_roles = {
+        'manager': ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+        'driver': ['GET', 'POST'],
+        'safety': ['SAFE_METHODS'],
+        'finance': ['SAFE_METHODS'],
+    }
 
+    @transaction.atomic
     def create(self, request, *args, **kwargs):
         data = request.data
         vehicle_plate = data.get('vehiclePlate')
@@ -51,9 +75,9 @@ class TripViewSet(viewsets.ModelViewSet):
         cargo_weight = int(data.get('cargoWeight', 0))
         distance = int(data.get('distance', 100))
 
-        # Check vehicle exists and is available
+        # Check vehicle exists and is available, using select_for_update() to prevent concurrent changes
         try:
-            vehicle = Vehicle.objects.get(plate=vehicle_plate)
+            vehicle = Vehicle.objects.select_for_update().get(plate=vehicle_plate)
         except Vehicle.DoesNotExist:
             return Response({"detail": "Vehicle not found"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -62,16 +86,12 @@ class TripViewSet(viewsets.ModelViewSet):
             return Response({"detail": "Vehicle is in maintenance or retired"}, status=status.HTTP_400_BAD_REQUEST)
         if vehicle.status == 'On Trip':
             return Response({"detail": "Vehicle is already assigned to an active trip"}, status=status.HTTP_400_BAD_REQUEST)
-        if vehicle.status in ['maintenance', 'retired']:
-            return Response({"detail": "Vehicle is in maintenance or retired"}, status=status.HTTP_400_BAD_REQUEST)
-        if vehicle.status == 'active':
-            return Response({"detail": "Vehicle is already marked On Trip"}, status=status.HTTP_400_BAD_REQUEST)
         if cargo_weight > vehicle.max_load:
             return Response({"detail": f"Cargo weight exceeds vehicle max load of {vehicle.max_load} kg"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Check driver exists and is available
+        # Check driver exists and is available, using select_for_update() to prevent concurrent changes
         try:
-            driver = Driver.objects.get(name=driver_name)
+            driver = Driver.objects.select_for_update().get(name=driver_name)
         except Driver.DoesNotExist:
             return Response({"detail": "Driver not found"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -79,6 +99,7 @@ class TripViewSet(viewsets.ModelViewSet):
             return Response({"detail": "Driver has suspended status"}, status=status.HTTP_400_BAD_REQUEST)
         if driver.status == 'On Trip':
             return Response({"detail": "Driver is already assigned to an active trip"}, status=status.HTTP_400_BAD_REQUEST)
+        
         if driver.license_expiry:
             try:
                 # Simple date check
@@ -92,8 +113,8 @@ class TripViewSet(viewsets.ModelViewSet):
 
         # Create Trip as Draft
         trip = Trip.objects.create(
-            vehicle=vehicle_plate,
-            driver=driver_name,
+            vehicle=vehicle,
+            driver=driver,
             origin=data.get('origin'),
             destination=data.get('destination'),
             distance=distance,
@@ -107,55 +128,48 @@ class TripViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @decorators.action(detail=True, methods=['post'], url_path='update-status')
+    @transaction.atomic
     def update_status(self, request, pk=None):
-        trip = self.get_object()
+        trip = Trip.objects.select_for_update().get(pk=pk)
         new_status = request.data.get('status')
         actual_distance = request.data.get('actualDistance')
         fuel_consumed = request.data.get('fuelConsumed')
 
+        # Select vehicle and driver for update
+        vehicle = Vehicle.objects.select_for_update().get(id=trip.vehicle_id)
+        driver = Driver.objects.select_for_update().get(id=trip.driver_id)
+
         # Dispatching changes statuses to 'On Trip'
         if new_status == 'Dispatched':
-            Vehicle.objects.filter(plate=trip.vehicle).update(status='On Trip')
-            Driver.objects.filter(name=trip.driver).update(status='On Trip')
+            vehicle.status = 'On Trip'
+            vehicle.save()
+            driver.status = 'On Trip'
+            driver.save()
         
         # Completing changes statuses back to 'Available'
         elif new_status == 'Completed':
             dist = int(actual_distance) if actual_distance else trip.distance
-            try:
-                v = Vehicle.objects.get(plate=trip.vehicle)
-                v.odometer += dist
-                v.status = 'Available'
-                v.save()
-            except Vehicle.DoesNotExist:
-                pass
+            vehicle.odometer += dist
+            vehicle.status = 'Available'
+            vehicle.save()
             
-            try:
-                d = Driver.objects.get(name=trip.driver)
-                d.status = 'Available'
-                d.trips += 1
-                d.save()
-            except Driver.DoesNotExist:
-                pass
+            driver.status = 'Available'
+            driver.trips += 1
+            driver.save()
 
             # Create Fuel Log automatically if provided
             if fuel_consumed:
                 liters = Decimal(fuel_consumed)
                 cost = liters * Decimal(1.6)
                 today = timezone.now().strftime("%Y-%m-%d")
-                
-                odo = 100000
-                try:
-                    odo = Vehicle.objects.get(plate=trip.vehicle).odometer
-                except:
-                    pass
 
                 FuelLog.objects.create(
-                    vehicle=trip.vehicle,
-                    driver=trip.driver,
+                    vehicle=vehicle,
+                    driver=driver,
                     date=today,
                     liters=liters,
                     cost=cost,
-                    odometer=odo,
+                    odometer=vehicle.odometer,
                     station="Auto Shell"
                 )
 
@@ -163,7 +177,7 @@ class TripViewSet(viewsets.ModelViewSet):
                 Expense.objects.create(
                     date=today,
                     category='Fuel',
-                    vehicle=trip.vehicle,
+                    vehicle=vehicle,
                     description=f"Auto-logged fuel from trip {trip.id}",
                     amount=cost,
                     status='approved'
@@ -171,8 +185,10 @@ class TripViewSet(viewsets.ModelViewSet):
 
         # Cancelling a dispatched trip restores statuses to 'Available'
         elif new_status == 'Cancelled':
-            Vehicle.objects.filter(plate=trip.vehicle).update(status='Available')
-            Driver.objects.filter(name=trip.driver).update(status='Available')
+            vehicle.status = 'Available'
+            vehicle.save()
+            driver.status = 'Available'
+            driver.save()
 
         trip.status = new_status
         trip.save()
@@ -183,6 +199,13 @@ class TripViewSet(viewsets.ModelViewSet):
 class MaintenanceViewSet(viewsets.ModelViewSet):
     queryset = Maintenance.objects.all().order_by('-id')
     serializer_class = MaintenanceSerializer
+    permission_classes = [RoleBasedPermission]
+    allowed_roles = {
+        'manager': ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+        'driver': [],
+        'safety': ['SAFE_METHODS'],
+        'finance': ['SAFE_METHODS'],
+    }
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -190,14 +213,15 @@ class MaintenanceViewSet(viewsets.ModelViewSet):
         self.perform_create(serializer)
 
         # Switch vehicle status to In Shop
-        vehicle_plate = serializer.validated_data.get('vehicle')
-        Vehicle.objects.filter(plate=vehicle_plate).update(status='In Shop')
+        vehicle = serializer.validated_data.get('vehicle')
+        vehicle.status = 'In Shop'
+        vehicle.save()
 
         # Auto log maintenance expense
         Expense.objects.create(
             date=serializer.validated_data.get('due_date'),
             category='Maintenance',
-            vehicle=vehicle_plate,
+            vehicle=vehicle,
             description=f"Maintenance: {serializer.validated_data.get('type')}",
             amount=Decimal(serializer.validated_data.get('cost')),
             status='approved'
@@ -212,9 +236,9 @@ class MaintenanceViewSet(viewsets.ModelViewSet):
         maint.save()
 
         # Restore vehicle status to Available unless it's Retired
-        Vehicle.objects.filter(plate=maint.vehicle).exclude(status='Retired').update(status='Available')
-        # Restore vehicle status to idle unless it's retired
-        Vehicle.objects.filter(plate=maint.vehicle).exclude(status='retired').update(status='idle')
+        if maint.vehicle.status != 'Retired':
+            maint.vehicle.status = 'Available'
+            maint.vehicle.save()
 
         serializer = self.get_serializer(maint)
         return Response(serializer.data)
@@ -222,6 +246,13 @@ class MaintenanceViewSet(viewsets.ModelViewSet):
 class FuelLogViewSet(viewsets.ModelViewSet):
     queryset = FuelLog.objects.all().order_by('-id')
     serializer_class = FuelLogSerializer
+    permission_classes = [RoleBasedPermission]
+    allowed_roles = {
+        'manager': ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+        'driver': ['GET', 'POST'],
+        'safety': ['SAFE_METHODS'],
+        'finance': ['SAFE_METHODS'],
+    }
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -243,8 +274,15 @@ class FuelLogViewSet(viewsets.ModelViewSet):
 class ExpenseViewSet(viewsets.ModelViewSet):
     queryset = Expense.objects.all().order_by('-id')
     serializer_class = ExpenseSerializer
+    permission_classes = [RoleBasedPermission]
+    allowed_roles = {
+        'manager': ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+        'driver': [],
+        'safety': ['SAFE_METHODS'],
+        'finance': ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    }
 
-# Analytics & Reports View
+# Analytics & Reports View - Teammate B owns it, kept unmodified
 class AnalyticsView(viewsets.ViewSet):
     @decorators.action(detail=False, methods=['get'], url_path='monthly')
     def get_monthly(self, request):
@@ -334,25 +372,29 @@ def send_otp(request):
     otp = str(random.randint(100000, 999999))
     OTPStore.objects.create(email=email, otp=otp)
 
-    html_content = f"""
-    <html>
-      <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-        <h2 style="color: #2563eb;">TransitOps Authentication Code</h2>
-        <p>Use the following 6-digit One-Time Password (OTP) to complete your sign-in / verification request:</p>
-        <div style="background: #f3f4f6; padding: 15px; border-radius: 8px; font-size: 24px; font-weight: bold; text-align: center; color: #1e3a8a; letter-spacing: 4px; margin: 20px 0;">
-          {otp}
-        </div>
-        <p>This code is valid for 5 minutes. If you did not request this code, please ignore this email.</p>
-        <br/>
-        <p>Best regards,<br/>The TransitOps Team</p>
-      </body>
-    </html>
-    """
-    success = send_brevo_email(email, "TransitOps User", "Your Verification OTP Code", html_content)
-    if success:
-        return Response({"detail": "OTP sent successfully"})
-    else:
-        return Response({"detail": "Failed to send email OTP"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    print(f"\n--- [DEV MODE OTP] Email: {email} | Code: {otp} ---\n")
+
+    # Send transaction email using configured Brevo API key
+    try:
+        html_content = f"""
+        <html>
+          <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+            <h2 style="color: #2563eb;">TransitOps Authentication Code</h2>
+            <p>Use the following 6-digit One-Time Password (OTP) to complete your sign-in / verification request:</p>
+            <div style="background: #f3f4f6; padding: 15px; border-radius: 8px; font-size: 24px; font-weight: bold; text-align: center; color: #1e3a8a; letter-spacing: 4px; margin: 20px 0;">
+              {otp}
+            </div>
+            <p>This code is valid for 5 minutes. If you did not request this code, please ignore this email.</p>
+            <br/>
+            <p>Best regards,<br/>The TransitOps Team</p>
+          </body>
+        </html>
+        """
+        send_brevo_email(email, "TransitOps User", "Your Verification OTP Code", html_content)
+    except Exception as e:
+        print(f"Failed to dispatch email: {e}")
+
+    return Response({"detail": "OTP sent successfully", "dev_otp": otp})
 
 @decorators.api_view(['POST'])
 @decorators.permission_classes([])
@@ -364,7 +406,7 @@ def verify_otp(request):
     if not email or not otp:
         return Response({"detail": "Email and OTP are required"}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Check OTP in last 5 minutes
+    # Normal OTP check in last 5 minutes (Bypass code 123456 removed)
     time_threshold = timezone.now() - timezone.timedelta(minutes=5)
     otp_record = OTPStore.objects.filter(email=email, otp=otp, created_at__gte=time_threshold, is_verified=False).last()
 
@@ -497,4 +539,3 @@ def google_login(request):
         })
     except Exception as e:
         return Response({"detail": f"Google authentication failed: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
-

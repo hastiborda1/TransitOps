@@ -1,27 +1,7 @@
-import { createFileRoute, redirect, Link } from "@tanstack/react-router";
-import { Truck, Navigation, ShieldCheck, DollarSign, ArrowRight, Phone, Database } from "lucide-react";
-import { AUTH_KEY } from "@/lib/auth";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Truck, Navigation, ShieldCheck, DollarSign, ArrowRight, Database } from "lucide-react";
 
 export const Route = createFileRoute("/")({
-  beforeLoad: () => {
-    if (typeof window !== "undefined") {
-      try {
-        const data = localStorage.getItem(AUTH_KEY);
-        const user = localStorage.getItem("user");
-        if (data && user) {
-          const parsed = JSON.parse(data);
-          const role = parsed?.role;
-          if (role === "admin") throw redirect({ to: "/admin" });
-          if (role === "fleet-manager") throw redirect({ to: "/dashboard" });
-          if (role === "safety-officer") throw redirect({ to: "/safety" });
-          if (role === "financial-analyst") throw redirect({ to: "/finance" });
-          if (role === "driver") throw redirect({ to: "/driver" });
-        }
-      } catch (e) {
-        // Ignored
-      }
-    }
-  },
   head: () => ({
     meta: [
       { title: "TransitOps — Smart Transport Operations Platform" },
@@ -80,10 +60,7 @@ function LandingPage() {
 
         <div className="relative z-10 max-w-7xl mx-auto px-8 py-24 grid lg:grid-cols-12 gap-16 items-center w-full">
           <div className="lg:col-span-7 space-y-8">
-            <div className="inline-flex items-center gap-2 bg-[#C59B27]/10 border border-[#C59B27]/20 px-4 py-2 rounded-[5px] text-[10px] font-bold uppercase tracking-widest text-[#C59B27]">
-              End-to-End Fleet Integration
-            </div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight leading-[1.05] text-[#F5F5F3]">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-black uppercase tracking-tight leading-[1.05] text-[#F5F5F3]">
               Ditch Spreadsheets. <br />
               <span className="text-[#C59B27]">Centralize Operations.</span>
             </h1>
@@ -105,7 +82,7 @@ function LandingPage() {
           </div>
 
           <div className="lg:col-span-5 hidden lg:block">
-            {/* Transparent Glassmorphic Widget - Soft Rounded 5px */}
+            {/* Transparent Glassmorphic Widget */}
             <div className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-[5px] p-8 shadow-2xl space-y-6">
               <div className="flex items-center justify-between border-b border-white/10 pb-4">
                 <span className="text-xs uppercase font-extrabold tracking-widest text-[#C59B27]">Telemetry Sync Status</span>
@@ -118,7 +95,7 @@ function LandingPage() {
                 </div>
                 <div className="flex justify-between items-center bg-white/5 p-4 rounded-[5px] border border-white/5">
                   <span className="text-xs text-gray-300 font-medium">Utilization Percentage</span>
-                  <span className="text-sm font-extrabold text-[#C59B27]">98.2%</span>
+                  <span className="text-sm font-extrabold text-[#C59B27]">0.0%</span>
                 </div>
               </div>
             </div>
@@ -136,7 +113,7 @@ function LandingPage() {
             {/* Center Section Title */}
             <div className="lg:col-span-4 space-y-6 lg:pr-8">
               <span className="text-[10px] uppercase font-extrabold tracking-widest text-[#C59B27] block">System Architecture</span>
-              <h2 className="text-3xl lg:text-4xl font-black uppercase tracking-tight leading-none text-[#F5F5F3]">
+              <h2 className="text-3xl lg:text-4xl font-serif font-black uppercase tracking-tight leading-none text-[#F5F5F3]">
                 Four Integrated <br />Target Roles
               </h2>
               <div className="w-16 h-1 bg-[#C59B27]" />
@@ -148,7 +125,7 @@ function LandingPage() {
             {/* Staggered Non-Linear Cards Layout */}
             <div className="lg:col-span-8 relative min-h-[580px] grid grid-cols-1 md:grid-cols-2 gap-y-16 gap-x-12 pt-8">
               
-              {/* Fleet Manager Card (Top-Left Position) */}
+              {/* Fleet Manager Card */}
               <div className="relative group md:translate-y-[-15px] md:-translate-x-2">
                 <div className="bg-[#FAF9F5] text-[#2E2C26] p-8 rounded-[5px] shadow-xl border border-white/10 min-h-[220px] flex flex-col justify-end pt-12 relative">
                   <div className="absolute -top-6 left-6 bg-[#32302A] text-white px-5 py-2.5 rounded-[5px] text-xs font-black uppercase tracking-wider border border-white/10 shadow-lg group-hover:border-[#C59B27] transition-colors">
@@ -160,7 +137,7 @@ function LandingPage() {
                 </div>
               </div>
 
-              {/* Driver Card (Top-Right Position) */}
+              {/* Driver Card */}
               <div className="relative group md:translate-y-[45px] md:translate-x-4">
                 <div className="bg-[#FAF9F5] text-[#2E2C26] p-8 rounded-[5px] shadow-xl border border-white/10 min-h-[220px] flex flex-col justify-end pt-12 relative">
                   <div className="absolute -top-6 left-6 bg-[#32302A] text-white px-5 py-2.5 rounded-[5px] text-xs font-black uppercase tracking-wider border border-white/10 shadow-lg group-hover:border-[#C59B27] transition-colors">
@@ -172,7 +149,7 @@ function LandingPage() {
                 </div>
               </div>
 
-              {/* Safety Officer Card (Bottom-Left Position) */}
+              {/* Safety Officer Card */}
               <div className="relative group md:translate-y-[-30px] md:-translate-x-6">
                 <div className="bg-[#FAF9F5] text-[#2E2C26] p-8 rounded-[5px] shadow-xl border border-white/10 min-h-[220px] flex flex-col justify-end pt-12 relative">
                   <div className="absolute -top-6 left-6 bg-[#32302A] text-white px-5 py-2.5 rounded-[5px] text-xs font-black uppercase tracking-wider border border-white/10 shadow-lg group-hover:border-[#C59B27] transition-colors">
@@ -184,7 +161,7 @@ function LandingPage() {
                 </div>
               </div>
 
-              {/* Financial Analyst Card (Bottom-Right Position) */}
+              {/* Financial Analyst Card */}
               <div className="relative group md:translate-y-[30px] md:translate-x-2">
                 <div className="bg-[#FAF9F5] text-[#2E2C26] p-8 rounded-[5px] shadow-xl border border-white/10 min-h-[220px] flex flex-col justify-end pt-12 relative">
                   <div className="absolute -top-6 left-6 bg-[#32302A] text-white px-5 py-2.5 rounded-[5px] text-xs font-black uppercase tracking-wider border border-white/10 shadow-lg group-hover:border-[#C59B27] transition-colors">
@@ -201,12 +178,12 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* Functional Modules Section - 5px Rounded Grid */}
+      {/* Functional Modules Section - Sharp Grid */}
       <section id="features" className="max-w-7xl mx-auto px-8 py-32 relative z-10">
         <div className="grid lg:grid-cols-12 gap-16 items-start">
           <div className="lg:col-span-4 lg:sticky lg:top-32 space-y-6">
             <span className="text-[10px] uppercase font-extrabold tracking-widest text-[#C59B27] block">Functional Modules</span>
-            <h2 className="text-4xl font-extrabold uppercase tracking-tight leading-tight text-[#2E2C26]">Robust Fleet <br />Business Logic</h2>
+            <h2 className="text-4xl font-serif font-extrabold uppercase tracking-tight leading-tight text-[#2E2C26]">Robust Fleet <br />Business Logic</h2>
             <div className="w-16 h-1 bg-[#C59B27]" />
             <p className="text-xs text-[#7E7B72] leading-relaxed">
               TransitOps enforces strict domain rules to guarantee safe operations: preventing double-booking of busy drivers and automatically transitioning status categories.
@@ -280,7 +257,7 @@ function LandingPage() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#C59B27]/5 rounded-full blur-[180px] pointer-events-none" />
         
         <div className="relative z-10 max-w-4xl mx-auto text-center px-8 space-y-8">
-          <h2 className="text-3xl md:text-4xl font-extrabold uppercase tracking-tight leading-none">Ready to Standardize Fleet Logistics?</h2>
+          <h2 className="text-3xl md:text-4xl font-serif font-extrabold uppercase tracking-tight leading-none">Ready to Standardize Fleet Logistics?</h2>
           <p className="text-[#D1CFC7] max-w-md mx-auto text-xs leading-relaxed tracking-wider">
             Move beyond manual ledger tracking. Establish secure RBAC credentials, coordinate trips, and retrieve reports automatically.
           </p>
@@ -299,7 +276,6 @@ function LandingPage() {
         <div className="max-w-7xl mx-auto px-8 flex flex-col md:flex-row items-center justify-between gap-6">
           <p>© 2026 TransitOps Systems. Digitizing transport logbooks under strict compliance.</p>
           <div className="flex gap-8 uppercase tracking-widest font-bold text-[10px]">
-            <a href="/UI_RULEBOOK.html" target="_blank" className="hover:text-[#C59B27] transition-colors">UI System Guide</a>
             <a href="#" className="hover:text-[#C59B27] transition-colors">Security Policy</a>
           </div>
         </div>

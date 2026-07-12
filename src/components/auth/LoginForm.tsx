@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Mail, ArrowLeft, LucideIcon, User, Copy, KeyRound, Loader2 } from "lucide-react";
+import { Mail, ArrowLeft, LucideIcon, User, Copy, KeyRound, Loader2, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,7 @@ import { AuthButton } from "./AuthButton";
 import { useAuth, UserRole, DEMO_CREDENTIALS, DEV_BYPASS_AUTH } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 import { authService } from "@/services/api";
+import { Button } from "@/components/ui/button";
 
 const loginSchema = z.object({
   identifier: z.string().min(1, "Email or Employee ID is required"),
@@ -48,31 +49,22 @@ export function LoginForm({
   icon: Icon,
   redirectUrl,
   defaultIdentifier,
-  identifierType,
+  identifierType = "email",
   theme = "default",
   colorClass = "bg-primary",
   buttonClass,
   isAdmin = false,
 }: LoginFormProps) {
   const navigate = useNavigate();
-  const { login, getUserRole } = useAuth();
+  const { login } = useAuth();
   const [loading, setLoading] = useState(false);
   const [isOtpMode, setIsOtpMode] = useState(false);
   const [sendingOtp, setSendingOtp] = useState(false);
-  const isDark = theme === "dark";
-  const demoCreds = role ? DEMO_CREDENTIALS[role] : null;
 
-  useEffect(() => {
-    // If a user is already logged in, automatically redirect them to their dashboard
-    const currentRole = getUserRole();
-    if (currentRole) {
-      if (currentRole === "admin") navigate({ to: "/admin" });
-      else if (currentRole === "fleet-manager") navigate({ to: "/dashboard" });
-      else if (currentRole === "safety-officer") navigate({ to: "/safety" });
-      else if (currentRole === "financial-analyst") navigate({ to: "/finance" });
-      else if (currentRole === "driver") navigate({ to: "/driver" });
-    }
-  }, [getUserRole, navigate]);
+  const isDark = theme === "dark";
+  const demoCreds = DEMO_CREDENTIALS[role];
+  const identifierLabel = identifierType === "email" ? "Email Address" : "Employee ID";
+  const InputIcon = Mail;
 
   const {
     register,
@@ -82,64 +74,28 @@ export function LoginForm({
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { identifier: defaultIdentifier, password: isAdmin ? "" : "demo1234", otp: "", remember: true },
+    defaultValues: {
+      identifier: defaultIdentifier || "",
+      password: demoCreds?.password || "",
+      otp: "",
+      remember: true,
+    },
   });
+
+  useEffect(() => {
+    if (defaultIdentifier) {
+      setValue("identifier", defaultIdentifier);
+    }
+    if (demoCreds?.password) {
+      setValue("password", demoCreds.password);
+    }
+  }, [role, defaultIdentifier, demoCreds, setValue]);
 
   const watchEmail = watch("identifier");
 
-  // Google Login Integration
-  useEffect(() => {
-    const btnContainer = document.getElementById("google-signin-btn");
-    if (!btnContainer) return;
-
-    const initializeGoogle = () => {
-      if (window.google && btnContainer) {
-        window.google.accounts.id.initialize({
-          client_id: "901970136857-g9taqknvcb75apssmtt91ftqoluoterh.apps.googleusercontent.com",
-          callback: handleGoogleLogin,
-        });
-        window.google.accounts.id.renderButton(
-          btnContainer,
-          { theme: isDark ? "dark" : "outline", size: "large", width: 380 }
-        );
-      }
-    };
-
-    if (window.google) {
-      initializeGoogle();
-    } else {
-      const script = document.createElement("script");
-      script.src = "https://accounts.google.com/gsi/client";
-      script.async = true;
-      script.defer = true;
-      script.onload = initializeGoogle;
-      document.body.appendChild(script);
-
-      return () => {
-        if (document.body.contains(script)) {
-          document.body.removeChild(script);
-        }
-      };
-    }
-  }, [isDark]);
-
-  const handleGoogleLogin = async (response: any) => {
-    setLoading(true);
-    try {
-      const res = await authService.googleLogin(response.credential, role || "manager");
-      login(res.role, res.email);
-      toast.success(`Welcome back, ${res.name}`);
-      navigate({ to: redirectUrl });
-    } catch (e: any) {
-      toast.error(e.message || "Google Login failed");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleSendOtp = async () => {
     const email = watchEmail;
-    if (!email || !z.string().email().safeParse(email).success) {
+    if (!email || !email.includes("@")) {
       toast.error("Please enter a valid email address first.");
       return;
     }
@@ -147,7 +103,7 @@ export function LoginForm({
     setSendingOtp(true);
     try {
       await authService.sendOtp(email);
-      toast.success("OTP verification code sent! Enter 123456 to bypass.");
+      toast.success("OTP verification code sent to your email!");
     } catch (e: any) {
       toast.error(e.message || "Failed to send OTP code");
     } finally {
@@ -173,97 +129,99 @@ export function LoginForm({
         return;
       }
     } else {
-      if (!values.password || values.password.length < 6) {
-        toast.error("Password must be at least 6 characters.");
+      if (!values.password || values.password.length < 4) {
+        toast.error("Password must be at least 4 characters.");
         return;
       }
     }
 
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 600));
-    setLoading(false);
-    
-    // Validate credentials
-    if (!demoCreds || !role) {
-      toast.error("Invalid role configuration");
-      return;
+    try {
+      if (isOtpMode) {
+        const res = await authService.verifyOtp(values.identifier, values.otp || "", role);
+        login({ id: res.id, email: res.email, name: res.name, role: res.role });
+        toast.success(`Welcome, ${res.name}`);
+        navigate({ to: redirectUrl });
+      } else {
+        const res = await authService.login(values.identifier, values.password || "");
+        login({ id: res.id, email: res.email, name: res.name, role: res.role });
+        toast.success(`Welcome, ${res.name}`);
+        navigate({ to: redirectUrl });
+      }
+    } catch (e: any) {
+      toast.error(e.message || "Authentication failed. Check your credentials.");
+    } finally {
+      setLoading(false);
     }
-
-    const expectedIdentifier = identifierType === "email" ? (demoCreds as any).email : (demoCreds as any).employeeId;
-
-    if (values.identifier !== expectedIdentifier || values.password !== demoCreds.password) {
-      toast.error("Incorrect credentials. Please check and try again.");
-      return;
-    }
-
-    // Mock login logic mapping to the requested role
-    login(role, values.identifier, demoCreds.name);
-    toast.success(`Welcome, ${title}`);
-    navigate({ to: redirectUrl });
   };
 
   const copyCreds = () => {
     if (!demoCreds) return;
-    const identifier = identifierType === "email" ? (demoCreds as any).email : (demoCreds as any).employeeId;
-    setValue("identifier", identifier);
-    setValue("password", demoCreds.password);
-    toast.success("Demo credentials copied to form");
+    const credText =
+      identifierType === "email"
+        ? `Email: ${demoCreds.email}\nPassword: ${demoCreds.password}`
+        : `Employee ID: ${demoCreds.employeeId}\nPassword: ${demoCreds.password}`;
+    navigator.clipboard.writeText(credText);
+    toast.success("Credentials copied to clipboard!");
   };
 
-  const InputIcon = identifierType === "email" ? Mail : User;
-  const identifierLabel = identifierType === "email" ? (isAdmin ? "Admin ID" : "Email Address") : "Employee ID";
-
   return (
-    <>
-      <Link
-        to="/login"
-        className={cn(
-          "inline-flex items-center text-sm font-medium mb-6 transition-colors",
-          isDark ? "text-zinc-400 hover:text-zinc-100" : "text-muted-foreground hover:text-foreground"
+    <div className="w-full space-y-6">
+      <div className="flex flex-col items-center text-center">
+        {!isAdmin && (
+          <Link
+            to="/login"
+            className={cn(
+              "flex items-center gap-1.5 text-sm font-medium mb-6 self-start transition-colors",
+              isDark ? "text-zinc-400 hover:text-zinc-200" : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            <ArrowLeft className="w-4 h-4" /> Back to portal selection
+          </Link>
         )}
-      >
-        <ArrowLeft className="w-4 h-4 mr-2" /> {isAdmin ? "Back to Role Selection" : "Back"}
-      </Link>
-      
-      <div className="flex flex-col items-center mb-8">
+
         <div
           className={cn(
-            "w-12 h-12 rounded-xl flex items-center justify-center mb-4 shadow-lg",
-            isDark ? "bg-zinc-900 border border-zinc-800" : colorClass
+            "w-12 h-12 rounded-xl flex items-center justify-center mb-3 shadow-lg",
+            isDark ? "bg-zinc-800 text-zinc-100 shadow-zinc-950/50" : cn(colorClass, "text-white")
           )}
         >
-          <Icon className={cn("h-7 w-7", isDark ? "text-zinc-400" : "text-white")} />
+          <Icon className="w-6 h-6" />
         </div>
-        <h1 className={cn("text-2xl font-bold tracking-tight", isDark ? "text-white font-mono" : "text-foreground")}>
+        <h1 className={cn("text-xl font-bold tracking-tight", isDark ? "text-zinc-100" : "text-foreground")}>
           {title}
         </h1>
-        <p className={cn("text-sm mt-1", isDark ? "text-zinc-500 font-mono uppercase tracking-widest" : "text-muted-foreground")}>
-          {isAdmin ? "Restricted Access" : "TransitOps Sign In"}
+        <p className={cn("text-xs mt-0.5", isDark ? "text-zinc-500" : "text-muted-foreground")}>
+          {isAdmin ? "System Administrator Access" : `Authorized ${role} login`}
         </p>
       </div>
 
       <section
         className={cn(
-          "rounded-xl p-6 border shadow-sm mb-6",
-          "rounded-xl p-6 border shadow-sm w-full max-w-[440px] mx-auto",
+          "rounded-[5px] p-6 border shadow-sm w-full max-w-[440px] mx-auto",
           isDark ? "bg-zinc-900/50 border-zinc-800 backdrop-blur-sm" : "bg-card"
         )}
       >
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          
           {/* OTP Mode Switcher */}
           {!isAdmin && (
-            <div className="flex rounded-lg bg-muted p-1 text-sm mb-4">
+            <div className="flex rounded-[5px] bg-muted p-1 text-sm mb-4">
               <button
                 type="button"
-                className={cn("flex-1 py-1.5 rounded-md font-medium transition-all text-center", !isOtpMode ? "bg-card text-foreground shadow-sm" : "text-muted-foreground")}
+                className={cn(
+                  "flex-1 py-1.5 rounded-[5px] font-medium transition-all text-center",
+                  !isOtpMode ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
+                )}
                 onClick={() => setIsOtpMode(false)}
               >
                 Password
               </button>
               <button
                 type="button"
-                className={cn("flex-1 py-1.5 rounded-md font-medium transition-all text-center", isOtpMode ? "bg-card text-foreground shadow-sm" : "text-muted-foreground")}
+                className={cn(
+                  "flex-1 py-1.5 rounded-[5px] font-medium transition-all text-center",
+                  isOtpMode ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
+                )}
                 onClick={() => setIsOtpMode(true)}
               >
                 OTP Code
@@ -271,29 +229,24 @@ export function LoginForm({
             </div>
           )}
 
+          {/* Identifier Input Container */}
           <div className="space-y-1.5">
             <Label
               htmlFor="identifier"
-              className={cn(
-                "text-xs uppercase tracking-wider",
-                isDark ? "text-zinc-500 font-mono" : "text-muted-foreground"
-              )}
+              className={cn("text-xs uppercase tracking-wider", isDark ? "text-zinc-500 font-mono" : "text-muted-foreground")}
             >
               {identifierLabel}
             </Label>
             <div className="flex gap-2">
               <div className="relative flex-1">
                 <InputIcon
-                  className={cn(
-                    "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4",
-                    isDark ? "text-zinc-500" : "text-muted-foreground"
-                  )}
+                  className={cn("absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4", isDark ? "text-zinc-500" : "text-muted-foreground")}
                 />
                 <Input
                   id="identifier"
                   type={identifierType === "email" ? "email" : "text"}
                   className={cn(
-                    "pl-9",
+                    "pl-12",
                     isDark && "bg-zinc-950 border-zinc-800 focus-visible:ring-zinc-700 text-zinc-100 placeholder:text-zinc-500"
                   )}
                   placeholder={defaultIdentifier || (identifierType === "email" ? "Enter email" : "Enter ID")}
@@ -301,13 +254,7 @@ export function LoginForm({
                 />
               </div>
               {isOtpMode && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  disabled={sendingOtp}
-                  onClick={handleSendOtp}
-                  className="shrink-0"
-                >
+                <Button type="button" variant="outline" disabled={sendingOtp} onClick={handleSendOtp} className="shrink-0 rounded-[5px]">
                   {sendingOtp ? <Loader2 className="h-4 w-4 animate-spin" /> : "Send OTP"}
                 </Button>
               )}
@@ -319,33 +266,36 @@ export function LoginForm({
             )}
           </div>
 
+          {/* Password or OTP Input Container */}
           {!isOtpMode ? (
             <div className="space-y-1.5">
               <div className="flex justify-between items-center">
                 <Label
                   htmlFor="password"
-                  className={cn(
-                    "text-xs uppercase tracking-wider",
-                    isDark ? "text-zinc-500 font-mono" : "text-muted-foreground"
-                  )}
+                  className={cn("text-xs uppercase tracking-wider", isDark ? "text-zinc-500 font-mono" : "text-muted-foreground")}
                 >
-                  {isAdmin ? "Passkey" : "Password"}
+                  Password
                 </Label>
                 <Link
                   to="/forgot-password"
-                  className={cn(
-                    "text-xs font-semibold hover:underline",
-                    isDark ? "text-zinc-400" : "text-primary"
-                  )}
+                  className={cn("text-xs font-semibold hover:underline", isDark ? "text-zinc-400 hover:text-zinc-300" : "text-primary")}
                 >
                   Forgot Password?
                 </Link>
               </div>
-              <PasswordInput
-                id="password"
-                theme={theme}
-                {...register("password")}
-              />
+              <div className="relative">
+                <Lock
+                  className={cn("absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4", isDark ? "text-zinc-500" : "text-muted-foreground")}
+                />
+                <PasswordInput
+                  id="password"
+                  className={cn(
+                    "pl-12",
+                    isDark && "bg-zinc-950 border-zinc-800 focus-visible:ring-zinc-700 text-zinc-100 placeholder:text-zinc-500"
+                  )}
+                  {...register("password")}
+                />
+              </div>
               {errors.password && (
                 <p className={cn("text-xs", isDark ? "text-red-400 font-mono" : "text-destructive")}>
                   {errors.password.message}
@@ -356,26 +306,20 @@ export function LoginForm({
             <div className="space-y-1.5">
               <Label
                 htmlFor="otp"
-                className={cn(
-                  "text-xs uppercase tracking-wider",
-                  isDark ? "text-zinc-500 font-mono" : "text-muted-foreground"
-                )}
+                className={cn("text-xs uppercase tracking-wider", isDark ? "text-zinc-500 font-mono" : "text-muted-foreground")}
               >
                 Verification OTP Code
               </Label>
               <div className="relative">
                 <KeyRound
-                  className={cn(
-                    "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4",
-                    isDark ? "text-zinc-500" : "text-outline"
-                  )}
+                  className={cn("absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4", isDark ? "text-zinc-500" : "text-muted-foreground")}
                 />
                 <Input
                   id="otp"
                   type="text"
                   maxLength={6}
                   className={cn(
-                    "pl-9 font-mono tracking-widest text-center text-lg",
+                    "pl-12 font-mono tracking-widest text-center text-lg",
                     isDark && "bg-zinc-950 border-zinc-800 focus-visible:ring-zinc-700 text-zinc-100 placeholder:text-zinc-500"
                   )}
                   placeholder="000000"
@@ -399,10 +343,7 @@ export function LoginForm({
             />
             <Label
               htmlFor="remember"
-              className={cn(
-                "text-sm font-normal cursor-pointer",
-                isDark ? "text-zinc-400" : "text-muted-foreground"
-              )}
+              className={cn("text-sm font-normal cursor-pointer", isDark ? "text-zinc-400" : "text-muted-foreground")}
             >
               Remember Me
             </Label>
@@ -446,7 +387,7 @@ export function LoginForm({
       {demoCreds && (
         <section
           className={cn(
-            "rounded-xl p-4 border text-sm",
+            "rounded-[5px] p-4 border text-sm",
             isDark ? "bg-zinc-900/30 border-zinc-800" : "bg-muted/50 border-muted"
           )}
         >
@@ -465,7 +406,7 @@ export function LoginForm({
               <Copy className="w-3 h-3" /> Copy
             </button>
           </div>
-          
+
           <div className="space-y-2 font-mono text-xs">
             <div className="flex justify-between">
               <span className={isDark ? "text-zinc-500" : "text-muted-foreground"}>
@@ -482,6 +423,6 @@ export function LoginForm({
           </div>
         </section>
       )}
-    </>
+    </div>
   );
 }
