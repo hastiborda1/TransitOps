@@ -125,7 +125,7 @@ export function LoginForm({
   };
 
   const handleSendOtp = async () => {
-    const email = getValues("identifier");
+    const email = watchEmail;
     if (!email || !z.string().email().safeParse(email).success) {
       toast.error("Please enter a valid email address first.");
       return;
@@ -136,6 +136,7 @@ export function LoginForm({
       await authService.sendOtp(email);
       toast.success("OTP verification code sent to your email!");
     } catch (e: any) {
+      console.error("OTP send failed:", e);
       toast.error(e.message || "Failed to send OTP code");
     } finally {
       setSendingOtp(false);
