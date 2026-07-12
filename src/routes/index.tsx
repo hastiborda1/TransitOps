@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Truck, Navigation, ShieldCheck, DollarSign, ArrowRight, Phone, UserCheck, ShieldAlert, BarChart3, Database } from "lucide-react";
+import { Truck, Navigation, ShieldCheck, DollarSign, ArrowRight, Phone, Database } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -22,7 +22,7 @@ function LandingPage() {
       <header className="sticky top-0 z-50 bg-[#1E1C18] text-[#F5F5F3] border-b border-white/5 transition-all">
         <div className="max-w-7xl mx-auto px-8 h-20 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="grid h-10 w-10 place-items-center rounded-none bg-[#C59B27]">
+            <div className="grid h-10 w-10 place-items-center rounded-[5px] bg-[#C59B27]">
               <Truck className="h-5 w-5 text-white" />
             </div>
             <div>
@@ -39,7 +39,7 @@ function LandingPage() {
 
           <div className="flex items-center gap-6">
             <Link to="/login">
-              <button className="bg-[#C59B27] hover:bg-[#b08920] text-white text-xs font-bold uppercase tracking-widest px-6 py-3 rounded-none transition-all duration-300">
+              <button className="bg-[#C59B27] hover:bg-[#b08920] text-white text-xs font-bold uppercase tracking-widest px-6 py-3 rounded-[5px] transition-all duration-300">
                 Client Portal
               </button>
             </Link>
@@ -60,7 +60,7 @@ function LandingPage() {
 
         <div className="relative z-10 max-w-7xl mx-auto px-8 py-24 grid lg:grid-cols-12 gap-16 items-center w-full">
           <div className="lg:col-span-7 space-y-8">
-            <div className="inline-flex items-center gap-2 bg-[#C59B27]/10 border border-[#C59B27]/20 px-4 py-2 rounded-none text-[10px] font-bold uppercase tracking-widest text-[#C59B27]">
+            <div className="inline-flex items-center gap-2 bg-[#C59B27]/10 border border-[#C59B27]/20 px-4 py-2 rounded-[5px] text-[10px] font-bold uppercase tracking-widest text-[#C59B27]">
               End-to-End Fleet Integration
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight leading-[1.05] text-[#F5F5F3]">
@@ -72,12 +72,12 @@ function LandingPage() {
             </p>
             <div className="pt-2 flex flex-wrap gap-4">
               <Link to="/login">
-                <button className="bg-[#C59B27] hover:bg-[#b08920] text-white font-extrabold uppercase tracking-widest text-xs px-8 py-4.5 rounded-none transition-all duration-300 hover:translate-x-1 flex items-center gap-3">
+                <button className="bg-[#C59B27] hover:bg-[#b08920] text-white font-extrabold uppercase tracking-widest text-xs px-8 py-4.5 rounded-[5px] transition-all duration-300 hover:translate-x-1 flex items-center gap-3">
                   Enter System Portal <ArrowRight className="h-4 w-4" />
                 </button>
               </Link>
               <a href="/UI_RULEBOOK.html" target="_blank">
-                <button className="bg-white/5 hover:bg-white/10 border border-white/10 text-white font-extrabold uppercase tracking-widest text-xs px-8 py-4.5 rounded-none transition-all">
+                <button className="bg-white/5 hover:bg-white/10 border border-white/10 text-white font-extrabold uppercase tracking-widest text-xs px-8 py-4.5 rounded-[5px] transition-all">
                   Design Specifications
                 </button>
               </a>
@@ -85,18 +85,18 @@ function LandingPage() {
           </div>
 
           <div className="lg:col-span-5 hidden lg:block">
-            {/* Transparent Glassmorphic Widget - Sharp */}
-            <div className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-none p-8 shadow-2xl space-y-6">
+            {/* Transparent Glassmorphic Widget - Soft Rounded 5px */}
+            <div className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-[5px] p-8 shadow-2xl space-y-6">
               <div className="flex items-center justify-between border-b border-white/10 pb-4">
                 <span className="text-xs uppercase font-extrabold tracking-widest text-[#C59B27]">Telemetry Sync Status</span>
                 <span className="inline-flex items-center h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
               </div>
               <div className="space-y-4">
-                <div className="flex justify-between items-center bg-white/5 p-4 rounded-none border border-white/5">
+                <div className="flex justify-between items-center bg-white/5 p-4 rounded-[5px] border border-white/5">
                   <span className="text-xs text-gray-300 font-medium">Compliance Violations</span>
                   <span className="text-sm font-extrabold text-emerald-400">0 Alerts</span>
                 </div>
-                <div className="flex justify-between items-center bg-white/5 p-4 rounded-none border border-white/5">
+                <div className="flex justify-between items-center bg-white/5 p-4 rounded-[5px] border border-white/5">
                   <span className="text-xs text-gray-300 font-medium">Utilization Percentage</span>
                   <span className="text-sm font-extrabold text-[#C59B27]">98.2%</span>
                 </div>
@@ -130,8 +130,8 @@ function LandingPage() {
               
               {/* Fleet Manager Card (Top-Left Position) */}
               <div className="relative group md:translate-y-[-15px] md:-translate-x-2">
-                <div className="bg-[#FAF9F5] text-[#2E2C26] p-8 rounded-none shadow-xl border border-white/10 min-h-[220px] flex flex-col justify-end pt-12 relative">
-                  <div className="absolute -top-6 left-6 bg-[#32302A] text-white px-5 py-2.5 rounded-none text-xs font-black uppercase tracking-wider border border-white/10 shadow-lg group-hover:border-[#C59B27] transition-colors">
+                <div className="bg-[#FAF9F5] text-[#2E2C26] p-8 rounded-[5px] shadow-xl border border-white/10 min-h-[220px] flex flex-col justify-end pt-12 relative">
+                  <div className="absolute -top-6 left-6 bg-[#32302A] text-white px-5 py-2.5 rounded-[5px] text-xs font-black uppercase tracking-wider border border-white/10 shadow-lg group-hover:border-[#C59B27] transition-colors">
                     Fleet Manager
                   </div>
                   <p className="text-xs text-[#7E7B72] leading-relaxed">
@@ -142,8 +142,8 @@ function LandingPage() {
 
               {/* Driver Card (Top-Right Position) */}
               <div className="relative group md:translate-y-[45px] md:translate-x-4">
-                <div className="bg-[#FAF9F5] text-[#2E2C26] p-8 rounded-none shadow-xl border border-white/10 min-h-[220px] flex flex-col justify-end pt-12 relative">
-                  <div className="absolute -top-6 left-6 bg-[#32302A] text-white px-5 py-2.5 rounded-none text-xs font-black uppercase tracking-wider border border-white/10 shadow-lg group-hover:border-[#C59B27] transition-colors">
+                <div className="bg-[#FAF9F5] text-[#2E2C26] p-8 rounded-[5px] shadow-xl border border-white/10 min-h-[220px] flex flex-col justify-end pt-12 relative">
+                  <div className="absolute -top-6 left-6 bg-[#32302A] text-white px-5 py-2.5 rounded-[5px] text-xs font-black uppercase tracking-wider border border-white/10 shadow-lg group-hover:border-[#C59B27] transition-colors">
                     Active Driver
                   </div>
                   <p className="text-xs text-[#7E7B72] leading-relaxed">
@@ -154,8 +154,8 @@ function LandingPage() {
 
               {/* Safety Officer Card (Bottom-Left Position) */}
               <div className="relative group md:translate-y-[-30px] md:-translate-x-6">
-                <div className="bg-[#FAF9F5] text-[#2E2C26] p-8 rounded-none shadow-xl border border-white/10 min-h-[220px] flex flex-col justify-end pt-12 relative">
-                  <div className="absolute -top-6 left-6 bg-[#32302A] text-white px-5 py-2.5 rounded-none text-xs font-black uppercase tracking-wider border border-white/10 shadow-lg group-hover:border-[#C59B27] transition-colors">
+                <div className="bg-[#FAF9F5] text-[#2E2C26] p-8 rounded-[5px] shadow-xl border border-white/10 min-h-[220px] flex flex-col justify-end pt-12 relative">
+                  <div className="absolute -top-6 left-6 bg-[#32302A] text-white px-5 py-2.5 rounded-[5px] text-xs font-black uppercase tracking-wider border border-white/10 shadow-lg group-hover:border-[#C59B27] transition-colors">
                     Safety Officer
                   </div>
                   <p className="text-xs text-[#7E7B72] leading-relaxed">
@@ -166,8 +166,8 @@ function LandingPage() {
 
               {/* Financial Analyst Card (Bottom-Right Position) */}
               <div className="relative group md:translate-y-[30px] md:translate-x-2">
-                <div className="bg-[#FAF9F5] text-[#2E2C26] p-8 rounded-none shadow-xl border border-white/10 min-h-[220px] flex flex-col justify-end pt-12 relative">
-                  <div className="absolute -top-6 left-6 bg-[#32302A] text-white px-5 py-2.5 rounded-none text-xs font-black uppercase tracking-wider border border-white/10 shadow-lg group-hover:border-[#C59B27] transition-colors">
+                <div className="bg-[#FAF9F5] text-[#2E2C26] p-8 rounded-[5px] shadow-xl border border-white/10 min-h-[220px] flex flex-col justify-end pt-12 relative">
+                  <div className="absolute -top-6 left-6 bg-[#32302A] text-white px-5 py-2.5 rounded-[5px] text-xs font-black uppercase tracking-wider border border-white/10 shadow-lg group-hover:border-[#C59B27] transition-colors">
                     Financial Analyst
                   </div>
                   <p className="text-xs text-[#7E7B72] leading-relaxed">
@@ -181,7 +181,7 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* Functional Modules Section - Sharp Grid */}
+      {/* Functional Modules Section - 5px Rounded Grid */}
       <section id="features" className="max-w-7xl mx-auto px-8 py-32 relative z-10">
         <div className="grid lg:grid-cols-12 gap-16 items-start">
           <div className="lg:col-span-4 lg:sticky lg:top-32 space-y-6">
@@ -196,10 +196,10 @@ function LandingPage() {
           <div className="lg:col-span-8 space-y-10">
             <div className="grid sm:grid-cols-2 gap-8">
               {/* Card 01 */}
-              <div className="bg-white border border-[#D1CFC7] p-8 rounded-none flex flex-col justify-between hover:border-[#C59B27] transition-all duration-300 min-h-[260px]">
+              <div className="bg-white border border-[#D1CFC7] p-8 rounded-[5px] flex flex-col justify-between hover:border-[#C59B27] transition-all duration-300 min-h-[260px]">
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
-                    <div className="p-3 bg-[#EBE9E1] rounded-none text-[#C59B27]">{<Navigation className="h-5 w-5" />}</div>
+                    <div className="p-3 bg-[#EBE9E1] rounded-[5px] text-[#C59B27]">{<Navigation className="h-5 w-5" />}</div>
                     <span className="text-[10px] font-extrabold text-[#C59B27]/60 font-mono tracking-widest">01 / DISPATCH</span>
                   </div>
                   <h3 className="font-extrabold text-sm uppercase tracking-wider text-[#1F1F1F]">Trip Registry Validation</h3>
@@ -210,10 +210,10 @@ function LandingPage() {
               </div>
 
               {/* Card 02 */}
-              <div className="bg-[#1E1C18] border border-[#2D2D2D] p-8 rounded-none flex flex-col justify-between hover:border-[#C59B27] transition-all duration-300 min-h-[260px] text-[#F5F5F3]">
+              <div className="bg-[#1E1C18] border border-[#2D2D2D] p-8 rounded-[5px] flex flex-col justify-between hover:border-[#C59B27] transition-all duration-300 min-h-[260px] text-[#F5F5F3]">
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
-                    <div className="p-3 bg-white/5 rounded-none text-[#C59B27]">{<ShieldCheck className="h-5 w-5" />}</div>
+                    <div className="p-3 bg-white/5 rounded-[5px] text-[#C59B27]">{<ShieldCheck className="h-5 w-5" />}</div>
                     <span className="text-[10px] font-extrabold text-[#C59B27]/60 font-mono tracking-widest">02 / LICENSING</span>
                   </div>
                   <h3 className="font-extrabold text-sm uppercase tracking-wider text-[#F5F5F3]">Compliance Audits</h3>
@@ -224,10 +224,10 @@ function LandingPage() {
               </div>
 
               {/* Card 03 */}
-              <div className="bg-[#1E1C18] border border-[#2D2D2D] p-8 rounded-none flex flex-col justify-between hover:border-[#C59B27] transition-all duration-300 min-h-[260px] text-[#F5F5F3]">
+              <div className="bg-[#1E1C18] border border-[#2D2D2D] p-8 rounded-[5px] flex flex-col justify-between hover:border-[#C59B27] transition-all duration-300 min-h-[260px] text-[#F5F5F3]">
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
-                    <div className="p-3 bg-white/5 rounded-none text-[#C59B27]">{<Database className="h-5 w-5" />}</div>
+                    <div className="p-3 bg-white/5 rounded-[5px] text-[#C59B27]">{<Database className="h-5 w-5" />}</div>
                     <span className="text-[10px] font-extrabold text-[#C59B27]/60 font-mono tracking-widest">03 / LIFECYCLE</span>
                   </div>
                   <h3 className="font-extrabold text-sm uppercase tracking-wider text-[#F5F5F3]">Automated Workflows</h3>
@@ -238,10 +238,10 @@ function LandingPage() {
               </div>
 
               {/* Card 04 */}
-              <div className="bg-white border border-[#D1CFC7] p-8 rounded-none flex flex-col justify-between hover:border-[#C59B27] transition-all duration-300 min-h-[260px]">
+              <div className="bg-white border border-[#D1CFC7] p-8 rounded-[5px] flex flex-col justify-between hover:border-[#C59B27] transition-all duration-300 min-h-[260px]">
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
-                    <div className="p-3 bg-[#EBE9E1] rounded-none text-[#C59B27]">{<DollarSign className="h-5 w-5" />}</div>
+                    <div className="p-3 bg-[#EBE9E1] rounded-[5px] text-[#C59B27]">{<DollarSign className="h-5 w-5" />}</div>
                     <span className="text-[10px] font-extrabold text-[#C59B27]/60 font-mono tracking-widest">04 / LEDGER</span>
                   </div>
                   <h3 className="font-extrabold text-sm uppercase tracking-wider text-[#1F1F1F]">Operating Cost Calculus</h3>
@@ -266,7 +266,7 @@ function LandingPage() {
           </p>
           <div className="pt-2">
             <Link to="/login">
-              <button className="bg-[#C59B27] hover:bg-[#b08920] text-white font-extrabold uppercase tracking-widest text-xs px-12 py-5 rounded-none transition-all duration-300 hover:translate-x-1 flex items-center gap-3 mx-auto">
+              <button className="bg-[#C59B27] hover:bg-[#b08920] text-white font-extrabold uppercase tracking-widest text-xs px-12 py-5 rounded-[5px] transition-all duration-300 hover:translate-x-1 flex items-center gap-3 mx-auto">
                 Access System Portal <ArrowRight className="h-4 w-4" />
               </button>
             </Link>
