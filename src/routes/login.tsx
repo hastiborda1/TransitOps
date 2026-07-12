@@ -5,7 +5,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Truck, ShieldCheck, PieChart, User, Mail, KeyRound, Loader2, ShieldAlert } from "lucide-react";
 import { toast } from "sonner";
-import { useAuth } from "@/lib/auth";
 import { AuthLayout } from "@/components/auth/AuthLayout";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -228,14 +227,6 @@ function UnifiedLoginPage() {
             </button>
           </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="email" className="text-xs uppercase tracking-wider text-muted-foreground">
-                Email Address
-              </Label>
-              <div className="relative">
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-outline" />
-                <Input id="email" type="email" className="pl-12" placeholder="manager@transitops.com" {...register("email")} />
           {/* Identifier Input */}
           <div className="space-y-1.5">
             <Label htmlFor="identifier" className="text-xs uppercase tracking-wider text-muted-foreground">
@@ -275,13 +266,6 @@ function UnifiedLoginPage() {
                 Verification OTP Code
               </Label>
               <div className="relative">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-outline" />
-                <Input
-                  id="password"
-                  type={showPw ? "text" : "password"}
-                  className="pl-12 pr-12"
-                  placeholder="••••••••"
-                  {...register("password")}
                 <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-outline" />
                 <Input
                   id="otp"
@@ -302,12 +286,6 @@ function UnifiedLoginPage() {
               Remember Me
             </Label>
           </div>
-        </section>
-
-        <footer className="mt-8 text-center space-y-2">
-          <p className="text-xs text-muted-foreground">© 2026 TransitOps Systems. Digitizing transport logbooks under strict compliance.</p>
-          <div className="flex justify-center gap-6 text-[10px] font-bold uppercase tracking-wider">
-            <a href="#" className="text-muted-foreground hover:text-primary transition-colors">Security Policy</a>
 
           <AuthButton label="Sign In" loading={loading} />
 
