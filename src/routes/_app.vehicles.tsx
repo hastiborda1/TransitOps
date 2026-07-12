@@ -112,7 +112,7 @@ function VehiclesPage() {
   };
 
   const handleExport = () => {
-    if (!data) return;
+    if (!Array.isArray(data)) return;
     const headers = ["Vehicle Plate", "Make", "Model", "Year", "Type", "Status", "Odometer (km)", "Fuel Type", "Max Load (kg)", "Acquisition Cost ($)"];
     const rows = data.map((v: any) => [
       v.plate,
@@ -205,7 +205,7 @@ function VehiclesPage() {
       />
 
       <DataTable
-        data={data ?? []}
+        data={Array.isArray(data) ? data : []}
         columns={columns}
         isLoading={isLoading}
         searchKeys={["plate", "make", "model", "driver"]}

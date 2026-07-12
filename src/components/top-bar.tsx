@@ -4,18 +4,28 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { authService } from "@/services/api";
+import { useAuth } from "@/lib/auth";
 
 const roleLabels: Record<string, string> = {
   manager: "Fleet Manager",
   driver: "Driver",
   safety: "Safety Officer",
   finance: "Financial Analyst",
+  "fleet-manager": "Fleet Manager",
+  "safety-officer": "Safety Officer",
+  "financial-analyst": "Financial Analyst",
+  admin: "System Administrator",
 };
 
 export function TopBar() {
-  const user = authService.getCurrentUser() || { name: "Alex Morgan", role: "manager" };
-  const initials = user.name
+  const { getSession } = useAuth();
+  const session = getSession();
+  const user = session || { name: "Alex Morgan", role: "manager" };
+
+  const name = user.name || "Alex Morgan";
+  const role = roleLabels[user.role] || user.role || "Fleet Manager";
+
+  const initials = name
     .split(" ")
     .map((n: string) => n[0])
     .join("")
@@ -28,7 +38,7 @@ export function TopBar() {
       <Separator orientation="vertical" className="h-6 hidden sm:block" />
       <div className="relative flex-1 max-w-md hidden md:block">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input placeholder="Search vehicles, drivers, trips…" className="pl-9 h-9 bg-surface-container-low border-transparent focus-visible:bg-background" />
+        <Input placeholder="Search vehicles, drivers, trips…" className="pl-12 h-9 bg-surface-container-low border-transparent focus-visible:bg-background" />
       </div>
       <div className="flex items-center gap-2 ml-auto">
         <Button variant="ghost" size="icon" aria-label="Notifications" className="relative">
@@ -37,8 +47,8 @@ export function TopBar() {
         </Button>
         <div className="hidden sm:flex items-center gap-2 pl-2">
           <div className="text-right leading-tight">
-            <p className="text-xs font-semibold">{user.name}</p>
-            <p className="text-[10px] text-muted-foreground">{roleLabels[user.role] || user.role}</p>
+            <p className="text-xs font-semibold">{name}</p>
+            <p className="text-[10px] text-muted-foreground">{role}</p>
           </div>
           <Avatar className="h-8 w-8">
             <AvatarFallback className="bg-primary text-primary-foreground text-xs font-semibold">{initials}</AvatarFallback>

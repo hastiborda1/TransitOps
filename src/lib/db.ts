@@ -1,27 +1,8 @@
-import {
-  vehicles as mockVehicles,
-  drivers as mockDrivers,
-  trips as mockTrips,
-  maintenance as mockMaintenance,
-  fuelLogs as mockFuelLogs,
-  expenses as mockExpenses,
-  type Vehicle,
-  type Driver,
-  type Trip,
-  type Maintenance,
-  type FuelLog,
-  type Expense,
-} from "./mock-data";
-
 const connectionString =
   process.env.DATABASE_URL || "postgresql://postgres:postgres@localhost:5432/Transit";
 
 let pool: any = null;
-<<<<<<< Updated upstream
 let useFallbackDb = true;
-=======
-let useFallbackDb = typeof window !== "undefined";
->>>>>>> Stashed changes
 
 // Fallback in-memory database extending the mock data with business rules requirements
 export const fallbackDb = {
@@ -31,51 +12,25 @@ export const fallbackDb = {
     { id: "U-003", email: "safety@transitops.com", password: "demo1234", name: "Safety Officer", role: "safety" },
     { id: "U-004", email: "finance@transitops.com", password: "demo1234", name: "Financial Analyst", role: "finance" },
   ],
-  vehicles: mockVehicles.map(v => ({
-    ...v,
-    maxLoad: v.type === "Truck" ? 15000 : v.type === "Van" ? 2500 : 800, // kg
-    acquisitionCost: v.type === "Truck" ? 85000 : v.type === "Van" ? 35000 : 15000,
-  })),
-  drivers: mockDrivers.map(d => ({
-    ...d,
-    licenseCategory: d.license === "CDL-A" ? "Heavy Truck" : "Light Truck",
-    licenseExpiry: "2027-12-31", // Valid expiry
-  })),
-  trips: mockTrips.map(t => ({
-    ...t,
-    cargoWeight: 500, // Default kg
-    plannedDistance: t.distance,
-  })),
-  maintenance: [...mockMaintenance],
-  fuelLogs: [...mockFuelLogs],
-  expenses: [...mockExpenses],
+  vehicles: [] as any[],
+  drivers: [] as any[],
+  trips: [] as any[],
+  maintenance: [] as any[],
+  fuelLogs: [] as any[],
+  expenses: [] as any[],
 };
 
-<<<<<<< Updated upstream
-async function getPool() {
-=======
 // Helper to initialize pool dynamically on the server
-async function ensurePool() {
-  if (useFallbackDb) return null;
-  if (pool) return pool;
-
->>>>>>> Stashed changes
+async function getPool() {
   if (typeof window !== "undefined") {
     useFallbackDb = true;
     return null;
   }
-<<<<<<< Updated upstream
   if (pool) return pool;
-  try {
-    const pg = await import("pg");
-    pool = new pg.default.Pool({
-=======
-
   try {
     const pgModule = await import("pg");
     const PoolClass = pgModule.default?.Pool || pgModule.Pool;
     pool = new PoolClass({
->>>>>>> Stashed changes
       connectionString,
       connectionTimeoutMillis: 2000,
     });
@@ -88,11 +43,7 @@ async function ensurePool() {
 }
 
 export async function query<T = any>(text: string, params?: any[]): Promise<T[]> {
-<<<<<<< Updated upstream
   const activePool = await getPool();
-=======
-  const activePool = await ensurePool();
->>>>>>> Stashed changes
   if (useFallbackDb || !activePool) {
     return mockQueryFallback(text, params);
   }
@@ -138,7 +89,6 @@ function mockQueryFallback(text: string, params?: any[]): any[] {
 }
 
 export async function initDb() {
-<<<<<<< Updated upstream
   if (typeof window !== "undefined") return;
   
   // Only attempt PostgreSQL connection if a connection string is set
@@ -149,14 +99,8 @@ export async function initDb() {
   }
 
   const activePool = await getPool();
-  if (!activePool) {
-    console.log("Failed to initialize database pool. Using in-memory database store.");
-    useFallbackDb = true;
-=======
-  const activePool = await ensurePool();
   if (useFallbackDb || !activePool) {
     console.log("Using in-memory database store.");
->>>>>>> Stashed changes
     return;
   }
   pool = activePool;
@@ -317,7 +261,7 @@ export async function initDb() {
       console.log("Seeding completed successfully.");
     }
   } catch (error) {
-    console.error("PostgreSQL connection / migration error. Switching to fallback in-memory DB.", error);
+    console.error("PostgreSQL connection / migration error. Switching to fallback in-memory DB. Error:", error);
     useFallbackDb = true;
   }
 }

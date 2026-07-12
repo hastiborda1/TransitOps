@@ -11,6 +11,12 @@ export default defineConfig({
     server: {
       port: 3000,
       allowedHosts: ["localhost", ".trycloudflare.com"],
+      proxy: {
+        "/api": {
+          target: "http://localhost:8000",
+          changeOrigin: true,
+        },
+      },
     },
   },
   tanstackStart: {
