@@ -2,11 +2,8 @@ import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { TopBar } from "@/components/top-bar";
-<<<<<<< Updated upstream
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
-=======
 import { authService } from "@/services/api";
->>>>>>> Stashed changes
 
 export const Route = createFileRoute("/_app")({
   beforeLoad: () => {
