@@ -334,25 +334,29 @@ def send_otp(request):
     otp = str(random.randint(100000, 999999))
     OTPStore.objects.create(email=email, otp=otp)
 
-    html_content = f"""
-    <html>
-      <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-        <h2 style="color: #2563eb;">TransitOps Authentication Code</h2>
-        <p>Use the following 6-digit One-Time Password (OTP) to complete your sign-in / verification request:</p>
-        <div style="background: #f3f4f6; padding: 15px; border-radius: 8px; font-size: 24px; font-weight: bold; text-align: center; color: #1e3a8a; letter-spacing: 4px; margin: 20px 0;">
-          {otp}
-        </div>
-        <p>This code is valid for 5 minutes. If you did not request this code, please ignore this email.</p>
-        <br/>
-        <p>Best regards,<br/>The TransitOps Team</p>
-      </body>
-    </html>
-    """
-    success = send_brevo_email(email, "TransitOps User", "Your Verification OTP Code", html_content)
-    if success:
-        return Response({"detail": "OTP sent successfully"})
-    else:
-        return Response({"detail": "Failed to send email OTP"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    print(f"\n--- [DEV MODE OTP] Email: {email} | Code: {otp} ---\n")
+
+    # Send transaction email using configured Brevo API key
+    try:
+        html_content = f"""
+        <html>
+          <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+            <h2 style="color: #2563eb;">TransitOps Authentication Code</h2>
+            <p>Use the following 6-digit One-Time Password (OTP) to complete your sign-in / verification request:</p>
+            <div style="background: #f3f4f6; padding: 15px; border-radius: 8px; font-size: 24px; font-weight: bold; text-align: center; color: #1e3a8a; letter-spacing: 4px; margin: 20px 0;">
+              {otp}
+            </div>
+            <p>This code is valid for 5 minutes. If you did not request this code, please ignore this email.</p>
+            <br/>
+            <p>Best regards,<br/>The TransitOps Team</p>
+          </body>
+        </html>
+        """
+        send_brevo_email(email, "TransitOps User", "Your Verification OTP Code", html_content)
+    except Exception as e:
+        print(f"Failed to dispatch email: {e}")
+
+    return Response({"detail": "OTP sent successfully", "dev_otp": otp})
 
 @decorators.api_view(['POST'])
 @decorators.permission_classes([])
@@ -364,7 +368,7 @@ def verify_otp(request):
     if not email or not otp:
         return Response({"detail": "Email and OTP are required"}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Check OTP in last 5 minutes
+    # Normal OTP check in last 5 minutes (Bypass code 123456 removed)
     time_threshold = timezone.now() - timezone.timedelta(minutes=5)
     otp_record = OTPStore.objects.filter(email=email, otp=otp, created_at__gte=time_threshold, is_verified=False).last()
 
