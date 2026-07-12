@@ -93,7 +93,7 @@ function UnifiedLoginPage() {
   const [loading, setLoading] = useState(false);
   const [isOtpMode, setIsOtpMode] = useState(false);
   const [sendingOtp, setSendingOtp] = useState(false);
-  const { login } = useAuth();
+
 
   const activeRoleConfig = rolesConfig.find((r) => r.id === selectedRole) || rolesConfig[0];
 
@@ -167,15 +167,6 @@ function UnifiedLoginPage() {
         const res = await authService.login(values.identifier, values.password || "");
         login({ id: res.id, email: res.email, name: res.name, role: res.role });
         toast.success(`Welcome, ${res.username || res.name}`);
-=======
-        login(res.role, res.email, res.username || res.name || res.email);
-        toast.success(`Welcome, ${res.username || res.name || res.email}`);
-        navigate({ to: "/dashboard" });
-      } else {
-        const res = await authService.login(values.identifier, values.password || "");
-        login(res.role, res.email, res.username || res.name || res.email);
-        toast.success(`Welcome, ${res.username || res.name || res.email}`);
->>>>>>> f225225de45f21bc8e06ac5f184b546decfd0b8a
         navigate({ to: "/dashboard" });
       }
     } catch (e: any) {

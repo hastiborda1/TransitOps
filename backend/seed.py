@@ -13,13 +13,13 @@ def seed_db():
     print("Clearing database to prepare for relational seeding...")
 
     # Clear existing data
+    User.objects.all().delete()
     Trip.objects.all().delete()
     Maintenance.objects.all().delete()
     FuelLog.objects.all().delete()
     Expense.objects.all().delete()
     Vehicle.objects.all().delete()
     Driver.objects.all().delete()
-    User.objects.all().delete()
 
     # Seed Users
     users_data = [
@@ -43,7 +43,6 @@ def seed_db():
         # Super Admin accounts
         ("admin", "admin@transitops.com", "demo1234", "System Administrator", "manager", True),
         ("admin-user", "admin@transitops.com", "admin123", "System Admin User", "manager", True),
-        ("admin@gmail.com", "admin@gmail.com", "admin@123", "Admin Proper", "manager", True),
     ]
     for username, email, pwd, name, role, is_admin in users_data:
         if is_admin:

@@ -1,9 +1,6 @@
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
-import { Truck, Navigation, ShieldCheck, DollarSign, ArrowRight, Phone, Database } from "lucide-react";
-import { authService } from "@/services/api";
-=======
 import { Truck, Navigation, ShieldCheck, DollarSign, ArrowRight, Database, Linkedin, Mail, Phone } from "lucide-react";
->>>>>>> f225225de45f21bc8e06ac5f184b546decfd0b8a
+import { authService } from "@/services/api";
 
 export const Route = createFileRoute("/")({
   beforeLoad: () => {

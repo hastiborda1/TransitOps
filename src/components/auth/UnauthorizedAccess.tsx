@@ -1,14 +1,16 @@
-import { Link } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { ShieldAlert, ArrowLeft } from "lucide-react";
 import { authService } from "@/services/api";
 import { useAuth } from "@/lib/auth";
 
 export function UnauthorizedAccess() {
   const { logout } = useAuth();
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     authService.logout();
     logout();
+    navigate('/login');
   };
 
   return (
@@ -22,13 +24,13 @@ export function UnauthorizedAccess() {
           Your current role does not have permission to view this page. If you believe this is a mistake, please contact your system administrator.
         </p>
         <div className="pt-6">
-          <Link
-            to="/login"
+          <button
+            type="button"
             onClick={handleLogout}
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
             <ArrowLeft className="w-4 h-4 mr-2" /> Return to Login
-          </Link>
+          </button>
         </div>
       </div>
     </div>
