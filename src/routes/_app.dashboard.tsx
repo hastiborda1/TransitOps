@@ -52,42 +52,10 @@ function DashboardPage() {
   const tripsQ = useQuery({ queryKey: ["trips"], queryFn: api.trips.list });
   const monthlyQ = useQuery({ queryKey: ["analytics", "monthly"], queryFn: api.analytics.monthly });
 
-<<<<<<< HEAD
-  // Compute precise specification KPIs
-  const totalVehicles = vehiclesQ.data?.length ?? 0;
-  const activeVehicles = vehiclesQ.data?.filter((v) => v.status === "On Trip").length ?? 0;
-  const availableVehicles = vehiclesQ.data?.filter((v) => v.status === "Available").length ?? 0;
-  const maintenanceVehicles = vehiclesQ.data?.filter((v) => v.status === "In Shop").length ?? 0;
-
-  const activeTrips = tripsQ.data?.filter((t) => t.status === "Dispatched").length ?? 0;
-  const pendingTrips = tripsQ.data?.filter((t) => t.status === "Draft").length ?? 0;
-  const driversOnDuty = driversQ.data?.filter((d) => d.status === "Available" || d.status === "On Trip").length ?? 0;
-
-  const fleetUtilization = totalVehicles > 0 ? ((activeVehicles / totalVehicles) * 100).toFixed(1) : "0.0";
-
-  const handleExport = () => {
-    if (!vehiclesQ.data) return;
-    const headers = ["Plate", "Make", "Model", "Type", "Status", "Odometer", "Fuel Type", "Max Load (kg)", "Acquisition Cost ($)"];
-    const rows = vehiclesQ.data.map((v: any) => [
-      v.plate,
-      v.make,
-      v.model,
-      v.type,
-      v.status,
-      v.odometer,
-      v.fuelType,
-      v.maxLoad ?? 1000,
-      v.acquisitionCost ?? 20000,
-    ]);
-    exportToCsv("TransitOps_Fleet_Status_Report", headers, rows);
-  };
-
-=======
   const user = authService.getCurrentUser() || { role: "manager" };
   const role = user.role;
   const canNewTrip = role === "manager" || role === "admin";
   const canExport = role !== "driver";
->>>>>>> hasti
 
   // Data mapping from backend queries
   const vehiclesList = vehiclesQ.data || [];
@@ -328,7 +296,6 @@ function DashboardPage() {
         }
       />
 
-<<<<<<< HEAD
       <div className="flex flex-wrap gap-3 mb-6 p-4 rounded-lg bg-surface border gold-stripe-left">
         <div>
           <h4 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-2">Portal Redirection Quick Links</h4>
@@ -350,9 +317,6 @@ function DashboardPage() {
       </div>
 
       {/* Aligned spec KPIs grid with zero values */}
-=======
-      {/* Aligned spec KPIs grid */}
->>>>>>> hasti
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 mb-6">
         <KpiCard label="Active Vehicles" value={activeVehicles} hint={`Total: ${totalVehicles}`} icon={Truck} tone="primary" />
         <KpiCard label="Available Vehicles" value={availableVehicles} hint="Ready for dispatch" icon={Truck} tone="success" />
@@ -421,7 +385,6 @@ function DashboardPage() {
           <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/trips" })}>View all</Button>
         </div>
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-<<<<<<< HEAD
           {tripsQ.data?.filter((t) => t.status === "Dispatched").length ? (
             tripsQ.data?.filter((t) => t.status === "Dispatched").map((t) => (
               <div key={t.id} className="rounded-lg border p-4 hover:border-primary/40 transition-colors">
@@ -436,19 +399,6 @@ function DashboardPage() {
           ) : (
             <p className="text-sm text-muted-foreground col-span-3 text-center py-6">No active trips</p>
           )}
-
-=======
-          {(tripsList.filter((t) => t.status === "Dispatched") || []).map((t) => (
-            <div key={t.id} className="rounded-lg border p-4 hover:border-primary/40 transition-colors">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-mono text-muted-foreground">{t.id}</span>
-                <StatusBadge status={t.status} />
-              </div>
-              <p className="font-semibold text-sm truncate">{t.origin} → {t.destination}</p>
-              <p className="text-xs text-muted-foreground mt-1">{t.driver} · {t.vehicle} · {t.distance} km</p>
-            </div>
-          ))}
->>>>>>> hasti
         </div>
       </Card>
     </>

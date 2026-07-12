@@ -1,4 +1,5 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, redirect, Link } from "@tanstack/react-router";
+import { Truck, Navigation, ShieldCheck, DollarSign, ArrowRight, Phone, Database } from "lucide-react";
 import { AUTH_KEY } from "@/lib/auth";
 
 export const Route = createFileRoute("/")({
@@ -6,7 +7,8 @@ export const Route = createFileRoute("/")({
     if (typeof window !== "undefined") {
       try {
         const data = localStorage.getItem(AUTH_KEY);
-        if (data) {
+        const user = localStorage.getItem("user");
+        if (data && user) {
           const parsed = JSON.parse(data);
           const role = parsed?.role;
           if (role === "admin") throw redirect({ to: "/admin" });
@@ -19,12 +21,7 @@ export const Route = createFileRoute("/")({
         // Ignored
       }
     }
-    throw redirect({ to: "/login" });
   },
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Truck, Navigation, ShieldCheck, DollarSign, ArrowRight, Phone, Database } from "lucide-react";
-
-export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "TransitOps — Smart Transport Operations Platform" },

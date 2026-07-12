@@ -3,7 +3,7 @@ import { PieChart } from "lucide-react";
 import { AuthLayout } from "@/components/auth/AuthLayout";
 import { LoginForm } from "@/components/auth/LoginForm";
 
-export const Route = createFileRoute("/login_/financial-analyst")({
+export const Route = createFileRoute("/login_/finance")({
   head: () => ({
     meta: [
       { title: "Financial Analyst Sign In — TransitOps" },

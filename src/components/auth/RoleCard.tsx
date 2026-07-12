@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { ChevronRight, LucideIcon } from "lucide-react";
 
 interface RoleCardProps {
@@ -11,10 +11,12 @@ interface RoleCardProps {
 }
 
 export function RoleCard({ title, description, icon: Icon, path, colorClass }: RoleCardProps) {
+  const navigate = useNavigate();
+  
   return (
-    <Link
-      to={path}
-      className="flex items-center gap-4 p-4 rounded-lg hover:bg-muted/50 transition-colors group"
+    <div
+      onClick={() => navigate({ to: path as any })}
+      className="flex items-center gap-4 p-4 rounded-lg hover:bg-muted/50 transition-colors group cursor-pointer"
     >
       <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${colorClass}`}>
         <Icon className="w-6 h-6" />
@@ -24,6 +26,6 @@ export function RoleCard({ title, description, icon: Icon, path, colorClass }: R
         <p className="text-xs text-muted-foreground">{description}</p>
       </div>
       <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
-    </Link>
+    </div>
   );
 }

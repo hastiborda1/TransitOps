@@ -3,7 +3,7 @@ import { ShieldCheck } from "lucide-react";
 import { AuthLayout } from "@/components/auth/AuthLayout";
 import { LoginForm } from "@/components/auth/LoginForm";
 
-export const Route = createFileRoute("/login_/safety-officer")({
+export const Route = createFileRoute("/login_/safety")({
   head: () => ({
     meta: [
       { title: "Safety Officer Sign In — TransitOps" },

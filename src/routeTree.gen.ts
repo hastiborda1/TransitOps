@@ -14,9 +14,9 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as LoginSafetyOfficerRouteImport } from './routes/login_.safety-officer'
+import { Route as LoginSafetyRouteImport } from './routes/login_.safety'
 import { Route as LoginFleetManagerRouteImport } from './routes/login_.fleet-manager'
-import { Route as LoginFinancialAnalystRouteImport } from './routes/login_.financial-analyst'
+import { Route as LoginFinanceRouteImport } from './routes/login_.finance'
 import { Route as LoginDriverRouteImport } from './routes/login_.driver'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AppVehiclesRouteImport } from './routes/_app.vehicles'
@@ -59,9 +59,9 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LoginSafetyOfficerRoute = LoginSafetyOfficerRouteImport.update({
-  id: '/login_/safety-officer',
-  path: '/login/safety-officer',
+const LoginSafetyRoute = LoginSafetyRouteImport.update({
+  id: '/login_/safety',
+  path: '/login/safety',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginFleetManagerRoute = LoginFleetManagerRouteImport.update({
@@ -69,9 +69,9 @@ const LoginFleetManagerRoute = LoginFleetManagerRouteImport.update({
   path: '/login/fleet-manager',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LoginFinancialAnalystRoute = LoginFinancialAnalystRouteImport.update({
-  id: '/login_/financial-analyst',
-  path: '/login/financial-analyst',
+const LoginFinanceRoute = LoginFinanceRouteImport.update({
+  id: '/login_/finance',
+  path: '/login/finance',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginDriverRoute = LoginDriverRouteImport.update({
@@ -182,9 +182,9 @@ export interface FileRoutesByFullPath {
   '/vehicles': typeof AppVehiclesRoute
   '/admin/login': typeof AdminLoginRoute
   '/login/driver': typeof LoginDriverRoute
-  '/login/financial-analyst': typeof LoginFinancialAnalystRoute
+  '/login/finance': typeof LoginFinanceRoute
   '/login/fleet-manager': typeof LoginFleetManagerRoute
-  '/login/safety-officer': typeof LoginSafetyOfficerRoute
+  '/login/safety': typeof LoginSafetyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -208,9 +208,9 @@ export interface FileRoutesByTo {
   '/vehicles': typeof AppVehiclesRoute
   '/admin/login': typeof AdminLoginRoute
   '/login/driver': typeof LoginDriverRoute
-  '/login/financial-analyst': typeof LoginFinancialAnalystRoute
+  '/login/finance': typeof LoginFinanceRoute
   '/login/fleet-manager': typeof LoginFleetManagerRoute
-  '/login/safety-officer': typeof LoginSafetyOfficerRoute
+  '/login/safety': typeof LoginSafetyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -236,9 +236,9 @@ export interface FileRoutesById {
   '/_app/vehicles': typeof AppVehiclesRoute
   '/admin/login': typeof AdminLoginRoute
   '/login_/driver': typeof LoginDriverRoute
-  '/login_/financial-analyst': typeof LoginFinancialAnalystRoute
+  '/login_/finance': typeof LoginFinanceRoute
   '/login_/fleet-manager': typeof LoginFleetManagerRoute
-  '/login_/safety-officer': typeof LoginSafetyOfficerRoute
+  '/login_/safety': typeof LoginSafetyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -264,9 +264,9 @@ export interface FileRouteTypes {
     | '/vehicles'
     | '/admin/login'
     | '/login/driver'
-    | '/login/financial-analyst'
+    | '/login/finance'
     | '/login/fleet-manager'
-    | '/login/safety-officer'
+    | '/login/safety'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -290,9 +290,9 @@ export interface FileRouteTypes {
     | '/vehicles'
     | '/admin/login'
     | '/login/driver'
-    | '/login/financial-analyst'
+    | '/login/finance'
     | '/login/fleet-manager'
-    | '/login/safety-officer'
+    | '/login/safety'
   id:
     | '__root__'
     | '/'
@@ -317,9 +317,9 @@ export interface FileRouteTypes {
     | '/_app/vehicles'
     | '/admin/login'
     | '/login_/driver'
-    | '/login_/financial-analyst'
+    | '/login_/finance'
     | '/login_/fleet-manager'
-    | '/login_/safety-officer'
+    | '/login_/safety'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -330,9 +330,9 @@ export interface RootRouteChildren {
   SignupRoute: typeof SignupRoute
   AdminLoginRoute: typeof AdminLoginRoute
   LoginDriverRoute: typeof LoginDriverRoute
-  LoginFinancialAnalystRoute: typeof LoginFinancialAnalystRoute
+  LoginFinanceRoute: typeof LoginFinanceRoute
   LoginFleetManagerRoute: typeof LoginFleetManagerRoute
-  LoginSafetyOfficerRoute: typeof LoginSafetyOfficerRoute
+  LoginSafetyRoute: typeof LoginSafetyRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -372,11 +372,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/login_/safety-officer': {
-      id: '/login_/safety-officer'
-      path: '/login/safety-officer'
-      fullPath: '/login/safety-officer'
-      preLoaderRoute: typeof LoginSafetyOfficerRouteImport
+    '/login_/safety': {
+      id: '/login_/safety'
+      path: '/login/safety'
+      fullPath: '/login/safety'
+      preLoaderRoute: typeof LoginSafetyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login_/fleet-manager': {
@@ -386,11 +386,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginFleetManagerRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/login_/financial-analyst': {
-      id: '/login_/financial-analyst'
-      path: '/login/financial-analyst'
-      fullPath: '/login/financial-analyst'
-      preLoaderRoute: typeof LoginFinancialAnalystRouteImport
+    '/login_/finance': {
+      id: '/login_/finance'
+      path: '/login/finance'
+      fullPath: '/login/finance'
+      preLoaderRoute: typeof LoginFinanceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login_/driver': {
@@ -561,9 +561,9 @@ const rootRouteChildren: RootRouteChildren = {
   SignupRoute: SignupRoute,
   AdminLoginRoute: AdminLoginRoute,
   LoginDriverRoute: LoginDriverRoute,
-  LoginFinancialAnalystRoute: LoginFinancialAnalystRoute,
+  LoginFinanceRoute: LoginFinanceRoute,
   LoginFleetManagerRoute: LoginFleetManagerRoute,
-  LoginSafetyOfficerRoute: LoginSafetyOfficerRoute,
+  LoginSafetyRoute: LoginSafetyRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

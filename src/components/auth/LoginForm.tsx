@@ -3,15 +3,15 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Mail, ArrowLeft, LucideIcon, User, Copy } from "lucide-react";
-import { Mail, ArrowLeft, LucideIcon, KeyRound, Loader2 } from "lucide-react";
+import { Mail, ArrowLeft, LucideIcon, User, Copy, KeyRound, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
 import { PasswordInput } from "./PasswordInput";
 import { AuthButton } from "./AuthButton";
-import { useAuth, UserRole, DEMO_CREDENTIALS } from "@/lib/auth";
+import { useAuth, UserRole, DEMO_CREDENTIALS, DEV_BYPASS_AUTH } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 import { authService } from "@/services/api";
 
@@ -48,6 +48,7 @@ export function LoginForm({
   icon: Icon,
   redirectUrl,
   defaultIdentifier,
+  identifierType,
   theme = "default",
   colorClass = "bg-primary",
   buttonClass,
@@ -80,8 +81,6 @@ export function LoginForm({
     watch,
     formState: { errors },
   } = useForm<FormValues>({
-    resolver: zodResolver(schema),
-    defaultValues: { identifier: "", password: "", remember: true },
     resolver: zodResolver(loginSchema),
     defaultValues: { identifier: defaultIdentifier, password: isAdmin ? "" : "demo1234", otp: "", remember: true },
   });
@@ -157,6 +156,13 @@ export function LoginForm({
   };
 
   const onSubmit = async (values: FormValues) => {
+    if (DEV_BYPASS_AUTH && role) {
+      login(role, values.identifier, demoCreds?.name || "Bypass User");
+      toast.success(`Welcome, ${title}`);
+      navigate({ to: redirectUrl });
+      return;
+    }
+
     if (isOtpMode) {
       if (!values.identifier || !values.identifier.includes("@")) {
         toast.error("A valid email address is required to sign in with OTP.");
@@ -206,27 +212,6 @@ export function LoginForm({
 
   const InputIcon = identifierType === "email" ? Mail : User;
   const identifierLabel = identifierType === "email" ? (isAdmin ? "Admin ID" : "Email Address") : "Employee ID";
-    try {
-      if (isOtpMode) {
-        const res = await authService.verifyOtp(values.identifier, values.otp || "", role || "driver");
-        login(res.role, res.email);
-        toast.success(`Welcome, ${res.username || res.name}`);
-        navigate({ to: redirectUrl });
-      } else {
-        const res = await authService.login(values.identifier, values.password || "");
-        login(res.role, res.email);
-        toast.success(`Welcome, ${res.username || res.name}`);
-        navigate({ to: redirectUrl });
-      }
-    } catch (e: any) {
-      toast.error(e.message || "Authentication failed. Check your credentials.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const InputIcon = Mail;
-  const identifierLabel = isAdmin ? "Admin ID" : "Email Address";
 
   return (
     <>
@@ -296,39 +281,22 @@ export function LoginForm({
             >
               {identifierLabel}
             </Label>
-            <div className="relative">
-              <InputIcon
-                className={cn(
-                  "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4",
-                  isDark ? "text-zinc-500" : "text-muted-foreground"
-                )}
-              />
-              <Input
-                id="identifier"
-                type={identifierType === "email" ? "email" : "text"}
-                className={cn(
-                  "pl-9",
-                  isDark && "bg-zinc-950 border-zinc-800 focus-visible:ring-zinc-700 text-zinc-100 placeholder:text-zinc-500"
-                )}
-                placeholder={defaultIdentifier || (identifierType === "email" ? "Enter email" : "Enter ID")}
-                {...register("identifier")}
-              />
             <div className="flex gap-2">
               <div className="relative flex-1">
                 <InputIcon
                   className={cn(
                     "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4",
-                    isDark ? "text-zinc-500" : "text-outline"
+                    isDark ? "text-zinc-500" : "text-muted-foreground"
                   )}
                 />
                 <Input
                   id="identifier"
-                  type="email"
+                  type={identifierType === "email" ? "email" : "text"}
                   className={cn(
                     "pl-9",
                     isDark && "bg-zinc-950 border-zinc-800 focus-visible:ring-zinc-700 text-zinc-100 placeholder:text-zinc-500"
                   )}
-                  placeholder="Enter email"
+                  placeholder={defaultIdentifier || (identifierType === "email" ? "Enter email" : "Enter ID")}
                   {...register("identifier")}
                 />
               </div>

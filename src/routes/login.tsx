@@ -1,8 +1,8 @@
 import { useEffect } from "react";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, redirect } from "@tanstack/react-router";
 import { Truck, ShieldCheck, PieChart, User, ShieldAlert } from "lucide-react";
 import { AuthLayout } from "@/components/auth/AuthLayout";
+import { RoleCard } from "@/components/auth/RoleCard";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
 import { authService } from "@/services/api";
@@ -11,9 +11,12 @@ export const Route = createFileRoute("/login")({
   beforeLoad: () => {
     const user = authService.getCurrentUser();
     if (user) {
-      throw redirect({
-        to: "/dashboard",
-      });
+      if (user.role === "admin") throw redirect({ to: "/admin" });
+      if (user.role === "fleet-manager") throw redirect({ to: "/dashboard" });
+      if (user.role === "safety-officer") throw redirect({ to: "/safety" });
+      if (user.role === "financial-analyst") throw redirect({ to: "/finance" });
+      if (user.role === "driver") throw redirect({ to: "/driver" });
+      throw redirect({ to: "/dashboard" });
     }
   },
   head: () => ({
@@ -37,14 +40,14 @@ const roles = [
     id: "safety-officer",
     title: "Safety",
     icon: ShieldCheck,
-    path: "/login/safety-officer",
+    path: "/login/safety",
     color: "bg-emerald-500/10 text-emerald-500",
   },
   {
     id: "financial-analyst",
     title: "Analyst",
     icon: PieChart,
-    path: "/login/financial-analyst",
+    path: "/login/finance",
     color: "bg-purple-500/10 text-purple-500",
   },
   {
@@ -81,30 +84,29 @@ function LoginSelectionPage() {
         <p className="text-xs text-muted-foreground mt-0.5">Please select your role to sign in</p>
       </div>
 
-      <section className="bg-card rounded-xl p-2.5 border shadow-sm flex flex-row gap-2 justify-between w-full max-w-[400px] mx-auto">
+      <section className="bg-card rounded-xl p-2.5 border shadow-sm flex flex-col gap-2 w-full max-w-[400px] mx-auto">
         {roles.map((role) => (
-          <Link
+          <RoleCard
             key={role.id}
-            to={role.path}
-            className="flex-1 min-w-[70px] flex flex-col items-center gap-1.5 p-2 rounded-lg hover:bg-muted/65 transition-colors group text-center"
-          >
-            <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${role.color} group-hover:scale-105 transition-transform`}>
-              <role.icon className="w-5.5 h-5.5" />
-            </div>
-            <span className="text-[10px] font-bold text-foreground leading-tight group-hover:text-primary transition-colors">
-              {role.title}
-            </span>
-          </Link>
+            id={role.id}
+            title={role.title}
+            description={`Access ${role.title} portal`}
+            icon={role.icon}
+            path={role.path}
+            colorClass={role.color}
+          />
         ))}
       </section>
       
       <div className="mt-6 flex justify-center">
-        <Link to="/admin/login">
-          <Button variant="ghost" className="text-muted-foreground hover:text-foreground text-xs">
-            <ShieldAlert className="w-4 h-4 mr-1.5" />
-            Administrator Login
-          </Button>
-        </Link>
+        <Button 
+          variant="ghost" 
+          className="text-muted-foreground hover:text-foreground text-xs"
+          onClick={() => navigate({ to: "/admin/login" })}
+        >
+          <ShieldAlert className="w-4 h-4 mr-1.5" />
+          Administrator Login
+        </Button>
       </div>
 
       <footer className="mt-8 text-center">

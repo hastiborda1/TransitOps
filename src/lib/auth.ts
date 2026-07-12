@@ -2,6 +2,8 @@ export type UserRole = "fleet-manager" | "safety-officer" | "financial-analyst" 
 
 export const AUTH_KEY = "transitops_auth_role";
 
+export const DEV_BYPASS_AUTH = true;
+
 export const DEMO_CREDENTIALS = {
   "admin": { email: "admin@transitops.com", password: "admin123", name: "Administrator" },
   "fleet-manager": { email: "fleet@transitops.com", password: "fleet123", name: "Fleet Manager" },
@@ -13,6 +15,8 @@ export const DEMO_CREDENTIALS = {
 export const useAuth = () => {
   const login = (role: UserRole, identifier: string, name: string) => {
     localStorage.setItem(AUTH_KEY, JSON.stringify({ role, identifier, name }));
+    // Ensure the 'user' key is also set so authService.getCurrentUser() passes in _app.tsx
+    localStorage.setItem("user", JSON.stringify({ token: "mock-bypass-token", role, email: identifier, name, username: identifier }));
   };
 
   const logout = () => {
@@ -24,8 +28,17 @@ export const useAuth = () => {
     if (typeof window === "undefined") return null;
     try {
       const data = localStorage.getItem(AUTH_KEY);
-      if (data) {
+      const user = localStorage.getItem("user");
+      
+      if (data && user) {
         return JSON.parse(data) as { role: UserRole; identifier: string; name: string };
+      }
+      
+      // If one exists without the other, the session is corrupted/stale
+      if (data || user) {
+        localStorage.removeItem(AUTH_KEY);
+        localStorage.removeItem("user");
+        sessionStorage.clear();
       }
     } catch (e) {
       // Ignored

@@ -23,16 +23,6 @@ export function TopBar() {
   
   // Initials for avatar fallback
   const initials = name
-const roleLabels: Record<string, string> = {
-  manager: "Fleet Manager",
-  driver: "Driver",
-  safety: "Safety Officer",
-  finance: "Financial Analyst",
-};
-
-export function TopBar() {
-  const user = authService.getCurrentUser() || { name: "Alex Morgan", role: "manager" };
-  const initials = user.name
     .split(" ")
     .map((n: string) => n[0])
     .join("")
