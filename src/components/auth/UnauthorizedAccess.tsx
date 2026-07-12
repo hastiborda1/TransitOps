@@ -1,7 +1,16 @@
 import { Link } from "@tanstack/react-router";
 import { ShieldAlert, ArrowLeft } from "lucide-react";
+import { authService } from "@/services/api";
+import { useAuth } from "@/lib/auth";
 
 export function UnauthorizedAccess() {
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    authService.logout();
+    logout();
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-background">
       <div className="max-w-md w-full text-center space-y-6">
@@ -15,6 +24,7 @@ export function UnauthorizedAccess() {
         <div className="pt-6">
           <Link
             to="/login"
+            onClick={handleLogout}
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
             <ArrowLeft className="w-4 h-4 mr-2" /> Return to Login
