@@ -61,12 +61,8 @@ WSGI_APPLICATION = 'transit_backend.wsgi.application'
 # Database configuration targeting Transit PostgreSQL database
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'Transit',
-        'USER': 'postgres',
-        'PASSWORD': 'admin@1087',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 

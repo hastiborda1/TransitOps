@@ -13,7 +13,6 @@ export const Route = createFileRoute("/login")({
   }),
   component: LoginSelectionPage,
 });
-
 const roles = [
   {
     id: "fleet-manager",
