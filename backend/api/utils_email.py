@@ -3,7 +3,7 @@ import urllib.request
 from django.conf import settings
 
 def get_brevo_verified_sender():
-    url = "https://api.brevo.com/v3/account"
+    url = "https://api.brevo.com/v3/senders"
     headers = {
         "accept": "application/json",
         "api-key": getattr(settings, "BREVO_API_KEY", "")
@@ -12,12 +12,15 @@ def get_brevo_verified_sender():
         req = urllib.request.Request(url, headers=headers, method="GET")
         with urllib.request.urlopen(req) as response:
             data = json.loads(response.read().decode("utf-8"))
-            email = data.get("email")
-            if email:
-                print("Found verified Brevo sender email:", email)
-                return email
+            senders = data.get("senders", [])
+            for sender in senders:
+                if sender.get("active") is True:
+                    email = sender.get("email")
+                    if email:
+                        print("Found active verified Brevo sender email:", email)
+                        return email
     except Exception as e:
-        print("Failed to fetch Brevo account details, falling back:", str(e))
+        print("Failed to fetch Brevo verified senders, falling back:", str(e))
     return None
 
 def send_brevo_email(to_email, to_name, subject, html_content):
