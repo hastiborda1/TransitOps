@@ -62,6 +62,10 @@ class TripViewSet(viewsets.ModelViewSet):
             return Response({"detail": "Vehicle is in maintenance or retired"}, status=status.HTTP_400_BAD_REQUEST)
         if vehicle.status == 'On Trip':
             return Response({"detail": "Vehicle is already assigned to an active trip"}, status=status.HTTP_400_BAD_REQUEST)
+        if vehicle.status in ['maintenance', 'retired']:
+            return Response({"detail": "Vehicle is in maintenance or retired"}, status=status.HTTP_400_BAD_REQUEST)
+        if vehicle.status == 'active':
+            return Response({"detail": "Vehicle is already marked On Trip"}, status=status.HTTP_400_BAD_REQUEST)
         if cargo_weight > vehicle.max_load:
             return Response({"detail": f"Cargo weight exceeds vehicle max load of {vehicle.max_load} kg"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -97,6 +101,7 @@ class TripViewSet(viewsets.ModelViewSet):
             planned_distance=distance,
             started_at=started_at,
             status='Draft'
+            status='scheduled'
         )
 
         serializer = self.get_serializer(trip)
@@ -121,6 +126,18 @@ class TripViewSet(viewsets.ModelViewSet):
                 v = Vehicle.objects.get(plate=trip.vehicle)
                 v.odometer += dist
                 v.status = 'Available'
+        if new_status == 'in-progress':
+            # Dispatch
+            Vehicle.objects.filter(plate=trip.vehicle).update(status='active')
+            Driver.objects.filter(name=trip.driver).update(status='on-trip')
+        elif new_status == 'completed':
+            # Complete
+            dist = int(actual_distance) if actual_distance else trip.distance
+            # Update vehicle odometer and status
+            try:
+                v = Vehicle.objects.get(plate=trip.vehicle)
+                v.odometer += dist
+                v.status = 'idle'
                 v.save()
             except Vehicle.DoesNotExist:
                 pass
@@ -128,6 +145,10 @@ class TripViewSet(viewsets.ModelViewSet):
             try:
                 d = Driver.objects.get(name=trip.driver)
                 d.status = 'Available'
+            # Update driver
+            try:
+                d = Driver.objects.get(name=trip.driver)
+                d.status = 'available'
                 d.trips += 1
                 d.save()
             except Driver.DoesNotExist:
@@ -139,6 +160,10 @@ class TripViewSet(viewsets.ModelViewSet):
                 cost = liters * Decimal(1.6)
                 today = timezone.now().strftime("%Y-%m-%d")
                 
+                cost = liters * Decimal(1.6) # auto cost logic
+                today = timezone.now().strftime("%Y-%m-%d")
+                
+                # Fetch fresh odometer
                 odo = 100000
                 try:
                     odo = Vehicle.objects.get(plate=trip.vehicle).odometer
@@ -169,6 +194,10 @@ class TripViewSet(viewsets.ModelViewSet):
         elif new_status == 'Cancelled':
             Vehicle.objects.filter(plate=trip.vehicle).update(status='Available')
             Driver.objects.filter(name=trip.driver).update(status='Available')
+        elif new_status == 'cancelled':
+            # Restore Available
+            Vehicle.objects.filter(plate=trip.vehicle).update(status='idle')
+            Driver.objects.filter(name=trip.driver).update(status='available')
 
         trip.status = new_status
         trip.save()
@@ -188,6 +217,9 @@ class MaintenanceViewSet(viewsets.ModelViewSet):
         # Switch vehicle status to In Shop
         vehicle_plate = serializer.validated_data.get('vehicle')
         Vehicle.objects.filter(plate=vehicle_plate).update(status='In Shop')
+        # Switch vehicle status to maintenance
+        vehicle_plate = serializer.validated_data.get('vehicle')
+        Vehicle.objects.filter(plate=vehicle_plate).update(status='maintenance')
 
         # Auto log maintenance expense
         Expense.objects.create(
@@ -209,6 +241,8 @@ class MaintenanceViewSet(viewsets.ModelViewSet):
 
         # Restore vehicle status to Available unless it's Retired
         Vehicle.objects.filter(plate=maint.vehicle).exclude(status='Retired').update(status='Available')
+        # Restore vehicle status to idle unless it's retired
+        Vehicle.objects.filter(plate=maint.vehicle).exclude(status='retired').update(status='idle')
 
         serializer = self.get_serializer(maint)
         return Response(serializer.data)
