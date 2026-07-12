@@ -64,30 +64,50 @@ export function AppSidebar() {
     navigate({ to: "/login" });
   };
 
-  const filteredMainNav = mainNav.map((item) => {
-    if (item.title === "Dashboard" && role === "driver") {
-      return { ...item, url: "/driver" as any };
-    }
-    return item;
-  });
-
-  const filteredOpsNav = opsNav.filter((item) => {
-    if (role === "safety-officer") {
-      // Safety Officer: No Fuel Logs, No Expenses
-      return item.title !== "Fuel Logs" && item.title !== "Expenses";
-    }
-    if (role === "driver") {
-      // Driver: Fuel Logs
-      return item.title === "Fuel Logs";
+  const hasAccess = (url: string, userRole: string): boolean => {
+    const permissions: Record<string, string[]> = {
+      '/admin': ['admin'],
+      '/dashboard': ['fleet-manager'],
+      '/safety-driver': ['safety-officer'],
+      '/financial-analyst': ['financial-analyst'],
+      '/driver': ['driver'],
+      '/vehicles': ['fleet-manager'],
+      '/trips': ['fleet-manager'],
+      '/drivers': ['fleet-manager'],
+      '/maintenance': ['fleet-manager'],
+      '/fuel': ['fleet-manager'],
+      '/expenses': ['fleet-manager', 'financial-analyst'],
+      '/analytics': ['fleet-manager', 'financial-analyst'],
+      '/settings': ['fleet-manager', 'admin'],
+    };
+    
+    const match = Object.entries(permissions).find(([route]) => 
+      url === route || url.startsWith(route + '/')
+    );
+    if (match) {
+      return match[1].includes(userRole);
     }
     return true;
-  });
+  };
+
+  const filteredMainNav = mainNav
+    .map((item) => {
+      if (item.title === "Dashboard" && role === "driver") {
+        return { ...item, url: "/driver" as any };
+      }
+      return item;
+    })
+    .filter((item) => hasAccess(item.url, role));
+
+  const filteredOpsNav = opsNav.filter((item) => hasAccess(item.url, role));
 
   const finalOpsNav = [...filteredOpsNav];
-  if (role === "admin") {
+  if (role === "admin" && hasAccess("/admin", role)) {
     // Add System admin dashboard for administrative role
     finalOpsNav.push({ title: "System Admin", url: "/admin" as any, icon: Shield });
   }
+
+  const filteredBottomNav = bottomNav.filter((item) => hasAccess(item.url, role));
 
   return (
     <Sidebar collapsible="icon">
@@ -145,7 +165,7 @@ export function AppSidebar() {
 
       <SidebarFooter className="border-t">
         <SidebarMenu>
-          {bottomNav.map((item) => (
+          {filteredBottomNav.map((item) => (
             <SidebarMenuItem key={item.url}>
               <SidebarMenuButton asChild isActive={isActive(item.url)} tooltip={item.title}>
                 <Link to={item.url}>
