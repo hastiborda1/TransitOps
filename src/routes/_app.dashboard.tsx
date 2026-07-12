@@ -44,10 +44,14 @@ function DashboardPage() {
   const tripsQ = useQuery({ queryKey: ["trips"], queryFn: api.trips.list });
   const monthlyQ = useQuery({ queryKey: ["analytics", "monthly"], queryFn: api.analytics.monthly });
 
-  const activeVehicles = vehiclesQ.data?.filter((v) => v.status === "active").length ?? 0;
-  const totalVehicles = vehiclesQ.data?.length ?? 0;
-  const activeDrivers = driversQ.data?.filter((d) => d.status !== "off-duty" && d.status !== "suspended").length ?? 0;
-  const inProgressTrips = tripsQ.data?.filter((t) => t.status === "in-progress").length ?? 0;
+  console.log("DEBUG: vehiclesQ.data is:", vehiclesQ.data);
+  console.log("DEBUG: driversQ.data is:", driversQ.data);
+  console.log("DEBUG: tripsQ.data is:", tripsQ.data);
+
+  const activeVehicles = Array.isArray(vehiclesQ.data) ? vehiclesQ.data.filter((v) => v.status === "active").length : 0;
+  const totalVehicles = Array.isArray(vehiclesQ.data) ? vehiclesQ.data.length : 0;
+  const activeDrivers = Array.isArray(driversQ.data) ? driversQ.data.filter((d) => d.status !== "off-duty" && d.status !== "suspended").length : 0;
+  const inProgressTrips = Array.isArray(tripsQ.data) ? tripsQ.data.filter((t) => t.status === "in-progress").length : 0;
 
   return (
     <>
@@ -128,7 +132,7 @@ function DashboardPage() {
           <Button variant="ghost" size="sm">View all</Button>
         </div>
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-          {tripsQ.data?.filter((t) => t.status === "in-progress").map((t) => (
+          {(Array.isArray(tripsQ.data) ? tripsQ.data.filter((t) => t.status === "in-progress") : []).map((t) => (
             <div key={t.id} className="rounded-lg border p-4 hover:border-primary/40 transition-colors">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-mono text-muted-foreground">{t.id}</span>
