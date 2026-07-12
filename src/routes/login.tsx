@@ -3,6 +3,16 @@ import { Truck, ShieldCheck, PieChart, User, ShieldAlert } from "lucide-react";
 import { AuthLayout } from "@/components/auth/AuthLayout";
 import { RoleCard } from "@/components/auth/RoleCard";
 import { Button } from "@/components/ui/button";
+
+export const Route = createFileRoute("/login")({
+  head: () => ({
+    meta: [
+      { title: "Select Role — TransitOps" },
+      { name: "description", content: "Select your role to sign in." },
+    ],
+  }),
+  component: LoginSelectionPage,
+});
 const roles = [
   {
     id: "fleet-manager",
