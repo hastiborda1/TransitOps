@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Truck, Filter, Loader2 } from "lucide-react";
+import { Plus, Truck, Filter, Loader2, Download } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -29,6 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { Vehicle } from "@/lib/mock-data";
+import { exportToCsv } from "@/lib/utils";
 
 export const Route = createFileRoute("/_app/vehicles")({
   head: () => ({
@@ -46,7 +47,7 @@ const vehicleSchema = z.object({
   model: z.string().min(1, "Model is required"),
   year: z.coerce.number().min(1900).max(new Date().getFullYear() + 1),
   type: z.enum(["Truck", "Van", "Car", "Bus"]),
-  status: z.enum(["idle", "active", "maintenance", "retired"]),
+  status: z.enum(["Available", "On Trip", "In Shop", "Retired"]),
   odometer: z.coerce.number().min(0, "Odometer cannot be negative"),
   fuelType: z.enum(["Diesel", "Petrol", "Electric", "Hybrid"]),
   maxLoad: z.coerce.number().min(1, "Maximum capacity is required"),
@@ -93,7 +94,7 @@ function VehiclesPage() {
       model: "",
       year: new Date().getFullYear(),
       type: "Truck",
-      status: "idle",
+      status: "Available",
       odometer: 0,
       fuelType: "Diesel",
       maxLoad: 5000,
@@ -107,8 +108,25 @@ function VehiclesPage() {
   const watchFuel = watch("fuelType");
 
   const onSubmit = (values: VehicleFormValues) => {
-    // Prevent retired / maintenance status validation check on creation if not needed
     createMutation.mutate(values);
+  };
+
+  const handleExport = () => {
+    if (!data) return;
+    const headers = ["Vehicle Plate", "Make", "Model", "Year", "Type", "Status", "Odometer (km)", "Fuel Type", "Max Load (kg)", "Acquisition Cost ($)"];
+    const rows = data.map((v: any) => [
+      v.plate,
+      v.make,
+      v.model,
+      v.year,
+      v.type,
+      v.status,
+      v.odometer,
+      v.fuelType,
+      v.maxLoad ?? 1000,
+      v.acquisitionCost ?? 20000,
+    ]);
+    exportToCsv("TransitOps_Vehicles_Registry", headers, rows);
   };
 
   const columns: Column<Vehicle>[] = [
@@ -176,8 +194,8 @@ function VehiclesPage() {
         description="All vehicles across your fleet."
         actions={
           <>
-            <Button variant="outline" size="sm">
-              <Filter className="h-4 w-4" /> Filters
+            <Button variant="outline" size="sm" onClick={handleExport}>
+              <Download className="h-4 w-4" /> Export CSV
             </Button>
             <Button size="sm" onClick={() => setIsAddOpen(true)}>
               <Plus className="h-4 w-4" /> Add Vehicle
@@ -300,10 +318,10 @@ function VehiclesPage() {
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="idle">Available (Idle)</SelectItem>
-                    <SelectItem value="active">On Trip (Active)</SelectItem>
-                    <SelectItem value="maintenance">In Shop (Maintenance)</SelectItem>
-                    <SelectItem value="retired">Retired</SelectItem>
+                    <SelectItem value="Available">Available</SelectItem>
+                    <SelectItem value="On Trip">On Trip</SelectItem>
+                    <SelectItem value="In Shop">In Shop</SelectItem>
+                    <SelectItem value="Retired">Retired</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
