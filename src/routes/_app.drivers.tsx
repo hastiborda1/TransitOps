@@ -118,7 +118,7 @@ function DriversPage() {
   };
 
   const handleExport = () => {
-    if (!data) return;
+    if (!Array.isArray(data)) return;
     const headers = ["Driver Name", "Email", "Phone", "License", "License Category", "License Expiry", "Status", "Rating", "Completed Trips"];
     const rows = data.map((d: any) => [
       d.name,
@@ -128,8 +128,8 @@ function DriversPage() {
       d.licenseCategory ?? "Light Truck",
       d.licenseExpiry ?? "2027-12-31",
       d.status,
-      d.rating,
-      d.trips,
+      d.rating ?? 5.0,
+      d.trips ?? 0,
     ]);
     exportToCsv("TransitOps_Drivers_Registry", headers, rows);
   };
@@ -227,7 +227,7 @@ function DriversPage() {
         }
       />
       <DataTable
-        data={data ?? []}
+        data={Array.isArray(data) ? data : []}
         columns={columns}
         isLoading={isLoading}
         searchKeys={["name", "email", "license", "vehicle"]}

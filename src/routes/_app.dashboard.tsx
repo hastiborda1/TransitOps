@@ -58,9 +58,9 @@ function DashboardPage() {
   const canExport = role !== "driver";
 
   // Data mapping from backend queries
-  const vehiclesList = vehiclesQ.data || [];
-  const driversList = driversQ.data || [];
-  const tripsList = tripsQ.data || [];
+  const vehiclesList = Array.isArray(vehiclesQ.data) ? vehiclesQ.data : [];
+  const driversList = Array.isArray(driversQ.data) ? driversQ.data : [];
+  const tripsList = Array.isArray(tripsQ.data) ? tripsQ.data : [];
 
   const totalVehicles = vehiclesList.length;
   const activeVehicles = vehiclesList.filter((v) => v.status === "active" || v.status === "On Trip").length;
@@ -73,7 +73,7 @@ function DashboardPage() {
   const fleetUtilization = totalVehicles > 0 ? ((activeVehicles / totalVehicles) * 100).toFixed(1) : "0.0";
 
   const handleExport = () => {
-    if (!vehiclesQ.data) return;
+    if (!Array.isArray(vehiclesList) || !vehiclesList.length) return;
     const headers = ["Plate", "Make", "Model", "Type", "Status", "Odometer", "Fuel Type", "Max Load (kg)", "Acquisition Cost ($)"];
     const rows = vehiclesList.map((v: any) => [
       v.plate,
@@ -340,7 +340,7 @@ function DashboardPage() {
               <Skeleton className="h-full w-full" />
             ) : (
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={monthlyQ.data}>
+                <AreaChart data={Array.isArray(monthlyQ.data) ? monthlyQ.data : []}>
                   <defs>
                     <linearGradient id="tripsFill" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor="var(--color-chart-1)" stopOpacity={0.4} />
