@@ -7,11 +7,13 @@ import { authService } from "@/services/api";
 
 export const Route = createFileRoute("/_app")({
   beforeLoad: () => {
-    const user = authService.getCurrentUser();
-    if (!user) {
-      throw redirect({
-        to: "/login",
-      });
+    if (typeof window !== "undefined") {
+      const user = authService.getCurrentUser();
+      if (!user) {
+        throw redirect({
+          to: "/login",
+        });
+      }
     }
   },
   component: AppLayout,
