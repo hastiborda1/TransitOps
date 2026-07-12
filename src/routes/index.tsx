@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Truck, Navigation, ShieldCheck, DollarSign, ArrowRight, Database } from "lucide-react";
+import { Truck, Navigation, ShieldCheck, DollarSign, ArrowRight, Database, Linkedin, Mail, Phone } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -272,11 +272,38 @@ function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#12110E] text-[#7E7B72] border-t border-white/5 py-10 text-xs text-center relative z-10">
-        <div className="max-w-7xl mx-auto px-8 flex flex-col md:flex-row items-center justify-between gap-6">
-          <p>© 2026 TransitOps Systems. Digitizing transport logbooks under strict compliance.</p>
-          <div className="flex gap-8 uppercase tracking-widest font-bold text-[10px]">
-            <a href="#" className="hover:text-[#C59B27] transition-colors">Security Policy</a>
+      <footer className="bg-[#12110E] text-[#7E7B72] border-t border-white/5 py-14 text-xs relative z-10">
+        <div className="max-w-7xl mx-auto px-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-10">
+            {/* About Us */}
+            <div className="space-y-3">
+              <h4 className="text-[#F5F5F3] font-bold uppercase tracking-widest text-sm">About Us</h4>
+              <p className="text-[#7E7B72] leading-relaxed text-xs">
+                TransitOps is a smart transport operations platform designed to replace manual logbooks with a centralized, role-based digital system for fleet management, driver compliance, trip dispatching, and financial intelligence.
+              </p>
+            </div>
+            {/* Contact Us */}
+            <div className="space-y-3">
+              <h4 className="text-[#F5F5F3] font-bold uppercase tracking-widest text-sm">Contact Us</h4>
+              <div className="space-y-2">
+                <a href="tel:+919876543210" className="flex items-center gap-2 text-[#7E7B72] hover:text-[#C59B27] transition-colors">
+                  <Phone className="h-3.5 w-3.5" /> +91 98765 43210
+                </a>
+                <a href="mailto:contact@transitops.in" className="flex items-center gap-2 text-[#7E7B72] hover:text-[#C59B27] transition-colors">
+                  <Mail className="h-3.5 w-3.5" /> contact@transitops.in
+                </a>
+              </div>
+            </div>
+            {/* Connect */}
+            <div className="space-y-3">
+              <h4 className="text-[#F5F5F3] font-bold uppercase tracking-widest text-sm">Connect</h4>
+              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[#7E7B72] hover:text-[#C59B27] transition-colors">
+                <Linkedin className="h-4 w-4" /> LinkedIn
+              </a>
+            </div>
+          </div>
+          <div className="border-t border-white/5 pt-6 text-center text-[10px] uppercase tracking-widest text-[#7E7B72]">
+            © 2026 TransitOps Systems. All rights reserved.
           </div>
         </div>
       </footer>
