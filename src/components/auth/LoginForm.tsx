@@ -3,7 +3,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Link, useNavigate } from "@tanstack/react-router";
+<<<<<<< HEAD
 import { Mail, ArrowLeft, LucideIcon, User, Copy, KeyRound, Loader2, Lock } from "lucide-react";
+=======
+import { Mail, ArrowLeft, LucideIcon, User, Copy, KeyRound, Loader2 } from "lucide-react";
+>>>>>>> main
 import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -149,6 +153,7 @@ export function LoginForm({
 
   const copyCreds = () => {
     if (!demoCreds) return;
+<<<<<<< HEAD
     const credText =
       identifierType === "email"
         ? `Email: ${demoCreds.email}\nPassword: ${demoCreds.password}`
@@ -156,6 +161,16 @@ export function LoginForm({
     navigator.clipboard.writeText(credText);
     toast.success("Credentials copied to clipboard!");
   };
+=======
+    const identifier = identifierType === "email" ? (demoCreds as any).email : (demoCreds as any).employeeId;
+    setValue("identifier", identifier);
+    setValue("password", demoCreds.password);
+    toast.success("Demo credentials copied to form");
+  };
+
+  const InputIcon = identifierType === "email" ? Mail : User;
+  const identifierLabel = identifierType === "email" ? (isAdmin ? "Admin ID" : "Email Address") : "Employee ID";
+>>>>>>> main
 
   return (
     <div className="w-full space-y-6">
@@ -232,7 +247,14 @@ export function LoginForm({
             <div className="flex gap-2">
               <div className="relative flex-1">
                 <InputIcon
+<<<<<<< HEAD
                   className={cn("absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4", isDark ? "text-zinc-500" : "text-muted-foreground")}
+=======
+                  className={cn(
+                    "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4",
+                    isDark ? "text-zinc-500" : "text-muted-foreground"
+                  )}
+>>>>>>> main
                 />
                 <Input
                   id="identifier"
@@ -245,8 +267,19 @@ export function LoginForm({
                   {...register("identifier")}
                 />
               </div>
+<<<<<<< HEAD
               {isOtpMode && (
                 <Button type="button" variant="outline" disabled={sendingOtp} onClick={handleSendOtp} className="shrink-0 rounded-[5px]">
+=======
+              {isOtpMode && !isAdmin && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={sendingOtp}
+                  onClick={handleSendOtp}
+                  className="shrink-0"
+                >
+>>>>>>> main
                   {sendingOtp ? <Loader2 className="h-4 w-4 animate-spin" /> : "Send OTP"}
                 </Button>
               )}

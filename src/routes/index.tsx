@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+
+>>>>>>> main
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Truck, Navigation, ShieldCheck, DollarSign, ArrowRight, Database } from "lucide-react";
 

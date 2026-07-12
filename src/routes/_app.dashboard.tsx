@@ -73,7 +73,7 @@ function DashboardPage() {
   const fleetUtilization = totalVehicles > 0 ? ((activeVehicles / totalVehicles) * 100).toFixed(1) : "0.0";
 
   const handleExport = () => {
-    if (!vehiclesQ.data) return;
+    if (!vehiclesList.length) return;
     const headers = ["Plate", "Make", "Model", "Type", "Status", "Odometer", "Fuel Type", "Max Load (kg)", "Acquisition Cost ($)"];
     const rows = vehiclesList.map((v: any) => [
       v.plate,
