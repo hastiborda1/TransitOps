@@ -27,24 +27,12 @@ export const fallbackDb = {
     { id: "U-003", email: "safety@transitops.com", password: "demo1234", name: "Safety Officer", role: "safety" },
     { id: "U-004", email: "finance@transitops.com", password: "demo1234", name: "Financial Analyst", role: "finance" },
   ],
-  vehicles: mockVehicles.map(v => ({
-    ...v,
-    maxLoad: v.type === "Truck" ? 15000 : v.type === "Van" ? 2500 : 800, // kg
-    acquisitionCost: v.type === "Truck" ? 85000 : v.type === "Van" ? 35000 : 15000,
-  })),
-  drivers: mockDrivers.map(d => ({
-    ...d,
-    licenseCategory: d.license === "CDL-A" ? "Heavy Truck" : "Light Truck",
-    licenseExpiry: "2027-12-31", // Valid expiry
-  })),
-  trips: mockTrips.map(t => ({
-    ...t,
-    cargoWeight: 500, // Default kg
-    plannedDistance: t.distance,
-  })),
-  maintenance: [...mockMaintenance],
-  fuelLogs: [...mockFuelLogs],
-  expenses: [...mockExpenses],
+  vehicles: [] as any[],
+  drivers: [] as any[],
+  trips: [] as any[],
+  maintenance: [] as any[],
+  fuelLogs: [] as any[],
+  expenses: [] as any[],
 };
 
 async function getPool() {

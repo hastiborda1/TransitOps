@@ -76,8 +76,8 @@ function LoginPage() {
                 Email Address
               </Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-outline" />
-                <Input id="email" type="email" className="pl-9" placeholder="manager@transitops.com" {...register("email")} />
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-outline" />
+                <Input id="email" type="email" className="pl-12" placeholder="manager@transitops.com" {...register("email")} />
               </div>
               {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
             </div>
@@ -92,11 +92,11 @@ function LoginPage() {
                 </a>
               </div>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-outline" />
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-outline" />
                 <Input
                   id="password"
                   type={showPw ? "text" : "password"}
-                  className="pl-9 pr-9"
+                  className="pl-12 pr-12"
                   placeholder="••••••••"
                   {...register("password")}
                 />
@@ -145,12 +145,10 @@ function LoginPage() {
           </div>
         </section>
 
-        <footer className="mt-8 text-center">
-          <p className="text-xs text-muted-foreground">© 2026 TransitOps Logistics Systems. All rights reserved.</p>
-          <div className="mt-2 space-x-4">
-            <a href="#" className="text-xs text-outline hover:text-primary">Privacy Policy</a>
-            <a href="#" className="text-xs text-outline hover:text-primary">Terms of Service</a>
-            <a href="#" className="text-xs text-outline hover:text-primary">Contact Support</a>
+        <footer className="mt-8 text-center space-y-2">
+          <p className="text-xs text-muted-foreground">© 2026 TransitOps Systems. Digitizing transport logbooks under strict compliance.</p>
+          <div className="flex justify-center gap-6 text-[10px] font-bold uppercase tracking-wider">
+            <a href="#" className="text-muted-foreground hover:text-primary transition-colors">Security Policy</a>
           </div>
         </footer>
       </main>
