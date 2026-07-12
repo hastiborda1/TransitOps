@@ -160,14 +160,30 @@ function UnifiedLoginPage() {
     try {
       if (isOtpMode) {
         const res = await authService.verifyOtp(values.identifier, values.otp || "", selectedRole);
-        login({ id: res.id, email: res.email, name: res.name, role: res.role });
-        toast.success(`Welcome, ${res.username || res.name}`);
-        navigate({ to: "/dashboard" });
+        login(res.role, res.email, res.username || res.name || res.email);
+        toast.success(`Welcome, ${res.username || res.name || res.email}`);
+        
+        const targetUrl = 
+          res.role === "admin" ? "/admin" :
+          res.role === "fleet-manager" ? "/dashboard" :
+          res.role === "safety-officer" ? "/safety-driver" :
+          res.role === "financial-analyst" ? "/financial-analyst" :
+          res.role === "driver" ? "/driver" : "/dashboard";
+          
+        navigate({ to: targetUrl });
       } else {
         const res = await authService.login(values.identifier, values.password || "");
-        login({ id: res.id, email: res.email, name: res.name, role: res.role });
-        toast.success(`Welcome, ${res.username || res.name}`);
-        navigate({ to: "/dashboard" });
+        login(res.role, res.email, res.username || res.name || res.email);
+        toast.success(`Welcome, ${res.username || res.name || res.email}`);
+        
+        const targetUrl = 
+          res.role === "admin" ? "/admin" :
+          res.role === "fleet-manager" ? "/dashboard" :
+          res.role === "safety-officer" ? "/safety-driver" :
+          res.role === "financial-analyst" ? "/financial-analyst" :
+          res.role === "driver" ? "/driver" : "/dashboard";
+          
+        navigate({ to: targetUrl });
       }
     } catch (e: any) {
       toast.error(e.message || "Authentication failed. Check your credentials.");

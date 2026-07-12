@@ -4,6 +4,15 @@ from datetime import timedelta
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Load local environment variables from .env file
+env_path = BASE_DIR / '.env'
+if env_path.exists():
+    with open(env_path) as f:
+        for line in f:
+            if line.strip() and not line.startswith('#') and '=' in line:
+                key, val = line.strip().split('=', 1)
+                os.environ[key.strip()] = val.strip().strip('"').strip("'")
+
 SECRET_KEY = 'django-insecure-transit-ops-secret-key-for-development'
 
 DEBUG = True
@@ -121,11 +130,8 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
-# Brevo API Key
-BREVO_API_KEY = os.environ.get("BREVO_API_KEY", "")
-
 # Brevo transactional email API key
-BREVO_API_KEY = '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'
+BREVO_API_KEY = os.environ.get("BREVO_API_KEY", "")
 
 AUTHENTICATION_BACKENDS = [
     'api.authentication.EmailOrUsernameModelBackend',
