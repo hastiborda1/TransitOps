@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import {
   Truck,
@@ -27,6 +27,7 @@ import { StatusBadge } from "@/components/status-badge";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { exportToCsv } from "@/lib/utils";
 
 export const Route = createFileRoute("/_app/dashboard")({
   head: () => ({
@@ -39,6 +40,7 @@ export const Route = createFileRoute("/_app/dashboard")({
 });
 
 function DashboardPage() {
+  const navigate = useNavigate();
   const vehiclesQ = useQuery({ queryKey: ["vehicles"], queryFn: api.vehicles.list });
   const driversQ = useQuery({ queryKey: ["drivers"], queryFn: api.drivers.list });
   const tripsQ = useQuery({ queryKey: ["trips"], queryFn: api.trips.list });
@@ -52,6 +54,34 @@ function DashboardPage() {
   const totalVehicles = Array.isArray(vehiclesQ.data) ? vehiclesQ.data.length : 0;
   const activeDrivers = Array.isArray(driversQ.data) ? driversQ.data.filter((d) => d.status !== "off-duty" && d.status !== "suspended").length : 0;
   const inProgressTrips = Array.isArray(tripsQ.data) ? tripsQ.data.filter((t) => t.status === "in-progress").length : 0;
+  // Compute precise specification KPIs
+  const totalVehicles = vehiclesQ.data?.length ?? 0;
+  const activeVehicles = vehiclesQ.data?.filter((v) => v.status === "On Trip").length ?? 0;
+  const availableVehicles = vehiclesQ.data?.filter((v) => v.status === "Available").length ?? 0;
+  const maintenanceVehicles = vehiclesQ.data?.filter((v) => v.status === "In Shop").length ?? 0;
+
+  const activeTrips = tripsQ.data?.filter((t) => t.status === "Dispatched").length ?? 0;
+  const pendingTrips = tripsQ.data?.filter((t) => t.status === "Draft").length ?? 0;
+  const driversOnDuty = driversQ.data?.filter((d) => d.status === "Available" || d.status === "On Trip").length ?? 0;
+
+  const fleetUtilization = totalVehicles > 0 ? ((activeVehicles / totalVehicles) * 100).toFixed(1) : "0.0";
+
+  const handleExport = () => {
+    if (!vehiclesQ.data) return;
+    const headers = ["Plate", "Make", "Model", "Type", "Status", "Odometer", "Fuel Type", "Max Load (kg)", "Acquisition Cost ($)"];
+    const rows = vehiclesQ.data.map((v: any) => [
+      v.plate,
+      v.make,
+      v.model,
+      v.type,
+      v.status,
+      v.odometer,
+      v.fuelType,
+      v.maxLoad ?? 1000,
+      v.acquisitionCost ?? 20000,
+    ]);
+    exportToCsv("TransitOps_Fleet_Status_Report", headers, rows);
+  };
 
   return (
     <>
@@ -61,17 +91,25 @@ function DashboardPage() {
         breadcrumbs={[{ label: "Dashboard" }]}
         actions={
           <>
-            <Button variant="outline" size="sm"><Download className="h-4 w-4" /> Export</Button>
-            <Button size="sm"><Plus className="h-4 w-4" /> New Trip</Button>
+            <Button variant="outline" size="sm" onClick={handleExport}>
+              <Download className="h-4 w-4" /> Export CSV
+            </Button>
+            <Button size="sm" onClick={() => navigate({ to: "/trips" })}>
+              <Plus className="h-4 w-4" /> New Trip
+            </Button>
           </>
         }
       />
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4 mb-6">
-        <KpiCard label="Active Vehicles" value={`${activeVehicles}/${totalVehicles}`} delta={4.2} hint="vs last week" icon={Truck} tone="primary" />
-        <KpiCard label="Drivers On-Duty" value={activeDrivers} delta={2.1} hint="12 available" icon={Users} tone="info" />
-        <KpiCard label="Trips In Progress" value={inProgressTrips} delta={-1.3} hint="6 scheduled today" icon={RouteIcon} tone="success" />
-        <KpiCard label="Fuel Cost (MTD)" value="$24,950" delta={5.6} hint="vs last month" icon={Fuel} tone="warning" />
+      {/* Aligned spec KPIs grid */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 mb-6">
+        <KpiCard label="Active Vehicles" value={activeVehicles} hint={`Total: ${totalVehicles}`} icon={Truck} tone="primary" />
+        <KpiCard label="Available Vehicles" value={availableVehicles} hint="Ready for dispatch" icon={Truck} tone="success" />
+        <KpiCard label="In Maintenance" value={maintenanceVehicles} hint="In Shop" icon={Truck} tone="warning" />
+        <KpiCard label="Active Trips" value={activeTrips} hint="On the road" icon={RouteIcon} tone="success" />
+        <KpiCard label="Pending Trips" value={pendingTrips} hint="Draft schedule" icon={RouteIcon} tone="info" />
+        <KpiCard label="Drivers On-Duty" value={driversOnDuty} hint="Active or Available" icon={Users} tone="info" />
+        <KpiCard label="Fleet Utilization" value={`${fleetUtilization}%`} hint="Active / Total" icon={RouteIcon} tone="primary" />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3 mb-6">
@@ -129,10 +167,11 @@ function DashboardPage() {
             <h3 className="font-semibold">Live trips</h3>
             <p className="text-xs text-muted-foreground">Currently on the road</p>
           </div>
-          <Button variant="ghost" size="sm">View all</Button>
+          <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/trips" })}>View all</Button>
         </div>
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           {(Array.isArray(tripsQ.data) ? tripsQ.data.filter((t) => t.status === "in-progress") : []).map((t) => (
+          {tripsQ.data?.filter((t) => t.status === "Dispatched").map((t) => (
             <div key={t.id} className="rounded-lg border p-4 hover:border-primary/40 transition-colors">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-mono text-muted-foreground">{t.id}</span>

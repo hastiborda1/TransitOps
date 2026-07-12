@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Star, Users, Loader2 } from "lucide-react";
+import { Plus, Star, Users, Loader2, Download } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -30,6 +30,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { Driver } from "@/lib/mock-data";
+import { exportToCsv } from "@/lib/utils";
 
 export const Route = createFileRoute("/_app/drivers")({
   head: () => ({
@@ -57,7 +58,7 @@ const driverSchema = z.object({
   license: z.string().min(2, "License is required"),
   licenseCategory: z.string().min(1, "License Category is required"),
   licenseExpiry: z.string().min(10, "Valid expiration date is required"),
-  status: z.enum(["available", "on-trip", "off-duty", "suspended"]),
+  status: z.enum(["Available", "On Trip", "Off Duty", "Suspended"]),
 });
 
 type DriverFormValues = z.infer<typeof driverSchema>;
@@ -102,7 +103,7 @@ function DriversPage() {
       licenseExpiry: new Date(new Date().setFullYear(new Date().getFullYear() + 2))
         .toISOString()
         .substring(0, 10),
-      status: "available",
+      status: "Available",
     },
   });
 
@@ -114,6 +115,23 @@ function DriversPage() {
       rating: 5.0,
       trips: 0,
     });
+  };
+
+  const handleExport = () => {
+    if (!data) return;
+    const headers = ["Driver Name", "Email", "Phone", "License", "License Category", "License Expiry", "Status", "Rating", "Completed Trips"];
+    const rows = data.map((d: any) => [
+      d.name,
+      d.email,
+      d.phone,
+      d.license,
+      d.licenseCategory ?? "Light Truck",
+      d.licenseExpiry ?? "2027-12-31",
+      d.status,
+      d.rating,
+      d.trips,
+    ]);
+    exportToCsv("TransitOps_Drivers_Registry", headers, rows);
   };
 
   const columns: Column<Driver>[] = [
@@ -198,9 +216,14 @@ function DriversPage() {
         title="Drivers"
         description="Team members licensed to operate your fleet."
         actions={
-          <Button size="sm" onClick={() => setIsAddOpen(true)}>
-            <Plus className="h-4 w-4" /> Add Driver
-          </Button>
+          <>
+            <Button variant="outline" size="sm" onClick={handleExport} className="mr-2">
+              <Download className="h-4 w-4" /> Export CSV
+            </Button>
+            <Button size="sm" onClick={() => setIsAddOpen(true)}>
+              <Plus className="h-4 w-4" /> Add Driver
+            </Button>
+          </>
         }
       />
       <DataTable
@@ -275,10 +298,10 @@ function DriversPage() {
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="available">Available</SelectItem>
-                    <SelectItem value="on-trip">On Trip</SelectItem>
-                    <SelectItem value="off-duty">Off Duty</SelectItem>
-                    <SelectItem value="suspended">Suspended</SelectItem>
+                    <SelectItem value="Available">Available</SelectItem>
+                    <SelectItem value="On Trip">On Trip</SelectItem>
+                    <SelectItem value="Off Duty">Off Duty</SelectItem>
+                    <SelectItem value="Suspended">Suspended</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

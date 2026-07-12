@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 type Tone = "success" | "warning" | "info" | "destructive" | "muted" | "primary";
 
 const toneMap: Record<string, Tone> = {
+  // Legacy
   active: "success",
   available: "success",
   completed: "success",
@@ -19,6 +20,18 @@ const toneMap: Record<string, Tone> = {
   rejected: "destructive",
   suspended: "destructive",
   retired: "muted",
+
+  // Aligned Specifics
+  Available: "success",
+  "On Trip": "info",
+  "In Shop": "warning",
+  Retired: "muted",
+  Draft: "info",
+  Dispatched: "info",
+  Completed: "success",
+  Cancelled: "muted",
+  "Off Duty": "muted",
+  Suspended: "destructive",
 };
 
 const toneStyles: Record<Tone, string> = {
