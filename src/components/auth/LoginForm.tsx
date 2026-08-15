@@ -61,7 +61,7 @@ export function LoginForm({
   const [sendingOtp, setSendingOtp] = useState(false);
 
   const isDark = theme === "dark";
-  const demoCreds = DEMO_CREDENTIALS[role];
+  const demoCreds = role ? DEMO_CREDENTIALS[role as Exclude<UserRole, null>] : undefined;
   const identifierLabel = identifierType === "email" ? "Email Address" : "Employee ID";
   const InputIcon = Mail;
 
@@ -130,7 +130,7 @@ export function LoginForm({
     setLoading(true);
     try {
       if (isOtpMode) {
-        const res = await authService.verifyOtp(values.identifier, values.otp || "", role);
+        const res = await authService.verifyOtp(values.identifier, values.otp || "", role || undefined);
         login(res.role, res.email, res.name || res.username || res.email);
         toast.success(`Welcome, ${res.name}`);
         navigate({ to: redirectUrl });
@@ -150,9 +150,9 @@ export function LoginForm({
   const copyCreds = () => {
     if (!demoCreds) return;
     const credText =
-      identifierType === "email"
+      demoCreds && "email" in demoCreds
         ? `Email: ${demoCreds.email}\nPassword: ${demoCreds.password}`
-        : `Employee ID: ${demoCreds.employeeId}\nPassword: ${demoCreds.password}`;
+        : `Employee ID: ${(demoCreds as any).employeeId}\nPassword: ${demoCreds.password}`;
     navigator.clipboard.writeText(credText);
     toast.success("Credentials copied to clipboard!");
   };

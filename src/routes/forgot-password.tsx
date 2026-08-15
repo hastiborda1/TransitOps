@@ -46,8 +46,8 @@ type ForgotFormValues = {
 type ResetFormValues = {
   email: string;
   otp: string;
-  password?: string;
-  confirmPassword?: string;
+  password: string;
+  confirmPassword: string;
 };
 
 function ForgotPasswordPage() {

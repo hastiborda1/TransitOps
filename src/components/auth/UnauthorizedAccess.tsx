@@ -10,7 +10,7 @@ export function UnauthorizedAccess() {
   const handleLogout = () => {
     authService.logout();
     logout();
-    navigate('/login');
+    navigate({ to: "/login" });
   };
 
   return (
